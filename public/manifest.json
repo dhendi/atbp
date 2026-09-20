@@ -1,0 +1,13 @@
+{
+  "name": "ATBP: Find something different",
+  "short_name": "ATBP",
+  "description": "Handmade, vintage, pre-loved, and collectible finds from sellers across the Philippines.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f0e3",
+  "theme_color": "#c95532",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

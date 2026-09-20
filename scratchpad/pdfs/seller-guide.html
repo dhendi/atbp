@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sell on ATBP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f0e3; --paper:#fffcf6;
+    --brand-50:#faf4f2; --brand-100:#f3e2dd; --brand-200:#e9c4b9; --brand-300:#de9f8c; --brand-400:#d4795e;
+    --brand-500:#c95532; --brand-600:#a64426; --brand-700:#80351e; --brand-800:#5d2819; --brand-900:#3f1d12;
+    --gold-100:#f7ead4; --gold-400:#eab457; --gold-500:#e9a52f; --gold-600:#bf831d;
+    --teal-100:#d2ddeb; --teal-500:#4c6fa3; --teal-600:#3c5983;
+    --live-500:#df3826;
+    --ink-50:#f9f5f3; --ink-100:#f0e7e3; --ink-200:#e0cec8; --ink-300:#c6aa9f; --ink-400:#a67e6e;
+    --ink-500:#7d584a; --ink-600:#5f4135; --ink-700:#4f362b; --ink-800:#4a2c20; --ink-900:#29170f;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body{
+    margin:0; font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif; color:var(--ink-800);
+    background:var(--paper); font-size:10.6pt; line-height:1.55;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  h1,h2,h3,h4{ font-family:'Fraunces',ui-serif,Georgia,serif; color:var(--ink-900); margin:0; }
+  .page{ position:relative; width:210mm; min-height:297mm; padding:20mm 20mm 12mm; page-break-after:always; display:flex; flex-direction:column; }
+  .page:last-child{ page-break-after:auto; }
+  .footer{
+    margin-top:auto; padding-top:3mm; display:flex; justify-content:space-between;
+    font-size:7.6pt; color:var(--ink-400); border-top:0.75pt solid var(--ink-200);
+    font-family:'DM Sans',sans-serif; letter-spacing:.02em;
+  }
+  .eyebrow{ font-size:8.6pt; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--brand-600); margin-bottom:5px; }
+  .lede{ font-size:12.5pt; color:var(--ink-600); max-width:145mm; }
+  p{ margin:0 0 9px; }
+  ul,ol{ margin:0 0 10px; padding-left:19px; }
+  li{ margin-bottom:4px; }
+  a{ color:var(--brand-600); }
+  .section-title{ font-size:24pt; font-weight:600; margin-bottom:3mm; line-height:1.1; }
+  .section-num{ font-family:'Fraunces',serif; font-size:13pt; font-weight:500; color:var(--brand-300); }
+
+  /* ---------- COVER ---------- */
+  .cover{ background:linear-gradient(180deg,var(--cream) 0%, var(--cream) 62%, var(--brand-500) 62%, var(--brand-600) 100%);
+    display:flex; flex-direction:column; justify-content:space-between; }
+  .cover .mark{ width:64px; height:64px; }
+  .cover .top{ padding-top:6mm; }
+  .cover .brandname{ font-family:'Fraunces',serif; font-weight:600; font-size:15pt; margin-top:8px; letter-spacing:.01em; }
+  .cover .middle{ margin-top:38mm; }
+  .cover h1{ font-size:52pt; line-height:0.98; font-weight:600; color:var(--ink-900); max-width:150mm; }
+  .cover h1 em{ font-style:italic; color:var(--brand-500); font-weight:500; }
+  .cover .subtitle{ font-family:'DM Sans',sans-serif; font-size:15pt; color:var(--ink-700); margin-top:6mm; font-weight:500; }
+  .cover .bottom{ color:#fff; padding-bottom:4mm; }
+  .cover .bottom .tag{ font-size:10.5pt; font-weight:700; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+  .cover .bottom .url{ font-size:9.5pt; margin-top:2mm; opacity:.85; }
+
+  /* ---------- TOC ---------- */
+  .toc-item{ display:flex; align-items:baseline; gap:10px; padding:7px 0; border-bottom:0.75pt solid var(--ink-100); }
+  .toc-item .n{ font-family:'Fraunces',serif; font-weight:600; color:var(--brand-500); font-size:13pt; width:22px; flex-shrink:0; }
+  .toc-item .t{ font-weight:600; color:var(--ink-900); font-size:11.5pt; }
+  .toc-item .d{ color:var(--ink-500); font-size:9.6pt; }
+
+  /* ---------- section divider band ---------- */
+  .band{ background:var(--brand-500); color:#fff; margin:-20mm -20mm 10mm; padding:14mm 20mm 9mm; }
+  .band.gold{ background:var(--gold-500); }
+  .band.teal{ background:var(--teal-500); }
+  .band.ink{ background:var(--ink-900); }
+  .band .section-num{ color:rgba(255,255,255,.65); }
+  .band .section-title{ color:#fff; }
+  .band .lede{ color:rgba(255,255,255,.92); }
+
+  /* ---------- components ---------- */
+  .card{ background:var(--ink-50); border:1px solid var(--ink-100); border-radius:10px; padding:11px 13px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
+  .chip{ display:inline-block; background:var(--brand-100); color:var(--brand-700); border-radius:999px; padding:3px 11px; font-size:8.8pt; font-weight:700; margin:0 5px 5px 0; }
+  .chip.gold{ background:var(--gold-100); color:var(--gold-600); }
+  .chip.teal{ background:var(--teal-100); color:var(--teal-600); }
+  .chip.no{ background:var(--ink-100); color:var(--ink-500); }
+
+  table{ width:100%; border-collapse:collapse; font-size:9.6pt; margin:8px 0 14px; }
+  th{ text-align:left; font-family:'DM Sans',sans-serif; font-weight:700; font-size:8.4pt; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-500); border-bottom:1.5pt solid var(--ink-300); padding:5px 8px; }
+  td{ padding:7px 8px; border-bottom:0.75pt solid var(--ink-100); vertical-align:top; }
+  tr:last-child td{ border-bottom:none; }
+
+  .plan-cards{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0 14px; }
+  .plan{ border:1.5pt solid var(--ink-200); border-radius:12px; padding:12px; position:relative; }
+  .plan.best{ border-color:var(--gold-500); background:var(--gold-100); }
+  .plan .badge{ position:absolute; top:-9px; right:10px; background:var(--gold-500); color:#fff; font-size:7.4pt; font-weight:700; padding:2px 8px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em; }
+  .plan h4{ font-size:12.5pt; }
+  .plan .price{ font-family:'Fraunces',serif; font-size:19pt; font-weight:600; color:var(--brand-600); margin:3px 0; }
+  .plan .price small{ font-family:'DM Sans',sans-serif; font-size:8.5pt; color:var(--ink-500); font-weight:500; }
+  .plan .comm{ display:inline-block; background:#fff; border:1pt solid var(--ink-200); border-radius:6px; padding:2px 7px; font-size:9pt; font-weight:700; color:var(--ink-700); margin-bottom:6px; }
+  .plan ul{ padding-left:14px; margin:5px 0 0; font-size:8.8pt; }
+  .plan li{ margin-bottom:2.5px; }
+
+  .callout{ border-left:3.5pt solid var(--brand-500); background:var(--brand-50); border-radius:0 8px 8px 0; padding:9px 13px; margin:10px 0; font-size:9.8pt; }
+  .callout.teal{ border-color:var(--teal-500); background:var(--teal-100); }
+  .callout.gold{ border-color:var(--gold-500); background:var(--gold-100); }
+  .callout b{ color:var(--ink-900); }
+
+  .fee-example{ background:var(--ink-900); color:var(--ink-50); border-radius:12px; padding:14px 16px; margin:10px 0; }
+  .fee-example .row{ display:flex; justify-content:space-between; padding:4px 0; font-size:9.8pt; border-bottom:0.75pt solid rgba(255,255,255,.12); }
+  .fee-example .row.total{ font-weight:700; color:var(--gold-400); font-size:11pt; border-bottom:none; padding-top:7px; }
+  .fee-example h4{ color:#fff; font-size:11pt; margin-bottom:6px; }
+
+  .steps{ counter-reset:step; }
+  .step{ display:flex; gap:10px; margin-bottom:9px; }
+  .step::before{ counter-increment:step; content:counter(step); flex-shrink:0; width:22px; height:22px; border-radius:50%; background:var(--brand-500); color:#fff; font-weight:700; font-size:10pt; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; }
+  .step .body{ padding-top:1px; }
+  .step .body b{ color:var(--ink-900); display:block; font-size:10pt; margin-bottom:1px; }
+
+  .check{ display:flex; gap:8px; margin-bottom:5px; align-items:flex-start; font-size:9.8pt; }
+  .check .box{ flex-shrink:0; width:13px; height:13px; border:1.5pt solid var(--brand-500); border-radius:3px; margin-top:2px; }
+
+  .persona-grid{ display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:8px 0 14px; }
+  .persona{ background:#fff; border:1pt solid var(--ink-100); border-radius:8px; padding:8px 11px; font-size:9.4pt; }
+  .persona b{ color:var(--brand-700); }
+
+  .faq-q{ font-weight:700; color:var(--ink-900); font-size:10.2pt; margin-top:10px; }
+  .faq-a{ color:var(--ink-600); font-size:9.8pt; margin-top:2px; }
+
+  .quote{ font-family:'Fraunces',serif; font-style:italic; font-size:15pt; color:var(--brand-700); line-height:1.4; margin:14px 0; }
+
+  .comp-table td:first-child, .comp-table th:first-child{ font-weight:700; color:var(--ink-900); }
+  .comp-table .atbp-row td{ background:var(--brand-50); }
+  .small{ font-size:8.4pt; color:var(--ink-500); }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="page cover">
+  <div class="top">
+    <svg class="mark" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#F7F0E3"/><path d="M46 47 C 34 45, 20 38, 14 24 C 12 19, 15 15, 20 16 C 34 19, 43 31, 47 44 Z" fill="#C95532"/><path d="M49 49 C 58 44, 72 38, 84 39 C 90 39, 92 44, 88 48 C 78 57, 62 56, 50 52 Z" fill="#DF3826"/><path d="M46 51 C 45 63, 40 77, 28 85 C 23 88, 18 85, 19 79 C 22 65, 33 55, 45 50 Z" fill="#F2ADA8"/><path d="M51 51 C 60 60, 70 72, 71 86 C 71 92, 66 94, 62 90 C 53 79, 49 64, 50 50 Z" fill="#4C6FA3"/><circle cx="53" cy="20" r="7" fill="#E9A52F"/><path d="M72 22 L74.5 27.5 L80 30 L74.5 32.5 L72 38 L69.5 32.5 L64 30 L69.5 27.5 Z" fill="#4A2C20"/></svg>
+    <div class="brandname">ATBP</div>
+  </div>
+  <div class="middle">
+    <div class="eyebrow" style="color:var(--brand-600)">For prospective sellers</div>
+    <h1>Sell on <em>ATBP</em></h1>
+    <div class="subtitle">Your shop. Your finds. Your people.</div>
+  </div>
+  <div class="bottom">
+    <div class="tag">Find something different.</div>
+    <div class="url">atbph.com — a Philippine marketplace for handmade, vintage, pre-loved &amp; collectible finds</div>
+  </div>
+</section>
+
+<!-- ================= TOC ================= -->
+<section class="page">
+  <div class="eyebrow">Contents</div>
+  <h2 class="section-title" style="margin-bottom:10mm;">What's inside this guide</h2>
+  <div class="toc-item"><span class="n">01</span><span class="t">What is ATBP?</span><span class="d">— the marketplace, the meaning, the feeling</span></div>
+  <div class="toc-item"><span class="n">02</span><span class="t">Who is ATBP for?</span><span class="d">— and who it isn't</span></div>
+  <div class="toc-item"><span class="n">03</span><span class="t">Why sell on ATBP?</span><span class="d">— real differentiators, honestly stated</span></div>
+  <div class="toc-item"><span class="n">04</span><span class="t">ATBP fees</span><span class="d">— commission, tiers, processing, Founding Sellers</span></div>
+  <div class="toc-item"><span class="n">05</span><span class="t">How ATBP compares</span><span class="d">— Shopee, Lazada, TikTok Shop, Carousell, Etsy</span></div>
+  <div class="toc-item"><span class="n">06</span><span class="t">Becoming a seller</span><span class="d">— step by step</span></div>
+  <div class="toc-item"><span class="n">07</span><span class="t">Creating a great listing</span><span class="d">— photos, pricing, condition, disclosure</span></div>
+  <div class="toc-item"><span class="n">08</span><span class="t">Getting your first sales</span><span class="d">— practical, ATBP-specific tactics</span></div>
+  <div class="toc-item"><span class="n">09</span><span class="t">A fee example, worked out</span><span class="d">— real pesos, both tiers</span></div>
+  <div class="toc-item"><span class="n">10</span><span class="t">Your launch checklist</span><span class="d">— before and after going live</span></div>
+  <div class="toc-item"><span class="n">11</span><span class="t">Seller FAQ</span><span class="d">— the questions we actually get</span></div>
+  <div class="toc-item"><span class="n">12</span><span class="t">Why ATBP</span><span class="d">— the closing case</span></div>
+</section>
+
+<!-- ================= 01 WHAT IS ATBP ================= -->
+<section class="page">
+  <div class="band"><div class="section-num">01</div><h2 class="section-title">What is ATBP?</h2>
+  <p class="lede">"ATBP" is short for <b>at iba pa</b> — Filipino for "and other things," "and so on." It's also exactly how the marketplace works.</p></div>
+
+  <p>ATBP is a Philippine marketplace built around <b>handmade, vintage, pre-loved, collectible, and just plain interesting finds</b> — the kind of things you'd stumble onto at a good weekend bazaar, a flea market table, a maker's booth, or a collector's swap meet. Closets being cleared out. Yard sales going up for the weekend. A one-of-one piece from a local maker. A trading card someone's finally letting go of.</p>
+
+  <p>That's a deliberately different shape than a mass-market catalogue marketplace. ATBP isn't optimized for "search a SKU, buy the cheapest one, done." It's built for <b>browsing</b> — for the moment someone finds something they weren't specifically looking for, from someone whose shop they'll want to come back to.</p>
+
+  <div class="quote">"Find something different."</div>
+
+  <p>Which is why ATBP is built around <b>seller identity</b>, not anonymous listings. Every shop on ATBP has a real presence:</p>
+
+  <div class="persona-grid">
+    <div class="persona"><b>Shop &amp; Story</b> — your own storefront page, banner, logo, and description</div>
+    <div class="persona"><b>Products</b> — organized under your shop, not lost in a generic grid</div>
+    <div class="persona"><b>Reviews &amp; ratings</b> — buyer feedback tied to real completed orders</div>
+    <div class="persona"><b>Followers</b> — buyers who follow your shop see your new listings</div>
+    <div class="persona"><b>Badges</b> — Verified Seller, Verified Maker, Rising Seller, Highly Rated, Fast Shipper, Local Seller, and more</div>
+    <div class="persona"><b>Collections</b> — a chance to be hand-picked into "ATBP Picks," a curated spotlight</div>
+  </div>
+
+  <p>Buyers come to ATBP to discover — through <b>Home</b>, <b>Explore</b>, <b>Trending</b>, <b>Deals</b>, and <b>Local</b> — and what they discover is <i>your shop</i>, not just a product row.</p>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>01 · What is ATBP?</span></div>
+</section>
+
+<!-- ================= 02 WHO IS IT FOR ================= -->
+<section class="page">
+  <div class="band gold"><div class="section-num" style="color:rgba(74,44,32,.55)">02</div><h2 class="section-title" style="color:var(--ink-900)">Who is ATBP for?</h2>
+  <p class="lede" style="color:var(--ink-800)">If any of these sound like you, you're in the right place.</p></div>
+
+  <div class="grid3">
+    <div class="card">🎨 Handmade makers &amp; artists</div>
+    <div class="card">🃏 Collectors — cards, toys, anime, gaming, vinyl</div>
+    <div class="card">🕰️ Vintage sellers</div>
+    <div class="card">♻️ Pre-loved &amp; closet sellers</div>
+    <div class="card">⛺ Yard-sale sellers (one-time clear-outs)</div>
+    <div class="card">🏷️ Small businesses &amp; local brands</div>
+    <div class="card">✨ Made-to-order / custom creators</div>
+    <div class="card">🍪 Shelf-stable food &amp; snack sellers</div>
+    <div class="card">🧵 Hobbyists turning a side hustle into a shop</div>
+  </div>
+
+  <h3 style="font-size:13pt; margin:16px 0 6px;">Who probably shouldn't sell on ATBP</h3>
+  <p>We'd rather tell you upfront: ATBP isn't built for pure commodity resale at the lowest possible price with no shop identity — that's a different kind of marketplace, optimized for a different kind of shopper. It's also not the place for anything on our <a href="https://atbph.com/prohibited-items">Prohibited Items</a> list (weapons, illegal drugs, counterfeit goods, live animals, unregistered prescription medicines, and a handful of other regulated categories), and it's not a fit if you'd rather list-and-forget than build a shop people can follow and come back to — discovery on ATBP rewards presence, not just inventory.</p>
+
+  <div class="callout gold"><b>The honest version:</b> if what you're selling has a story — who made it, where it's been, why it's rare, why it's yours to sell — ATBP is built for that story to matter.</div>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>02 · Who is ATBP for?</span></div>
+</section>
+
+<!-- ================= 03 WHY SELL ================= -->
+<section class="page">
+  <div class="band teal"><div class="section-num">03</div><h2 class="section-title">Why sell on ATBP?</h2>
+  <p class="lede">Real reasons — not the biggest-marketplace pitch, because that's not what ATBP is.</p></div>
+
+  <p>ATBP is younger and smaller than Shopee, Lazada, or TikTok Shop. We won't pretend otherwise — and we won't claim to send you more traffic than they can, or to be flatly cheaper than every platform in every scenario. What ATBP offers instead is a marketplace built specifically around <b>discovery and identity</b>, not raw transaction volume:</p>
+
+  <div class="grid2">
+    <div class="card"><b>A discovery-first homepage.</b> Browse by Vibe, Trending Now, curated ATBP Picks, and Deals — buyers land on the site to browse, the way they'd wander a bazaar.</div>
+    <div class="card"><b>A real storefront, not a listing ID.</b> Banner, bio, badges, ratings, and a follower count that's actually yours.</div>
+    <div class="card"><b>Followers who come back.</b> Buyers follow shops they like and see new drops without having to search again.</div>
+    <div class="card"><b>A shot at "ATBP Picks."</b> Our curated collections spotlight are hand-picked, not pay-to-play.</div>
+    <div class="card"><b>Local discovery.</b> Buyers can find nearby sellers, closets, yard sales, and markets specifically — not buried in a national catalogue.</div>
+    <div class="card"><b>Formats built for what you actually sell.</b> Closets and Yard Sales are their own destinations, not squeezed into a generic "used goods" category.</div>
+  </div>
+
+  <p>And, plainly: ATBP is a chance to reach buyers who are specifically looking for something different — outside whatever social audience you've already built.</p>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>03 · Why sell on ATBP?</span></div>
+</section>
+
+<!-- ================= 04 FEES ================= -->
+<section class="page">
+  <div class="band"><div class="section-num">04</div><h2 class="section-title">ATBP fees</h2>
+  <p class="lede">One standard commission. One flat processing fee on two payment methods. That's it.</p></div>
+
+  <p style="font-size:11.5pt;"><b>Standard commission: 10%, VAT-inclusive.</b> No listing fees. No signup cost. ATBP only makes money when you do.</p>
+
+  <h3 style="font-size:12.5pt; margin:14px 0 4px;">Seller plans</h3>
+  <div class="plan-cards">
+    <div class="plan">
+      <h4>Free</h4>
+      <div class="comm">10% commission</div>
+      <div class="price">₱0<small>/month</small></div>
+      <ul><li>10 active listings</li><li>Basic analytics</li><li>Basic storefront customization</li><li>Seller badge, standard support</li></ul>
+    </div>
+    <div class="plan">
+      <h4>Pro</h4>
+      <div class="comm">10% commission</div>
+      <div class="price">₱699<small>/month</small></div>
+      <ul><li>250 active listings</li><li>Advanced analytics</li><li>Enhanced storefront, boost tools</li><li>Bulk listing tools, priority support</li></ul>
+    </div>
+    <div class="plan best"><span class="badge">Best value</span>
+      <h4>Premium</h4>
+      <div class="comm" style="background:var(--gold-500); color:#fff; border-color:var(--gold-500);">8% commission</div>
+      <div class="price">₱1,999<small>/month</small></div>
+      <ul><li>Unlimited active listings</li><li>Everything in Pro</li><li>Advanced promo &amp; storefront tools</li><li>Priority support</li></ul>
+    </div>
+  </div>
+  <p class="small">Premium is the only plan with the lower 8% rate — Free and Pro are both 10%. Upgrade or downgrade any time from Studio → Plan &amp; Billing; no lock-in, you only pay for the month.</p>
+
+  <div class="callout gold">
+    <b>Founding Seller Program — 197 of 200 spots remaining.</b> Registered businesses with a valid BIR Certificate of Registration can apply to become one of ATBP's first 200 Founding Sellers: <b>8% commission</b> plus <b>free Pro for your first year</b>. After that, Founding Sellers unlock <b>Founding Premium at ₱999/month</b> — the same 8% commission as standard Premium, just a lower monthly fee, for as long as you stay a Founding Seller. Casual and individual sellers are always welcome on ATBP; this specific program is for verified registered businesses.
+  </div>
+
+  <h3 style="font-size:12.5pt; margin:14px 0 4px;">Payment processing</h3>
+  <p>GCash, Maya, and QR Ph carry no fee beyond your plan's commission. <b>Card and Online Banking orders carry one additional flat fee of ₱15</b> — not a percentage, and it's the same ₱15 whether the order is ₱200 or ₱20,000.</p>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>04 · ATBP fees</span></div>
+</section>
+
+<!-- ================= 05 COMPARISON ================= -->
+<section class="page">
+  <div class="band ink"><div class="section-num">05</div><h2 class="section-title">How ATBP compares</h2>
+  <p class="lede">Fee structures across marketplaces change often and vary by category — treat this as a general shape, not a live quote.</p></div>
+
+  <table class="comp-table">
+    <tr><th>Platform</th><th>Positioning</th><th>Publicly reported commission</th><th>Other fees layered on</th></tr>
+    <tr class="atbp-row"><td>ATBP</td><td>Discovery marketplace — handmade, vintage, pre-loved, collectibles</td><td><b>10%</b> flat (8% on Premium)</td><td>₱15 flat, Card/Online Banking only. Nothing else.</td></tr>
+    <tr><td>Shopee PH</td><td>Mass-market general marketplace</td><td>~6.1%–11.1% (Mall), ~8.5%–10.5% (Marketplace), category-based</td><td>~2.24% transaction fee, ₱5 order-processing fee after 50 orders/mo, ~1–1.5% seller growth support fee</td></tr>
+    <tr><td>Lazada PH</td><td>Mass-market general marketplace + LazMall</td><td>~6.1%–8.7% (Marketplace), ~7.7%–11.1% (LazMall), category-based</td><td>~2.24% payment/transaction fee reported separately</td></tr>
+    <tr><td>TikTok Shop PH</td><td>Social/live-commerce marketplace</td><td>~5%–9.1%, cluster &amp; category-based, VAT-inclusive</td><td>~2.24% transaction fee + payment-method fee (e.g. card 3.5% + ₱15)</td></tr>
+    <tr><td>Carousell PH</td><td>Peer-to-peer / casual resale, chat-to-buy</td><td>2.5% of revenue per completed transaction (capped ₱2,250)</td><td>Category listing fees for Cars/Property/Jobs only</td></tr>
+    <tr><td>Etsy (int'l)</td><td>Global handmade/vintage marketplace</td><td>6.5% transaction fee</td><td>$0.20 per listing + ~3%+$0.25 payment processing</td></tr>
+  </table>
+  <p class="small">Rates checked September 2026 from each platform's own seller-facing pages and current third-party fee guides; Shopee, Lazada, and TikTok Shop rates are category-dependent and change frequently — always confirm the live rate in that platform's own seller centre before comparing an actual sale.</p>
+
+  <div class="callout"><b>The honest positioning:</b> ATBP's fee structure is intentionally simple — one flat standard commission, one flat ₱15 fee on two specific payment methods, and nothing else layered on top. We're not claiming to be the cheapest option in every category or at every volume — actual cost on any platform depends heavily on category and payment mix — but you will never find a hidden line item on your ATBP payout.</p></div>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>05 · How ATBP compares</span></div>
+</section>
+
+<!-- ================= 06 BECOMING A SELLER ================= -->
+<section class="page">
+  <div class="band"><div class="section-num">06</div><h2 class="section-title">Becoming a seller</h2>
+  <p class="lede">From account to first payout.</p></div>
+
+  <div class="steps">
+    <div class="step"><div class="body"><b>Create an account</b> and choose "Sell on ATBP."</div></div>
+    <div class="step"><div class="body"><b>Set up your seller profile</b> — shop name, handle, logo, banner, description, and province.</div></div>
+    <div class="step"><div class="body"><b>Choose Individual or Business.</b> Registered businesses can optionally submit BIR details for verification and Founding Seller eligibility.</div></div>
+    <div class="step"><div class="body"><b>Add your payout method</b> — bank transfer, GCash, or Maya.</div></div>
+    <div class="step"><div class="body"><b>Create your first listing</b> — photos, title, description, category, price, condition, quantity, and shipping or pickup options.</div></div>
+    <div class="step"><div class="body"><b>Publish.</b></div></div>
+    <div class="step"><div class="body"><b>Manage orders</b> as they come in from Studio.</div></div>
+    <div class="step"><div class="body"><b>Fulfill</b> — ship it, hand it over locally, or deliver a service/digital file.</div></div>
+    <div class="step"><div class="body"><b>Request a payout</b> from Studio → Payouts whenever you have an available balance.</div></div>
+  </div>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>06 · Becoming a seller</span></div>
+</section>
+
+<!-- ================= 07 GREAT LISTING ================= -->
+<section class="page">
+  <div class="band gold"><div class="section-num" style="color:rgba(74,44,32,.55)">07</div><h2 class="section-title" style="color:var(--ink-900)">How to create a great listing</h2>
+  <p class="lede" style="color:var(--ink-800)">The details that actually move a "maybe" to a "buy now."</p></div>
+
+  <div class="grid2">
+    <div class="card"><b>Photos.</b> Natural light, multiple angles, and — for anything pre-loved or vintage — close-ups of any flaws. Buyers trust what they can see clearly.</div>
+    <div class="card"><b>Titles.</b> Specific beats clever: item, key material or era, and size or variant if relevant.</div>
+    <div class="card"><b>Descriptions.</b> Say what it is, what condition it's really in, and what's included. For made-to-order, state your turnaround time up front.</div>
+    <div class="card"><b>Pricing &amp; stock.</b> Set a real price and accurate quantity — ATBP tracks available stock per listing.</div>
+    <div class="card"><b>Condition, honestly.</b> ATBP's condition scale runs Brand New → Like New → Excellent → Good → Fair. Under-stating condition costs you disputes; over-stating costs you reviews.</div>
+    <div class="card"><b>Shipping or pickup.</b> Set what you actually offer — shipping, local pickup, or local delivery — so buyers aren't surprised at checkout.</div>
+  </div>
+
+  <h3 style="font-size:12.5pt; margin:14px 0 4px;">By category</h3>
+  <p><b>Vintage &amp; pre-loved:</b> measurements, materials, and any wear — disclosed, not hidden. <b>Collectibles:</b> edition, rarity, and authenticity details if you have them. <b>Handmade:</b> materials and process — buyers on ATBP want to know how it was made. <b>Made-to-order:</b> set expectations on turnaround before someone orders.</p>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>07 · Creating a great listing</span></div>
+</section>
+
+<!-- ================= 08 GET SALES ================= -->
+<section class="page">
+  <div class="band teal"><div class="section-num">08</div><h2 class="section-title">Getting your first sales</h2>
+  <p class="lede">Practical, ATBP-specific tactics — not generic ecommerce advice.</p></div>
+
+  <ul>
+    <li><b>Upload consistently.</b> "Just Added" is a real homepage shelf — regular new listings keep you visible there.</li>
+    <li><b>Build a shop people recognize.</b> A complete profile with a logo and banner reads as a real shop, not a one-off listing.</li>
+    <li><b>Share your ATBP storefront link</b> on your existing social channels — bring your audience to a shop they can follow and buy from directly.</li>
+    <li><b>Encourage follows.</b> Followers see your new listings without having to search for you again.</li>
+    <li><b>Try Boost or Featured placements</b> if it makes sense for a launch — self-serve, starting around ₱99–149 per listing.</li>
+    <li><b>Respond quickly</b> to messages and orders — it shows up in your seller stats and your reputation.</li>
+    <li><b>Ask happy buyers for a review.</b> Reviews and ratings are visible on your shop page and build trust for the next buyer.</li>
+    <li><b>Keep new products coming.</b> A shop that updates regularly earns more repeat visits than one that lists once and goes quiet.</li>
+  </ul>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>08 · Getting your first sales</span></div>
+</section>
+
+<!-- ================= 09 FEE EXAMPLE ================= -->
+<section class="page">
+  <div class="band"><div class="section-num">09</div><h2 class="section-title">A fee example, worked out</h2>
+  <p class="lede">Real pesos, on the Free/Pro tier and on Premium.</p></div>
+
+  <div class="fee-example">
+    <h4>₱1,000 sale — Free or Pro plan (10% commission), paid by GCash</h4>
+    <div class="row"><span>Sale subtotal</span><span>₱1,000.00</span></div>
+    <div class="row"><span>ATBP commission (10%)</span><span>–₱100.00</span></div>
+    <div class="row total"><span>You receive</span><span>₱900.00</span></div>
+  </div>
+
+  <div class="fee-example">
+    <h4>Same ₱1,000 sale, paid by Card or Online Banking</h4>
+    <div class="row"><span>Sale subtotal</span><span>₱1,000.00</span></div>
+    <div class="row"><span>ATBP commission (10%)</span><span>–₱100.00</span></div>
+    <div class="row"><span>Card / Online Banking processing fee</span><span>–₱15.00</span></div>
+    <div class="row total"><span>You receive</span><span>₱885.00</span></div>
+  </div>
+
+  <div class="fee-example">
+    <h4>Same ₱1,000 sale — Premium plan (8% commission), paid by GCash</h4>
+    <div class="row"><span>Sale subtotal</span><span>₱1,000.00</span></div>
+    <div class="row"><span>ATBP commission (8%)</span><span>–₱80.00</span></div>
+    <div class="row total"><span>You receive</span><span>₱920.00</span></div>
+  </div>
+
+  <p class="small">These examples cover the marketplace commission and payment-processing fee only. Shipping cost handling, any refund or dispute outcome, and an optional instant-payout fee (a flat ₱99, only if you choose instant payout over standard) can each affect your final amount depending on the order — check Studio for exact numbers on any specific order.</p>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>09 · A fee example, worked out</span></div>
+</section>
+
+<!-- ================= 10 CHECKLIST ================= -->
+<section class="page">
+  <div class="band gold"><div class="section-num" style="color:rgba(74,44,32,.55)">10</div><h2 class="section-title" style="color:var(--ink-900)">Your launch checklist</h2>
+  <p class="lede" style="color:var(--ink-800)">Two short lists — before you go live, and right after.</p></div>
+
+  <h3 style="font-size:12.5pt;">Before going live</h3>
+  <div class="check"><div class="box"></div>Profile complete — logo, banner, shop description</div>
+  <div class="check"><div class="box"></div>At least 5 quality listings</div>
+  <div class="check"><div class="box"></div>Accurate pricing and stock counts</div>
+  <div class="check"><div class="box"></div>Clear, well-lit photos on every listing</div>
+  <div class="check"><div class="box"></div>Shipping or pickup options configured</div>
+  <div class="check"><div class="box"></div>Payout method added</div>
+  <div class="check"><div class="box"></div>Prohibited Items policy reviewed</div>
+
+  <h3 style="font-size:12.5pt; margin-top:14px;">Right after launch</h3>
+  <div class="check"><div class="box"></div>Share your storefront link</div>
+  <div class="check"><div class="box"></div>Keep adding products on a regular cadence</div>
+  <div class="check"><div class="box"></div>Respond to messages and orders quickly</div>
+  <div class="check"><div class="box"></div>Watch your orders queue daily</div>
+  <div class="check"><div class="box"></div>Ask satisfied buyers for a review</div>
+  <div class="check"><div class="box"></div>Build your followers</div>
+  <div class="check"><div class="box"></div>Keep inventory counts current</div>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>10 · Your launch checklist</span></div>
+</section>
+
+<!-- ================= 11 FAQ ================= -->
+<section class="page">
+  <div class="band ink"><div class="section-num">11</div><h2 class="section-title">Seller FAQ</h2>
+  <p class="lede">The questions we actually get.</p></div>
+
+  <div class="faq-q">How and when do I get paid?</div>
+  <div class="faq-a">From Studio → Payouts, once you have an available balance, out to bank, GCash, or Maya. Standard payouts process in the ordinary queue; instant payout is available for a flat ₱99 fee if you need funds right away.</div>
+
+  <div class="faq-q">What happens with returns or a buyer dispute?</div>
+  <div class="faq-a">ATBP handles this through a dispute process rather than a separate "returns" flow — a buyer or seller can raise one, and it's reviewed and resolved (refund approved or denied) from there.</div>
+
+  <div class="faq-q">What are seller badges?</div>
+  <div class="faq-a">Recognitions like Verified Seller, Verified Maker, Rising Seller, Highly Rated, Fast Shipper, Local Seller, and Founding Seller, shown on your shop page as you qualify for them.</div>
+
+  <div class="faq-q">How do followers work?</div>
+  <div class="faq-a">Buyers can follow your shop from your storefront page and get surfaced your new listings — no extra setup needed on your end.</div>
+
+  <div class="faq-q">Can I promote my listings?</div>
+  <div class="faq-a">Yes — self-serve Boost, Featured, Category Feature, Homepage Feature, and Sponsored Campaign placements are available from Studio, priced per placement.</div>
+
+  <div class="faq-q">How do Deals work?</div>
+  <div class="faq-a">You set a scheduled sale price and window on your own listing — it's automatically live during that window and shows up on the Deals page.</div>
+
+  <div class="faq-q">Can I run an auction?</div>
+  <div class="faq-a">Auctions are fully built into ATBP but temporarily turned off site-wide while we build up a large enough buyer base for bidding to feel active. They'll switch back on as that grows.</div>
+
+  <div class="faq-q">What about Closets, Yard Sales, and Made-to-Order?</div>
+  <div class="faq-a">Each is its own listing format with its own discovery page — Closets and Yard Sales for personal pre-loved selling, Made-to-Order for custom pieces built after a buyer orders.</div>
+
+  <div class="faq-q">What can't I sell?</div>
+  <div class="faq-a">See the full <a href="https://atbph.com/prohibited-items">Prohibited Items</a> policy — weapons, illegal drugs, counterfeit goods, unregistered prescription medicines, live animals, and a short list of other regulated categories.</div>
+
+  <div class="faq-q">How do I close my shop?</div>
+  <div class="faq-a">Contact ATBP Support — they'll make sure any pending orders are settled first before closing your store.</div>
+  <div class="footer"><span>Sell on ATBP — Seller Guide</span><span>11 · Seller FAQ</span></div>
+</section>
+
+<!-- ================= 12 WHY ATBP ================= -->
+<section class="page cover" style="background:linear-gradient(180deg,var(--ink-900) 0%, var(--ink-900) 100%); justify-content:center;">
+  <div style="color:#fff; padding:0 4mm;">
+    <div class="eyebrow" style="color:var(--gold-400)">12 · Why ATBP</div>
+    <p class="quote" style="color:#fff; font-size:20pt; max-width:150mm;">Your products deserve more than being buried in a giant catalogue.</p>
+    <p style="color:rgba(255,255,255,.85); font-size:11.5pt; max-width:145mm; margin-top:10mm;">ATBP is built around discovery — people coming to browse, not just to search. That means people find things on ATBP they weren't specifically looking for, from sellers they didn't already know. That's the opportunity: not to compete on price against a warehouse, but to be the interesting find someone stumbles into and follows home.</p>
+    <p style="margin-top:14mm; font-family:'Fraunces',serif; font-size:16pt; color:var(--gold-400);">Find something different. Sell something different.</p>
+  </div>
+</section>
+
+</body>
+</html>

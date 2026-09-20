@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ATBP — Partner &amp; Investor Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f0e3; --paper:#fffdf9;
+    --brand-100:#f3e2dd; --brand-200:#e9c4b9; --brand-300:#de9f8c; --brand-400:#d4795e;
+    --brand-500:#c95532; --brand-600:#a64426; --brand-700:#80351e; --brand-900:#3f1d12;
+    --gold-100:#f7ead4; --gold-400:#eab457; --gold-500:#e9a52f; --gold-600:#bf831d;
+    --teal-100:#d2ddeb; --teal-500:#4c6fa3; --teal-600:#3c5983;
+    --live-500:#df3826;
+    --ink-50:#f9f5f3; --ink-100:#f0e7e3; --ink-200:#e0cec8; --ink-300:#c6aa9f; --ink-400:#a67e6e;
+    --ink-500:#7d584a; --ink-600:#5f4135; --ink-700:#4f362b; --ink-800:#4a2c20; --ink-900:#29170f;
+  }
+  @page { size: 338.67mm 190.5mm; margin: 0; }
+  * { box-sizing: border-box; }
+  body{ margin:0; font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif; color:var(--ink-800);
+    background:var(--paper); font-size:13.5px; line-height:1.45;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  h1,h2,h3,h4{ font-family:'Fraunces',ui-serif,Georgia,serif; color:var(--ink-900); margin:0; }
+  code, .mono{ font-family:'DM Mono',ui-monospace,monospace; }
+  .slide{ position:relative; width:338.67mm; height:190.5mm; padding:14mm 16mm; page-break-after:always;
+    display:flex; flex-direction:column; overflow:hidden; }
+  .slide:last-child{ page-break-after:auto; }
+  .kicker{ font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--brand-600); margin-bottom:3mm; }
+  .slidenum{ position:absolute; bottom:7mm; right:14mm; font-size:9.5px; color:var(--ink-400); }
+  .brandmark{ position:absolute; bottom:7mm; left:16mm; font-size:9.5px; color:var(--ink-400); display:flex; align-items:center; gap:5px; }
+  .brandmark svg{ width:12px; height:12px; }
+  h1.hero{ font-size:52px; line-height:1.03; font-weight:600; max-width:22ch; }
+  h1.hero em{ font-style:italic; color:var(--brand-500); font-weight:500; }
+  h2.slide-title{ font-size:32px; font-weight:600; line-height:1.08; margin-bottom:5mm; max-width:26ch; }
+  p.lede{ font-size:16px; color:var(--ink-600); max-width:70ch; }
+  .content{ flex:1; display:flex; flex-direction:column; justify-content:center; }
+  .small{ font-size:10.5px; color:var(--ink-500); }
+  .cite{ position:absolute; bottom:7mm; left:50%; transform:translateX(-50%); font-size:9px; color:var(--ink-400); max-width:70%; text-align:center; }
+
+  /* title slide */
+  .title-slide{ background:linear-gradient(155deg, var(--ink-900) 0%, var(--ink-900) 55%, var(--brand-700) 100%); color:#fff; justify-content:space-between; }
+  .title-slide .mark{ width:46px; height:46px; }
+  .title-slide h1{ font-size:64px; color:#fff; font-weight:600; margin-top:10mm; }
+  .title-slide h1 em{ font-style:italic; color:var(--gold-400); font-weight:500; }
+  .title-slide .sub{ font-size:19px; color:rgba(255,255,255,.85); margin-top:6mm; max-width:38ch; }
+  .title-slide .foot{ font-size:11px; color:rgba(255,255,255,.6); letter-spacing:.04em; }
+
+  /* grid helpers */
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .grid4{ display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; }
+  .card{ background:var(--ink-50); border:1px solid var(--ink-100); border-radius:12px; padding:14px 16px; }
+  .card h4{ font-size:15px; color:var(--brand-700); margin-bottom:4px; }
+  .card p{ font-size:12px; color:var(--ink-600); margin:0; }
+
+  /* big stat */
+  .stat{ text-align:left; }
+  .stat .num{ font-family:'Fraunces',serif; font-size:44px; font-weight:600; color:var(--brand-600); line-height:1; }
+  .stat .label{ font-size:11.5px; color:var(--ink-500); margin-top:3px; max-width:20ch; }
+
+  /* flow diagram */
+  .flow{ display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap; }
+  .flow .node{ background:#fff; border:1.5px solid var(--brand-300); border-radius:999px; padding:10px 20px; font-weight:700; color:var(--brand-700); font-size:14px; white-space:nowrap; }
+  .flow .arrow{ color:var(--ink-300); font-size:20px; padding:0 10px; }
+
+  /* browser frame for screenshots */
+  .browser{ border-radius:10px; overflow:hidden; border:1px solid var(--ink-200); box-shadow:0 6px 18px rgba(41,23,15,.10); background:#fff; }
+  .browser .bar{ background:var(--ink-100); padding:6px 10px; display:flex; align-items:center; gap:5px; }
+  .browser .dot{ width:6px; height:6px; border-radius:50%; background:var(--ink-300); }
+  .browser .url{ margin-left:8px; font-size:8px; color:var(--ink-500); background:#fff; border-radius:5px; padding:2px 8px; }
+  .browser img{ display:block; width:100%; height:auto; }
+  .shot-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .shot-cap{ font-size:10.5px; font-weight:700; color:var(--ink-700); margin-top:4px; }
+
+  table.deck{ width:100%; border-collapse:collapse; font-size:12px; }
+  table.deck th{ text-align:left; font-weight:700; font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-500); border-bottom:1.5px solid var(--ink-300); padding:6px 8px; }
+  table.deck td{ padding:7px 8px; border-bottom:0.75px solid var(--ink-100); vertical-align:top; }
+
+  .barchart{ display:flex; align-items:flex-end; gap:24px; height:150px; }
+  .barchart .bar-item{ display:flex; flex-direction:column; align-items:center; gap:6px; width:120px; }
+  .barchart .bar{ width:64px; border-radius:6px 6px 0 0; }
+  .barchart .bar-label{ font-size:11px; font-weight:700; color:var(--ink-700); text-align:center; }
+  .barchart .bar-val{ font-family:'Fraunces',serif; font-weight:600; font-size:15px; color:var(--ink-900); }
+
+  .tag{ display:inline-block; border-radius:5px; padding:2px 9px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; background:var(--gold-100); color:var(--gold-600); }
+</style>
+</head>
+<body>
+
+<!-- ============ TITLE ============ -->
+<section class="slide title-slide">
+  <div>
+    <svg class="mark" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#F7F0E3"/><path d="M46 47 C 34 45, 20 38, 14 24 C 12 19, 15 15, 20 16 C 34 19, 43 31, 47 44 Z" fill="#C95532"/><path d="M49 49 C 58 44, 72 38, 84 39 C 90 39, 92 44, 88 48 C 78 57, 62 56, 50 52 Z" fill="#DF3826"/><path d="M46 51 C 45 63, 40 77, 28 85 C 23 88, 18 85, 19 79 C 22 65, 33 55, 45 50 Z" fill="#F2ADA8"/><path d="M51 51 C 60 60, 70 72, 71 86 C 71 92, 66 94, 62 90 C 53 79, 49 64, 50 50 Z" fill="#4C6FA3"/><circle cx="53" cy="20" r="7" fill="#E9A52F"/><path d="M72 22 L74.5 27.5 L80 30 L74.5 32.5 L72 38 L69.5 32.5 L64 30 L69.5 27.5 Z" fill="#4A2C20"/></svg>
+    <h1>ATBP<br><em>Find something different.</em></h1>
+    <p class="sub">A discovery-first marketplace for unique Filipino finds — handmade, vintage, pre-loved, collectible, and made-to-order.</p>
+  </div>
+  <div class="foot">atbph.com &nbsp;·&nbsp; Partner &amp; Investor Overview &nbsp;·&nbsp; September 2026</div>
+</section>
+
+<!-- ============ 1. THE CONCEPT ============ -->
+<section class="slide">
+  <div class="kicker">01 — The Concept</div>
+  <div class="content">
+    <h2 class="slide-title">A marketplace built for browsing, not just searching.</h2>
+    <p class="lede">ATBP ("at iba pa" — Filipino for "and other things") is a Philippine marketplace focused on discovery rather than mass-market commodity shopping. Sellers list their own products; ATBP provides the marketplace, discovery, storefronts, transactions, and tools.</p>
+    <div class="grid4" style="margin-top:10mm;">
+      <div class="card"><h4>🎨 Handmade &amp; Art</h4><p>Makers and artists, one-of-ones and small batches</p></div>
+      <div class="card"><h4>🕰️ Vintage &amp; Pre-Loved</h4><p>Closets, yard sales, and personal resale</p></div>
+      <div class="card"><h4>🧸 Collectibles</h4><p>Trading cards, toys, anime, gaming, vinyl</p></div>
+      <div class="card"><h4>✨ Made-to-Order</h4><p>Custom pieces built after a buyer orders</p></div>
+    </div>
+    <p class="small" style="margin-top:6mm;">Plus a small set of adjacent formats: shelf-stable food &amp; snacks, remote services, and digital products.</p>
+  </div>
+  <div class="brandmark">ATBP</div><div class="slidenum">1</div>
+</section>
+
+<!-- ============ 2. THE PROBLEM ============ -->
+<section class="slide">
+  <div class="kicker">02 — The Problem</div>
+  <div class="content">
+    <h2 class="slide-title">Not every shopper is searching for a SKU.</h2>
+    <p class="lede">The largest Philippine marketplaces are optimized for search, price, convenience, and massive catalogues — genuinely well-suited to commodity shopping. But there's a different, well-documented shopping behavior they're not built around:</p>
+    <div class="grid3" style="margin-top:8mm;">
+      <div class="card"><p style="font-size:14px; font-style:italic; color:var(--ink-800);">"I want to browse — find something I wasn't specifically looking for."</p></div>
+      <div class="card"><p style="font-size:14px; font-style:italic; color:var(--ink-800);">"I want something with personality, made by someone I can follow."</p></div>
+      <div class="card"><p style="font-size:14px; font-style:italic; color:var(--ink-800);">"I want to support a small seller, not a warehouse."</p></div>
+    </div>
+    <p style="margin-top:8mm;">92% of Filipino survey respondents say they buy secondhand goods — among the highest rates surveyed in Southeast Asia — and the Philippines' secondhand apparel market alone is estimated to grow from <b>$5.2B (2025) to $17.9B by 2031</b> (22.8% CAGR). That behavior doesn't have a dedicated home on a mass-market catalogue platform.</p>
+  </div>
+  <div class="cite">Sources: Carousell/WEF secondhand-consumption survey (Southeast Asia); Mobility Foresights, Philippines Second-hand Apparel Market Size and Forecasts, checked September 2026.</div>
+  <div class="brandmark">ATBP</div><div class="slidenum">2</div>
+</section>
+
+<!-- ============ 3. THE EXPERIENCE ============ -->
+<section class="slide">
+  <div class="kicker">03 — The ATBP Experience</div>
+  <div class="content">
+    <h2 class="slide-title" style="text-align:center; margin-left:auto; margin-right:auto;">Seller identity turns browsing into repeat engagement.</h2>
+    <div class="flow" style="margin-top:14mm;">
+      <div class="node">Discover</div><div class="arrow">→</div>
+      <div class="node">Explore</div><div class="arrow">→</div>
+      <div class="node">Find a Seller</div><div class="arrow">→</div>
+      <div class="node">Follow</div><div class="arrow">→</div>
+      <div class="node">Buy</div><div class="arrow">→</div>
+      <div class="node" style="background:var(--brand-500); color:#fff; border-color:var(--brand-500);">Repeat</div>
+    </div>
+    <p class="lede" style="text-align:center; margin:12mm auto 0;">Every ATBP shop carries a real storefront, story, reviews, badges, and followers — not an anonymous listing ID. A buyer who follows a shop keeps seeing its new listings without searching again, turning one-time discovery into a standing relationship with a seller.</p>
+  </div>
+  <div class="brandmark">ATBP</div><div class="slidenum">3</div>
+</section>
+
+<!-- ============ 4. PRODUCT ============ -->
+<section class="slide">
+  <div class="kicker">04 — Product</div>
+  <h2 class="slide-title">A live, working marketplace — not a mockup.</h2>
+  <div class="shot-grid">
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com</div></div><img src="shots/home.png"></div><div class="shot-cap">Home — discovery-first, curated shelves</div></div>
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com/discover</div></div><img src="shots/explore.png"></div><div class="shot-cap">Explore — the full catalog, grouped</div></div>
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com/product/…</div></div><img src="shots/product.png"></div><div class="shot-cap">Product page — condition, seller, reviews</div></div>
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com/seller/…</div></div><img src="shots/seller.png"></div><div class="shot-cap">Seller storefront — badges, ratings, follow</div></div>
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com/trending</div></div><img src="shots/trending.png"></div><div class="shot-cap">Trending — algorithmic, real-time</div></div>
+    <div><div class="browser"><div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">atbph.com/deals</div></div><img src="shots/deals.png"></div><div class="shot-cap">Deals — seller-driven price destination</div></div>
+  </div>
+  <p class="small" style="margin-top:5mm;">Also live today: Closets, Yard Sales, Local discovery, Collections ("ATBP Picks"), Reviews &amp; badges, Following, ATBP Markets/Events, and sponsored placements. Auctions and livestream selling are fully built and feature-flagged off pending a larger buyer base.</p>
+  <div class="brandmark">ATBP</div><div class="slidenum">4</div>
+</section>
+
+<!-- ============ 5. TARGET MARKET ============ -->
+<section class="slide">
+  <div class="kicker">05 — Target Market</div>
+  <div class="content">
+    <h2 class="slide-title">Two sides, both underserved by mass-market platforms.</h2>
+    <div class="grid2">
+      <div class="card" style="padding:18px 20px;">
+        <h4 style="font-size:18px;">Sellers</h4>
+        <p style="font-size:13px;">Handmade makers &amp; artists · Collectors · Vintage &amp; pre-loved sellers · Closet &amp; yard-sale sellers · Small local businesses &amp; brands · Made-to-order/custom creators · Freelancers offering services · Digital-product creators</p>
+      </div>
+      <div class="card" style="padding:18px 20px;">
+        <h4 style="font-size:18px;">Buyers</h4>
+        <p style="font-size:13px;">Discovery shoppers · Collectors &amp; hobby communities · Gift shoppers · Pre-loved/thrift shoppers · Fans of Filipino makers · Local-discovery shoppers · Value-conscious shoppers</p>
+      </div>
+    </div>
+    <p style="margin-top:8mm;">98.6% of the Philippine population owns a smartphone, and e-wallets (GCash/Maya) now account for <b>39% of digital transactions</b>, ahead of card payments — the payment behavior ATBP's checkout is already built around.</p>
+  </div>
+  <div class="cite">Source: DataReportal / Meltwater / We Are Social, "Digital 2026: The Philippines," published November 2025.</div>
+  <div class="brandmark">ATBP</div><div class="slidenum">5</div>
+</section>
+
+<!-- ============ 6. MARKET OPPORTUNITY ============ -->
+<section class="slide">
+  <div class="kicker">06 — Market Opportunity</div>
+  <div class="content" style="justify-content:flex-start; padding-top:6mm;">
+    <h2 class="slide-title">A large, digitally-ready market — sized conservatively.</h2>
+    <div class="grid3" style="margin:8mm 0 14mm;">
+      <div class="stat"><div class="num">117M</div><div class="label">Total Philippine population (Oct. 2025)</div></div>
+      <div class="stat"><div class="num">98M</div><div class="label">Internet users — 83.8% penetration</div></div>
+      <div class="stat"><div class="num">95.8M</div><div class="label">Social media identities, +10.3% YoY</div></div>
+    </div>
+    <div class="barchart" style="height:auto; align-items:flex-end; margin-top:4mm;">
+      <div class="bar-item" style="width:180px;"><div class="bar-val">~₱1.0–2.1T</div><div class="bar" style="height:110px; background:var(--ink-300);"></div><div class="bar-label">TAM<br>PH e-commerce, all forms</div></div>
+      <div class="bar-item" style="width:180px;"><div class="bar-val">~$5.2B</div><div class="bar" style="height:60px; background:var(--brand-400);"></div><div class="bar-label">SAM<br>PH secondhand apparel (2025) — one proxy for ATBP's addressable segment</div></div>
+      <div class="bar-item" style="width:180px;"><div class="bar-val">Early</div><div class="bar" style="height:16px; background:var(--gold-500);"></div><div class="bar-label">SOM<br>Pre-scale — no share claimed yet</div></div>
+    </div>
+  </div>
+  <div class="cite">TAM range reflects multiple third-party estimates (Mordor Intelligence, MarkWide Research, Expert Market Research, Cloud Ecommerce), which vary by methodology — treat as directional. SAM proxy: Mobility Foresights, Philippines Second-hand Apparel Market. Population/internet figures: DataReportal Digital 2026 Philippines. All checked September 2026.</div>
+  <div class="brandmark">ATBP</div><div class="slidenum">6</div>
+</section>
+
+<!-- ============ 7. COMPETITIVE LANDSCAPE ============ -->
+<section class="slide">
+  <div class="kicker">07 — Competitive Landscape</div>
+  <h2 class="slide-title">Different platforms, different jobs — not a ranked list.</h2>
+  <table class="deck">
+    <tr><th>Platform</th><th>Positioning</th><th>Seller identity / storefront</th><th>Listing model</th></tr>
+    <tr><td><b>ATBP</b></td><td>Discovery — handmade, vintage, pre-loved, collectibles</td><td>Full storefront, badges, followers, reviews, curated Picks</td><td>Individual + Closets/Yard Sales/Services/Digital as distinct formats</td></tr>
+    <tr><td>Shopee / Lazada</td><td>Mass-market general commerce, largest catalogues</td><td>Shop pages exist, less identity-forward</td><td>Dense category-first catalogue</td></tr>
+    <tr><td>TikTok Shop</td><td>Social/live commerce, in-feed discovery</td><td>Creator-linked, algorithm-first</td><td>Video/livestream-driven selling</td></tr>
+    <tr><td>Carousell</td><td>Peer-to-peer casual resale, chat-to-buy</td><td>Light profiles, transactional</td><td>Individual listings, no formal storefront/collection layer</td></tr>
+    <tr><td>Etsy (int'l benchmark)</td><td>Global handmade &amp; vintage marketplace</td><td>Strong shop identity — closest analog to ATBP's model, different market</td><td>Individual shop catalogues</td></tr>
+  </table>
+  <p class="small" style="margin-top:6mm;">ATBP is not claiming to out-scale Shopee, Lazada, or TikTok Shop — it's occupying the discovery/identity niche closer to Etsy's model, adapted for the Philippine market and extended to formats (Closets, Yard Sales, local markets) none of the above are built around.</p>
+  <div class="brandmark">ATBP</div><div class="slidenum">7</div>
+</section>
+
+<!-- ============ 8. BUSINESS MODEL ============ -->
+<section class="slide">
+  <div class="kicker">08 — Business Model</div>
+  <div class="content">
+    <h2 class="slide-title">Simple, transparent, transaction-aligned.</h2>
+    <div class="grid4">
+      <div class="card"><h4>Commission</h4><p>10% standard, 8% on the Premium seller plan — ATBP's primary revenue line, earned only when a seller earns.</p></div>
+      <div class="card"><h4>Subscriptions</h4><p>Pro ₱699/mo and Premium ₱1,999/mo unlock higher listing limits and seller tools.</p></div>
+      <div class="card"><h4>Promotions &amp; ads</h4><p>Self-serve seller placements (Boost, Featured, Homepage) plus admin-managed third-party advertising.</p></div>
+      <div class="card"><h4>Transaction fees</h4><p>A flat ₱15 processing fee (Card/Online Banking) and an opt-in, buyer-paid Buyer Protection Fee.</p></div>
+    </div>
+    <p style="margin-top:10mm;">No cost of goods, no inventory risk — ATBP's cost structure is platform infrastructure and people, not merchandise. The fee model deliberately mirrors what's simplest for a seller to understand: one flat commission, not a stack of transaction/processing/growth-support line items layered on top.</p>
+  </div>
+  <div class="brandmark">ATBP</div><div class="slidenum">8</div>
+</section>
+
+<!-- ============ 9. WHERE ATBP IS TODAY ============ -->
+<section class="slide">
+  <div class="kicker">09 — Where ATBP Is Today</div>
+  <div class="content">
+    <h2 class="slide-title">A complete, working product — early in its commercial rollout.</h2>
+    <div class="grid2">
+      <div class="card"><h4>Built &amp; live</h4><p>Full buyer/seller marketplace flows — discovery, storefronts, checkout, reviews, following, collections, deals, closets, yard sales, local discovery, seller plans, sponsored placements, admin operations tooling, and a Founding Seller program with 200 slots (197 remaining at time of writing).</p></div>
+      <div class="card"><h4>Built, not yet switched on</h4><p>Auctions and livestream selling are fully implemented, feature-flagged off until buyer volume can sustain them. A real courier integration (Ninja Van) exists in code, pending production hardening.</p></div>
+    </div>
+    <div class="card" style="margin-top:8mm; border-color:var(--gold-500); background:var(--gold-100);">
+      <h4>What partners should know</h4>
+      <p style="font-size:13px;">Payments, payouts, and subscription billing currently run through a mock provider while ATBP prepares to integrate a live Philippine payment gateway — this is the primary near-term technical milestone, not a gap that affects the product experience today.</p>
+    </div>
+  </div>
+  <div class="brandmark">ATBP</div><div class="slidenum">9</div>
+</section>
+
+<!-- ============ 10. PARTNERSHIP OPPORTUNITIES ============ -->
+<section class="slide">
+  <div class="kicker">10 — Partnership Opportunities</div>
+  <div class="content">
+    <h2 class="slide-title">Where a partner plugs in directly.</h2>
+    <div class="grid3">
+      <div class="card"><h4>💳 Payment partners</h4><p>ATBP's checkout and commission engine are built to a real PSP integration point (GCash, Maya, QR Ph, Card, Online Banking) — the architecture is ready; the integration is the open door.</p></div>
+      <div class="card"><h4>📦 Logistics partners</h4><p>A courier-adapter pattern already exists in code (Ninja Van as the reference integration) alongside Manual and Local Pickup fulfillment — built to add another courier without changing checkout.</p></div>
+      <div class="card"><h4>🎪 Event &amp; market partners</h4><p>ATBP Markets and community Events are a real, admin-supported feature — a natural fit for organizers of maker markets, bazaars, and pop-ups seeking a digital counterpart.</p></div>
+      <div class="card"><h4>🏷️ Brand &amp; advertising partners</h4><p>A working sponsored-placement and third-party advertising system (impressions/clicks tracked) is live at the infrastructure level, ready for a formalized rate card.</p></div>
+    </div>
+  </div>
+  <div class="brandmark">ATBP</div><div class="slidenum">10</div>
+</section>
+
+<!-- ============ 11. CLOSING ============ -->
+<section class="slide title-slide" style="background:linear-gradient(155deg, var(--brand-700) 0%, var(--ink-900) 100%);">
+  <div>
+    <div class="kicker" style="color:var(--gold-400)">Closing</div>
+    <h1 style="font-size:44px; max-width:26ch; margin-top:6mm;">A discovery marketplace, built for the Philippines' next wave of online shoppers.</h1>
+    <p class="sub">ATBP is live, functional, and positioned in a category the largest Philippine marketplaces aren't built for. We'd welcome the conversation.</p>
+  </div>
+  <div class="foot">atbph.com &nbsp;·&nbsp; Find something different.</div>
+</section>
+
+</body>
+</html>

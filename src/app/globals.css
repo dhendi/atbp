@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f0e3;
+  --foreground: #4a2c20;
+
+  /* Brand — terracotta from the 2026 brand refresh, the primary interactive color (buttons, links) */
+  --brand-50: #faf4f2;
+  --brand-100: #f3e2dd;
+  --brand-200: #e9c4b9;
+  --brand-300: #de9f8c;
+  --brand-400: #d4795e;
+  --brand-500: #c95532;
+  --brand-600: #a64426;
+  --brand-700: #80351e;
+  --brand-800: #5d2819;
+  --brand-900: #3f1d12;
+
+  /* Live-red — energy accent: drops, "new", notification dots, sale tags (kept hot so it reads apart from the terracotta brand) */
+  --live-50: #fbf2f1;
+  --live-100: #f6dbd8;
+  --live-400: #e2685a;
+  --live-500: #df3826;
+  --live-600: #b92818;
+  --live-700: #8c2318;
+
+  /* Gold — trust & rating (verification stamps, star ratings) */
+  --gold-100: #f7ead4;
+  --gold-400: #eab457;
+  --gold-500: #e9a52f;
+  --gold-600: #bf831d;
+
+  /* Blue — Markets & secondary accents */
+  --teal-50: #eaeff5;
+  --teal-100: #d2ddeb;
+  --teal-400: #7191bc;
+  --teal-500: #4c6fa3;
+  --teal-600: #3c5983;
+
+  /* Pink — soft tertiary accent (used sparingly, tags/decoration) */
+  --pink-100: #fbe9e7;
+  --pink-400: #f2ada8;
+  --pink-500: #e8918a;
+
+  /* Success */
+  --success-500: #1f8a4c;
+  --success-100: #def3e1;
+
+  /* Ink — warm umber scale from the brand brown (text, borders, surfaces) */
+  --ink-50: #f9f5f3;
+  --ink-100: #f0e7e3;
+  --ink-200: #e0cec8;
+  --ink-300: #c6aa9f;
+  --ink-400: #a67e6e;
+  --ink-500: #7d584a;
+  --ink-600: #5f4135;
+  --ink-700: #4f362b;
+  --ink-800: #4a2c20;
+  --ink-900: #29170f;
+
+  --radius-card: 1.1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-live-50: var(--live-50);
+  --color-live-100: var(--live-100);
+  --color-live-400: var(--live-400);
+  --color-live-500: var(--live-500);
+  --color-live-600: var(--live-600);
+  --color-live-700: var(--live-700);
+
+  --color-gold-100: var(--gold-100);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+
+  --color-pink-100: var(--pink-100);
+  --color-pink-400: var(--pink-400);
+  --color-pink-500: var(--pink-500);
+
+  --color-success-100: var(--success-100);
+  --color-success-500: var(--success-500);
+
+  --color-ink-50: var(--ink-50);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-fraunces);
+
+  --radius-card: var(--radius-card);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-200);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.animate-live-pulse {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise-in {
+  animation: rise-in 0.35s ease-out both;
+}
+
+/* ---------- Signature: market-stall price tag ---------- */
+/* A hand-hung paper price tag: dashed edge + a punched string hole. */
+.price-tag {
+  position: relative;
+  border: 1.5px dashed var(--ink-300);
+  border-radius: 0.4rem;
+  background: var(--background);
+}
+.price-tag::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--background);
+  border: 1.5px dashed var(--ink-300);
+}
+
+/* Woven abaca-weave texture, used sparingly behind hero / section dividers */
+.weave-texture {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M0 0h24v2H0zM0 8h24v2H0zM0 16h24v2H0z' fill='%234a2c20' fill-opacity='0.045'/%3E%3Cpath d='M0 0v24h2V0zM8 0v24h2V0zM16 0v24h2V0z' fill='%234a2c20' fill-opacity='0.045'/%3E%3C/svg%3E");
+}
+
+.paper-grain {
+  background-image: radial-gradient(var(--ink-800) 0.5px, transparent 0.5px);
+  background-size: 12px 12px;
+  opacity: 0.035;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+/* Down to two typefaces (sans + display) — this used to be Space Mono;
+   kept as its own class since call sites still reach for `.font-tag`
+   semantically, but it now just resolves to the sans font. */
+.font-tag {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Slight, hand-placed rotation for collage photography */
+.tilt-l { transform: rotate(-3.5deg); }
+.tilt-r { transform: rotate(2.5deg); }
+.tilt-l-sm { transform: rotate(-2deg); }
+.tilt-r-sm { transform: rotate(1.5deg); }

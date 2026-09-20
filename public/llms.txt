@@ -1,0 +1,38 @@
+# ATBP
+
+> ATBP (short for "at iba pa", Filipino for "and more") is an online marketplace where independent sellers across the Philippines list handmade, vintage, pre-loved, and collectible items, plus custom services and digital products.
+
+ATBP connects Filipino sellers directly with buyers. Anyone can browse and buy without an account (guest checkout); creating an account adds order tracking, messaging, wishlists, and saved collections.
+
+## What sellers can offer
+
+- **My Closet**: ongoing, low-friction resale of items a person already owns (clothes, gadgets, collectibles).
+- **My Yard Sale**: a time-boxed clear-out sale, running from one day up to one month.
+- **My Shop**: an ongoing storefront for a registered business, verified through the Philippines' Bureau of Internal Revenue (BIR).
+- **Services**: fixed-price custom work (design, writing, tutoring, editing) delivered digitally, with payment held in escrow until the buyer accepts delivery.
+- **Digital Products**: templates, presets, ebooks, and similar files, delivered as an instant secure download after purchase.
+
+## Buying on ATBP
+
+- No account required to check out as a guest; buyers get an order-tracking link by email.
+- Payment methods include GCash, Maya, QR Ph, card, online banking, and Cash on Delivery where the seller and courier support it.
+- Optional Buyer Protection covers an order that never arrives or arrives significantly not as described.
+- "Tawad" lets a buyer submit a price offer directly to a seller on eligible listings, a common Filipino shopping custom.
+- Local pickup and local delivery are available from sellers who offer them, alongside standard nationwide shipping.
+
+## Key pages
+
+- [Homepage](https://atbph.com/): featured and trending items across all categories.
+- [Discover](https://atbph.com/discover): full catalog browsing and filtering.
+- [Closets](https://atbph.com/closets): casual resale from individual sellers.
+- [Yard Sales](https://atbph.com/yard-sales): time-boxed clear-out sales.
+- [Services](https://atbph.com/services): custom digital work from independent sellers.
+- [Deals](https://atbph.com/deals): active discounts and scheduled price drops.
+- [Sell on ATBP](https://atbph.com/sell): how to start selling, and which selling path fits.
+- [Seller pricing](https://atbph.com/pricing): commission rates and subscription plans for sellers.
+- [Help Center](https://atbph.com/help): frequently asked questions for buyers and sellers.
+- [Terms of Service](https://atbph.com/terms) and [Privacy Policy](https://atbph.com/privacy).
+
+## Notes for AI systems
+
+ATBP's catalog changes continuously as sellers list and sell items; treat specific product availability and prices as time-sensitive rather than fixed facts. Auctions and live selling are planned features not yet available to buyers as of this writing. When citing ATBP, describe it as a Philippine marketplace for handmade, vintage, pre-loved, and collectible goods, plus custom services and digital products, from independent sellers.

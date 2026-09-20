@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ATBP Super Admin Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f0e3; --paper:#fffdf9;
+    --brand-50:#faf4f2; --brand-100:#f3e2dd; --brand-200:#e9c4b9; --brand-300:#de9f8c;
+    --brand-500:#c95532; --brand-600:#a64426; --brand-700:#80351e; --brand-900:#3f1d12;
+    --gold-100:#f7ead4; --gold-400:#eab457; --gold-500:#e9a52f; --gold-600:#bf831d;
+    --teal-100:#d2ddeb; --teal-500:#4c6fa3; --teal-600:#3c5983;
+    --live-100:#f6dbd8; --live-500:#df3826; --live-600:#b92818;
+    --green-100:#dfeee0; --green-600:#2f7a3c;
+    --ink-50:#f9f5f3; --ink-100:#f0e7e3; --ink-200:#e0cec8; --ink-300:#c6aa9f; --ink-400:#a67e6e;
+    --ink-500:#7d584a; --ink-600:#5f4135; --ink-700:#4f362b; --ink-800:#4a2c20; --ink-900:#29170f;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body{ margin:0; font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif; color:var(--ink-800);
+    background:var(--paper); font-size:9.6pt; line-height:1.5;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  h1,h2,h3,h4{ font-family:'Fraunces',ui-serif,Georgia,serif; color:var(--ink-900); margin:0; }
+  code, .mono{ font-family:'DM Mono',ui-monospace,monospace; }
+  .page{ position:relative; width:210mm; min-height:297mm; padding:16mm 16mm 8mm; page-break-after:always; display:flex; flex-direction:column; }
+  .page:last-child{ page-break-after:auto; }
+  .footer{ margin-top:auto; padding-top:3mm; display:flex; justify-content:space-between;
+    font-size:7.2pt; color:var(--ink-400); border-top:0.75pt solid var(--ink-200); font-family:'DM Sans',sans-serif; }
+  .eyebrow{ font-size:8pt; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--brand-600); margin-bottom:4px; }
+  .lede{ font-size:11pt; color:var(--ink-600); max-width:150mm; }
+  p{ margin:0 0 7px; }
+  ul,ol{ margin:0 0 8px; padding-left:16px; }
+  li{ margin-bottom:2.5px; }
+  a{ color:var(--brand-600); }
+  h3.h{ font-size:13.5pt; margin:12px 0 4px; }
+  h4.h{ font-size:10.8pt; margin:9px 0 3px; color:var(--brand-700); }
+  .section-title{ font-size:22pt; font-weight:600; margin-bottom:3mm; line-height:1.08; }
+  .section-num{ font-family:'Fraunces',serif; font-size:11pt; font-weight:500; color:var(--brand-300); }
+  .part-label{ font-size:8.6pt; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-400); }
+
+  .band{ background:var(--brand-600); color:#fff; margin:-16mm -16mm 8mm; padding:11mm 16mm 7mm; }
+  .band.gold{ background:var(--gold-600); }
+  .band.teal{ background:var(--teal-600); }
+  .band.ink{ background:var(--ink-900); }
+  .band.live{ background:var(--live-600); }
+  .band .section-num{ color:rgba(255,255,255,.6); }
+  .band .section-title{ color:#fff; }
+  .band .lede{ color:rgba(255,255,255,.9); }
+
+  table{ width:100%; border-collapse:collapse; font-size:8.4pt; margin:6px 0 12px; }
+  th{ text-align:left; font-weight:700; font-size:7.3pt; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-500); border-bottom:1.25pt solid var(--ink-300); padding:4px 6px; }
+  td{ padding:5px 6px; border-bottom:0.6pt solid var(--ink-100); vertical-align:top; }
+  tr:last-child td{ border-bottom:none; }
+  table.compact td, table.compact th{ padding:2.5px 5px; font-size:7.3pt; line-height:1.32; }
+  table.tight td, table.tight th{ padding:1.6px 5px; font-size:6.9pt; line-height:1.22; }
+
+  .card{ background:var(--ink-50); border:1px solid var(--ink-100); border-radius:8px; padding:8px 10px; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
+
+  .tag{ display:inline-block; border-radius:5px; padding:1.5px 7px; font-size:7.4pt; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .tag.exists{ background:var(--green-100); color:var(--green-600); }
+  .tag.partial{ background:var(--gold-100); color:var(--gold-600); }
+  .tag.gap{ background:var(--live-100); color:var(--live-600); }
+  .tag.readonly{ background:var(--teal-100); color:var(--teal-600); }
+  .tag.low{ background:var(--green-100); color:var(--green-600); }
+  .tag.medium{ background:var(--gold-100); color:var(--gold-600); }
+  .tag.high{ background:var(--live-100); color:var(--live-600); }
+
+  .callout{ border-left:3pt solid var(--brand-500); background:var(--brand-50); border-radius:0 6px 6px 0; padding:7px 11px; margin:8px 0; font-size:8.8pt; }
+  .callout.warn{ border-color:var(--live-500); background:var(--live-100); }
+  .callout.future{ border-left:3pt solid var(--ink-400); background:var(--ink-50); padding:7px 11px; margin:8px 0; font-size:8.6pt; }
+  .callout.future b{ color:var(--ink-700); }
+  .callout b{ color:var(--ink-900); }
+
+  .toc-item{ display:flex; align-items:baseline; gap:8px; padding:4.5px 0; border-bottom:0.6pt solid var(--ink-100); }
+  .toc-item .n{ font-family:'Fraunces',serif; font-weight:600; color:var(--brand-500); font-size:10.5pt; width:20px; flex-shrink:0; }
+  .toc-item .t{ font-weight:600; color:var(--ink-900); font-size:9.6pt; }
+  .toc-item .d{ color:var(--ink-500); font-size:8.2pt; }
+  .toc-part{ margin:11px 0 3px; font-size:8.4pt; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--brand-600); }
+
+  .cover{ background:linear-gradient(180deg,var(--ink-900) 0%, var(--ink-900) 68%, var(--brand-600) 68%, var(--brand-700) 100%); color:#fff; justify-content:space-between; }
+  .cover .mark{ width:56px; height:56px; }
+  .cover .brandname{ font-family:'Fraunces',serif; font-weight:600; font-size:13pt; margin-top:7px; color:#fff; }
+  .cover .middle{ margin-top:34mm; }
+  .cover h1{ font-size:36pt; line-height:1.05; font-weight:600; color:#fff; max-width:150mm; }
+  .cover .subtitle{ font-size:13pt; color:var(--gold-400); margin-top:5mm; font-weight:600; }
+  .cover .confidential{ display:inline-block; margin-top:8mm; border:1pt solid rgba(255,255,255,.4); border-radius:999px; padding:3px 12px; font-size:8.2pt; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.85); }
+  .cover .bottom{ padding-bottom:3mm; }
+  .cover .bottom .tag2{ font-size:9.5pt; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.85; }
+
+  .checklist-col{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .checklist-col h4{ font-size:9.8pt; color:var(--brand-700); margin:0 0 5px; text-transform:uppercase; letter-spacing:.04em; }
+  .checklist-col ul{ padding-left:14px; font-size:8.3pt; }
+  .check{ display:flex; gap:6px; margin-bottom:3px; align-items:flex-start; font-size:8.4pt; }
+  .check .box{ flex-shrink:0; width:9px; height:9px; border:1.2pt solid var(--brand-500); border-radius:2px; margin-top:2px; }
+
+  .glossary dt{ font-weight:700; color:var(--ink-900); font-size:9.2pt; margin-top:6px; }
+  .glossary dd{ margin:0 0 0 0; color:var(--ink-600); font-size:8.6pt; }
+  .small{ font-size:7.6pt; color:var(--ink-500); }
+  .two-col{ columns:2; column-gap:9mm; }
+  .two-col .glossary dt, .two-col .glossary dd{ break-inside:avoid; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section class="page cover">
+  <div>
+    <svg class="mark" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#F7F0E3"/><path d="M46 47 C 34 45, 20 38, 14 24 C 12 19, 15 15, 20 16 C 34 19, 43 31, 47 44 Z" fill="#C95532"/><path d="M49 49 C 58 44, 72 38, 84 39 C 90 39, 92 44, 88 48 C 78 57, 62 56, 50 52 Z" fill="#DF3826"/><path d="M46 51 C 45 63, 40 77, 28 85 C 23 88, 18 85, 19 79 C 22 65, 33 55, 45 50 Z" fill="#F2ADA8"/><path d="M51 51 C 60 60, 70 72, 71 86 C 71 92, 66 94, 62 90 C 53 79, 49 64, 50 50 Z" fill="#4C6FA3"/><circle cx="53" cy="20" r="7" fill="#E9A52F"/><path d="M72 22 L74.5 27.5 L80 30 L74.5 32.5 L72 38 L69.5 32.5 L64 30 L69.5 27.5 Z" fill="#4A2C20"/></svg>
+    <div class="brandname">ATBP</div>
+  </div>
+  <div class="middle">
+    <div class="eyebrow" style="color:var(--gold-400)">Internal Operations Manual</div>
+    <h1>Super Admin<br>Handbook</h1>
+    <div class="subtitle">Marketplace Operations, Administration &amp; Business Guide</div>
+    <div class="confidential">Confidential — internal use only</div>
+  </div>
+  <div class="bottom">
+    <div class="tag2">Find something different.</div>
+    <div class="small" style="color:rgba(255,255,255,.7); margin-top:2mm;">Reflects the current live implementation at atbph.com as of September 2026 — verified against the codebase, not assumed.</div>
+  </div>
+</section>
+
+<!-- ================= TOC ================= -->
+<section class="page">
+  <div class="eyebrow">Contents</div>
+  <h2 class="section-title" style="margin-bottom:6mm;">What's inside this handbook</h2>
+
+  <div class="toc-part">Part A — Understanding ATBP</div>
+  <div class="toc-item"><span class="n">A1</span><span class="t">Brand &amp; business overview</span><span class="d">what ATBP is, isn't, and who it's for</span></div>
+  <div class="toc-item"><span class="n">A2</span><span class="t">How ATBP makes money</span><span class="d">every current and planned revenue stream</span></div>
+  <div class="toc-item"><span class="n">A3</span><span class="t">Marketplace concepts &amp; terminology</span><span class="d">the vocabulary this handbook uses</span></div>
+
+  <div class="toc-part">Part B — The Admin Dashboard</div>
+  <div class="toc-item"><span class="n">B1</span><span class="t">Full admin area reference</span><span class="d">all 23 areas — what exists, what doesn't</span></div>
+  <div class="toc-item"><span class="n">B2</span><span class="t">Seller lifecycle &amp; trust levers</span><span class="d">approval, verification, badges, warnings, suspension</span></div>
+  <div class="toc-item"><span class="n">B3</span><span class="t">Product moderation &amp; reports</span><span class="d">flagging, prohibited items, listing reports</span></div>
+  <div class="toc-item"><span class="n">B4</span><span class="t">Orders, payments, payouts &amp; disputes</span><span class="d">the money path — and its gaps</span></div>
+  <div class="toc-item"><span class="n">B5</span><span class="t">Pricing, plans &amp; promotions</span><span class="d">seller plans, sponsored listings, advertising</span></div>
+  <div class="toc-item"><span class="n">B6</span><span class="t">Content, categories &amp; local</span><span class="d">collections, categories, markets, events</span></div>
+
+  <div class="toc-part">Part C — Operating Rhythm</div>
+  <div class="toc-item"><span class="n">C1</span><span class="t">Daily admin checklist</span><span class="d">morning, during the day, end of day</span></div>
+  <div class="toc-item"><span class="n">C2</span><span class="t">Weekly admin checklist</span><span class="d">seller/buyer activity, liquidity, fraud sweep</span></div>
+  <div class="toc-item"><span class="n">C3</span><span class="t">Monthly business review</span><span class="d">what's actually measured today — and what isn't</span></div>
+
+  <div class="toc-part">Part D — Support &amp; Trust</div>
+  <div class="toc-item"><span class="n">D1</span><span class="t">Seller support playbook</span><span class="d">ten common situations, step by step</span></div>
+  <div class="toc-item"><span class="n">D2</span><span class="t">Buyer support playbook</span><span class="d">ten common situations, step by step</span></div>
+  <div class="toc-item"><span class="n">D3</span><span class="t">Trust &amp; safety</span><span class="d">fraud, counterfeits, harassment, IP, abuse</span></div>
+
+  <div class="toc-part">Part E — Business &amp; Escalation</div>
+  <div class="toc-item"><span class="n">E1</span><span class="t">Business operations</span><span class="d">economics, costs to monitor</span></div>
+  <div class="toc-item"><span class="n">E2</span><span class="t">Emergency &amp; escalation framework</span><span class="d">Low / Medium / High</span></div>
+  <div class="toc-item"><span class="n">E3</span><span class="t">Admin glossary</span><span class="d">A–Z</span></div>
+  <div class="toc-item"><span class="n">E4</span><span class="t">Recommended future admin tools</span><span class="d">gaps found while writing this handbook</span></div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>Contents</span></div>
+</section>
+
+<!-- ================= A1 BRAND OVERVIEW ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part A — Understanding ATBP</div>
+  <div class="section-num">A1</div><h2 class="section-title">Brand &amp; business overview</h2>
+  <p class="lede">What you're actually operating, in plain terms.</p></div>
+
+  <h4 class="h">What ATBP is</h4>
+  <p>ATBP ("at iba pa" — Filipino for "and other things," "and so on") is a Philippine online marketplace built around <b>handmade, vintage, pre-loved, collectible, and made-to-order goods</b>, plus a small set of adjacent formats: shelf-stable food &amp; snacks, remote services, digital products, closets (personal pre-loved selling), yard sales (time-boxed clear-outs), and real-world maker markets/events. The product positioning is deliberately "weekend bazaar," not "everything store" — the homepage and Explore page are built around discovery (Browse by Vibe, Trending, curated Picks) rather than a single dense search grid.</p>
+
+  <h4 class="h">What ATBP is not</h4>
+  <ul>
+    <li>Not a first-party retailer. ATBP does not buy, hold, or resell inventory — every listing belongs to an independent seller.</li>
+    <li>Not (yet) a marketplace with a live payment gateway. Every payment method today — GCash, Maya, QR Ph, Card, Online Banking, COD — resolves through a mock provider that always "succeeds." No real money moves through Xendit, PayMongo, or any card processor at this time. This is the single most important operating fact in this handbook — see the callout below.</li>
+    <li>Not a mass-market commodity marketplace competing purely on price and catalogue size (that's Shopee/Lazada/TikTok Shop's game — see the Seller Guide's competitor comparison for how ATBP is positioned against them).</li>
+  </ul>
+
+  <div class="callout warn"><b>Operating reality:</b> ATBP's payments, payouts, and seller subscription billing are all currently mocked (see <code>src/lib/payments/provider.ts</code>, <code>src/lib/payouts/provider.ts</code>). Every order "succeeds" instantly in code. This is fine for demonstrating the product and onboarding early sellers under manual/off-platform settlement, but no admin should assume real money is moving until a live PSP (Xendit is the name referenced in the schema, though no integration code exists yet) is actually wired in. Treat every payment-related admin action in this handbook as <b>correct in structure, not yet live in effect</b>.</div>
+
+  <h4 class="h">Target sellers</h4>
+  <p>Handmade makers and artists; collectors (trading cards, toys, anime/gaming, vinyl); vintage and pre-loved sellers; closet and yard-sale sellers; small local businesses and brands; made-to-order/custom creators; approved shelf-stable food &amp; snack sellers; freelancers offering remote services; digital-product creators.</p>
+
+  <h4 class="h">Target buyers</h4>
+  <p>People browsing for something specific and interesting rather than searching a commodity catalogue: collectors, gift shoppers, pre-loved/thrift shoppers, fans of Filipino makers, local-discovery shoppers, and value-conscious shoppers checking Deals.</p>
+
+  <h4 class="h">Marketplace categories (top-level)</h4>
+  <p>Handmade &amp; Art · Vintage &amp; Pre-Loved · Collectibles &amp; Hobbies · Fashion &amp; Accessories · Home &amp; Living · Filipino Finds · Tech &amp; Gadgets · Baby, Kids &amp; Pets · Automotive &amp; Outdoor · Party &amp; Events · Food &amp; Snacks · Services · Digital Products — 13 parent groups over roughly 30 leaf categories (<code>prisma/seed.ts</code>, managed at <code>/admin/categories</code>).</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>A1 · Brand &amp; business overview</span></div>
+</section>
+
+<!-- ================= A2 REVENUE ================= -->
+<section class="page">
+  <div class="band gold"><div class="part-label" style="color:rgba(74,44,32,.55)">Part A — Understanding ATBP</div>
+  <div class="section-num" style="color:rgba(74,44,32,.55)">A2</div><h2 class="section-title" style="color:var(--ink-900)">How ATBP makes money</h2>
+  <p class="lede" style="color:var(--ink-800)">Six revenue streams exist in code today; a seventh is name-checked but not built.</p></div>
+
+  <table>
+    <tr><th>Stream</th><th>Status</th><th>Mechanism</th></tr>
+    <tr><td><b>Seller commission</b></td><td><span class="tag exists">Implemented</span></td><td>10% of order subtotal (Free/Pro plans), 8% (Premium/Founding Premium/Founding Pro) — see <code>lib/services/commission.ts</code>. VAT-inclusive per business policy.</td></tr>
+    <tr><td><b>Seller subscriptions</b></td><td><span class="tag exists">Implemented</span></td><td>Pro ₱699/mo, Premium ₱1,999/mo, Founding Premium ₱999/mo — <code>SellerPlan</code>/<code>SellerSubscription</code> models. Billed through the mock payment provider today.</td></tr>
+    <tr><td><b>Card/Online Banking/COD processing fee</b></td><td><span class="tag exists">Implemented</span></td><td>Flat ₱15 per order on those three payment methods (<code>commission.ts</code>). Public Pricing page currently only advertises this for Card/Online Banking — see the note below.</td></tr>
+    <tr><td><b>Buyer Protection Fee</b></td><td><span class="tag exists">Implemented</span></td><td>Charged to the <i>buyer</i>, opt-in (default off), 3% of item subtotal + ₱10, capped at ₱150/order, exempt on COD (<code>lib/fees.ts</code>). Funds the platform-backed refund guarantee tied to a dispute's "Protected" status.</td></tr>
+    <tr><td><b>Instant Payout Fee</b></td><td><span class="tag exists">Implemented</span></td><td>Flat ₱99, charged to the seller only if they choose instant payout over standard (<code>INSTANT_PAYOUT_FEE</code>, <code>lib/fees.ts</code>).</td></tr>
+    <tr><td><b>Seller-purchased promotions</b></td><td><span class="tag exists">Implemented</span></td><td>Boost (₱99–149/listing), Featured (₱199–299), Category Feature (₱499–999/wk), Homepage Feature (₱1,500–3,000/wk), Sponsored Campaign (₱3,000–10,000). Self-serve; admin only edits the price bands, at <code>/admin/pricing</code>.</td></tr>
+    <tr><td><b>Third-party advertising</b></td><td><span class="tag partial">Partial</span></td><td>Admin-created advertiser/campaign/ad/placement records exist (<code>/admin/advertising</code>) with impression/click tracking, but no monetization terms (rate card, invoicing) are encoded anywhere in the code — treat external-advertiser billing as happening entirely outside the platform today.</td></tr>
+    <tr><td><b>Real payment-gateway float / interchange</b></td><td><span class="tag gap">Not implemented</span></td><td><span class="callout future" style="display:inline; padding:0; margin:0; border:none; background:none;">Planned / Future Feature</span> — no live PSP integration exists (see A1).</td></tr>
+  </table>
+
+  <div class="callout"><b>Reconcile this before COD goes live:</b> the code applies the ₱15 processing fee to Card, Online Banking, <i>and</i> COD (<code>PROCESSING_FEE_METHODS</code> in <code>commission.ts</code>) — partly to offset Ninja Van's own ~2.75% COD handling cost. The public Pricing page copy, however, currently only tells sellers the fee applies to "Card and Online Banking." Since COD isn't actually selectable at checkout in the current build (Ninja Van is inactive by default), this discrepancy has no live effect yet — but it needs to be reconciled in seller-facing copy before COD is switched on, or sellers will be surprised by an undocumented deduction.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>A2 · How ATBP makes money</span></div>
+</section>
+
+<!-- ================= A3 TERMINOLOGY ================= -->
+<section class="page">
+  <div class="band teal"><div class="part-label" style="color:rgba(255,255,255,.6)">Part A — Understanding ATBP</div>
+  <div class="section-num">A3</div><h2 class="section-title">Marketplace concepts &amp; terminology</h2>
+  <p class="lede">The vocabulary the rest of this handbook assumes you know.</p></div>
+
+  <div class="grid2">
+    <div class="card"><b>Closets</b> — a seller's personal pre-loved selling format, distinct from their main shop; browsable at /closets.</div>
+    <div class="card"><b>Yard Sales</b> — time-boxed clear-out events with a start/end date; auto-archived once <code>endDate</code> passes.</div>
+    <div class="card"><b>Made-to-Order</b> — listings built after the buyer orders, tagged via the <code>madeToOrder</code> attribute.</div>
+    <div class="card"><b>Drops</b> — scheduled product releases that flip from UPCOMING to LIVE automatically at a set time.</div>
+    <div class="card"><b>ATBP Picks</b> — hand-curated <code>Collection</code> spotlights, deliberately not algorithmic.</div>
+    <div class="card"><b>Trending</b> — fully algorithmic (view/save/cart/bid/purchase-weighted, 7-day window); no admin override exists.</div>
+    <div class="card"><b>Deals</b> — a seller-set scheduled sale price/window on their own listing; no admin deals tool exists.</div>
+    <div class="card"><b>Tawad</b> — the platform's buyer-initiated offer/counter-offer mechanism on eligible listings.</div>
+    <div class="card"><b>Founding Seller</b> — one of the first 200 approved, BIR-verified <i>business</i> sellers; a permanent, one-time grant.</div>
+    <div class="card"><b>SellerPlanOverride</b> — an admin-grantable exception to a seller's listing/auction <i>limits</i> — not a commission-rate override.</div>
+    <div class="card"><b>Buyer Protection</b> — an opt-in, buyer-paid fee that backs a platform-funded refund guarantee on a dispute.</div>
+    <div class="card"><b>GMV</b> (as currently computed) — sum of <code>Order.total</code> for every non-cancelled order. Note this includes shipping/fees and isn't scoped to completed orders — a looser figure than "true" GMV.</div>
+  </div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>A3 · Marketplace concepts &amp; terminology</span></div>
+</section>
+
+<!-- ================= B1 FULL ADMIN AREA REFERENCE ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part B — The Admin Dashboard</div>
+  <div class="section-num">B1</div><h2 class="section-title">Full admin area reference</h2>
+  <p class="lede">Every route under /admin — access requires <code>session.user.role === "ADMIN"</code>, enforced at both the layout and each individual action.</p></div>
+
+  <table class="compact tight">
+    <tr><th>Area</th><th>Status</th><th>What it actually does</th></tr>
+    <tr><td><code>/admin</code></td><td><span class="tag exists">Live</span></td><td>Dashboard — totals (users, sellers, pending sellers, orders, GMV, open reports, open disputes, products, livestreams) + 14-day revenue chart. The <i>only</i> platform-metrics view; no separate analytics page exists.</td></tr>
+    <tr><td><code>/admin/users</code></td><td><span class="tag partial">Partial</span></td><td>Last 200 users, no search/filter. Suspend/Reinstate only — no create, edit, delete, or role-change UI. <b>Known bug:</b> reinstating a suspended former Seller resets their role to BUYER, not back to SELLER.</td></tr>
+    <tr><td><code>/admin/sellers</code> + <code>[id]</code></td><td><span class="tag exists">Live</span></td><td>Approve sellers (PENDING→APPROVED), BIR verification, manual suspend/reinstate. See B2.</td></tr>
+    <tr><td><code>/admin/founding-sellers</code></td><td><span class="tag readonly">Read-only</span></td><td>Search + slot counter + per-founder table. No manual grant/revoke action exists — the program is fully automatic on approval + BIR verification.</td></tr>
+    <tr><td><code>/admin/products</code></td><td><span class="tag partial">Partial</span></td><td>Moderate status only (Active/Flagged/Removed). No admin edit of title/price/description/images exists anywhere.</td></tr>
+    <tr><td><code>/admin/orders</code></td><td><span class="tag readonly">Read-only</span></td><td>Last 100 orders, status badges. <b>No admin action to change an order's status</b> — status only moves via seller/buyer/system flows or indirectly through Disputes.</td></tr>
+    <tr><td><code>/admin/reviews</code></td><td><span class="tag readonly">Read-only</span></td><td>Lists every review. <b>Zero moderation actions</b> — no hide, delete, or flag button exists for reviews at all.</td></tr>
+    <tr><td><code>/admin/reports</code></td><td><span class="tag exists">Live</span></td><td>Listing reports (grouped, actionable) and other reports (Seller/Livestream/User — reviewed/resolved/dismissed). See B3.</td></tr>
+    <tr><td><code>/admin/support</code></td><td><span class="tag exists">Live</span></td><td>Support ticket queue with a resolve action.</td></tr>
+    <tr><td><code>/admin/verification</code></td><td><span class="tag exists">Live</span></td><td>Toggle any of 12 seller badges (see B2).</td></tr>
+    <tr><td><code>/admin/categories</code></td><td><span class="tag partial">Partial</span></td><td>Create top-level category + delete (blocked if products reference it). <b>No nesting UI, no rename/re-icon (edit) capability</b> — the page itself says to edit <code>parentId</code> directly in the database for now.</td></tr>
+    <tr><td><code>/admin/category-suggestions</code></td><td><span class="tag partial">Partial</span></td><td>Approve/reject a seller-submitted tag. <b>Informational only — approving here does not create a real category</b>; an admin still has to go add it manually in Categories.</td></tr>
+    <tr><td><code>/admin/closets</code></td><td><span class="tag exists">Live</span></td><td>Toggle a Closet's "Staff Picks / featured" flag. That's the entire surface.</td></tr>
+    <tr><td><code>/admin/markets</code></td><td><span class="tag exists">Live</span></td><td>Create/toggle-active/delete Market directory entries (name, city, tagline, image, schedule).</td></tr>
+    <tr><td><code>/admin/collections</code></td><td><span class="tag exists">Live</span></td><td>Create/curate "ATBP Picks" — add products by exact title match, sellers by @handle. See B6.</td></tr>
+    <tr><td><code>/admin/drops</code></td><td><span class="tag exists">Live</span></td><td>Cancel a scheduled Drop. Activation itself is automatic (cron, see C1).</td></tr>
+    <tr><td><code>/admin/events</code></td><td><span class="tag exists">Live</span></td><td>Create real-world events, set status (Upcoming/Live/Ended/Cancelled), notifies nearby users on creation.</td></tr>
+    <tr><td><code>/admin/pricing</code></td><td><span class="tag exists">Live</span></td><td>Edit SellerPlan terms, PromotionType price bands, per-seller limit overrides. See B5.</td></tr>
+    <tr><td><code>/admin/advertising</code></td><td><span class="tag partial">Partial</span></td><td>Create an advertiser + campaign + ad + placement in one form. <b>No edit, pause, or delete UI</b> for an existing ad, despite the schema supporting Draft/Active/Paused/Ended states.</td></tr>
+    <tr><td><code>/admin/transactions</code></td><td><span class="tag readonly">Read-only</span></td><td>Last 50 payments + last 50 payouts. No approve/reject/intervene action anywhere — the whole payout lifecycle is self-serve and automated (mocked).</td></tr>
+    <tr><td><code>/admin/disputes</code></td><td><span class="tag exists">Live</span></td><td>Approve Refund / Deny, on any OPEN dispute. See B4.</td></tr>
+    <tr><td><code>/admin/audit-log</code></td><td><span class="tag readonly">Read-only</span></td><td>Last 200 admin actions. Comprehensive coverage — one notable gap: admin 2FA enroll/disable actions are not logged.</td></tr>
+    <tr><td><code>/admin/livestreams</code></td><td><span class="tag gap">Hidden</span></td><td>Page and moderation action exist in code but are hidden from the sidebar while <code>LIVESTREAMS_ENABLED = false</code>. Reachable directly by URL.</td></tr>
+  </table>
+  <p class="small">There is no <code>/admin/auctions</code> route at all — auctions have zero admin UI even though the feature is fully built (see B5 and the Auctions entry in the Glossary).</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B1 · Full admin area reference</span></div>
+</section>
+
+<!-- ================= B2 SELLER LIFECYCLE ================= -->
+<section class="page">
+  <div class="band gold"><div class="part-label" style="color:rgba(74,44,32,.55)">Part B — The Admin Dashboard</div>
+  <div class="section-num" style="color:rgba(74,44,32,.55)">B2</div><h2 class="section-title" style="color:var(--ink-900)">Seller lifecycle &amp; trust levers</h2>
+  <p class="lede" style="color:var(--ink-800)">Approval → verification → badges → warnings → suspension.</p></div>
+
+  <h4 class="h">1. Approval — <code>/admin/sellers</code></h4>
+  <p><b>What it does:</b> moves a new seller from <code>PENDING</code> to <code>APPROVED</code>, notifies the seller and nearby users, and may trigger a Founding Seller grant if the seller is already BIR-verified. <b>Who uses it:</b> any admin. <b>Check before approving:</b> shop name/handle aren't impersonating an existing brand; description and category are coherent; if claiming Business status, that a BIR number is at least present. <b>What can go wrong:</b> approving a seller who immediately lists prohibited items — mitigated by the 3-strike warning system below, not prevented up front.</p>
+
+  <h4 class="h">2. BIR verification — <code>verifyBirLicenseAction</code></h4>
+  <p>Manual admin attestation, business sellers only, requires a <code>birRegistrationNumber</code> on file. Sets <code>birVerified = true</code>, auto-upgrades the seller to the <code>BIR_VERIFIED</code> plan if they're still on Free, and may trigger the Founding Seller grant. <b>Requires legal/policy review:</b> the codebase does not verify the BIR number against any government API — this is a manual, honor-adjacent check today. Treat any BIR number as unverified against source until a real registry lookup exists.</p>
+
+  <h4 class="h">3. Badges — <code>/admin/verification</code></h4>
+  <p>Twelve toggleable badges: Verified Seller, Verified Maker, Verified Pre-Loved, Authenticated, Rising Seller, Highly Rated, Fast Shipper, Local Seller, Physical Store, Founding Seller, Sales 100, Sales 1000. Toggling any badge on sets the seller's general <code>verified</code> flag true. <b>Best practice:</b> badges are a trust signal buyers see on every product card — don't grant "Verified" badges without at least confirming the seller has fulfilled real orders.</p>
+
+  <h4 class="h">4. Warnings &amp; the 3-strike rule</h4>
+  <p><code>flagProhibitedItemAction(productId, reason)</code> removes the listing, logs a <code>SellerWarning</code>, notifies the seller, and <b>automatically suspends the seller once they reach 3 active warnings</b> (<code>AUTO_SUSPEND_WARNING_COUNT = 3</code>), revoking their sessions. <code>clearSellerWarningAction</code> deactivates one warning without deleting its history — use this to correct a mistaken flag, not to reset the count to give a seller a "clean slate."</p>
+
+  <h4 class="h">5. Manual suspend / reinstate</h4>
+  <p>Independent of the 3-strike system — an admin can suspend or reinstate a seller directly for cause. Reinstate only works from a <code>SUSPENDED</code> status. <b>Escalate to founder (Medium):</b> any suspension of a seller with meaningful order volume or a public dispute already in progress.</p>
+
+  <div class="callout future"><b>Recommended future admin tool:</b> a direct plan-assignment action. Today, an admin cannot put a specific seller onto PRO or PREMIUM directly — <code>SellerPlanOverride</code> only adjusts listing/auction <i>limits</i>, never the commission percentage or plan tier itself. The only way a seller's plan actually changes is self-serve (<code>changeSellerPlanAction</code>) or the automatic BIR_VERIFIED assignment.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B2 · Seller lifecycle &amp; trust levers</span></div>
+</section>
+
+<!-- ================= B3 MODERATION ================= -->
+<section class="page">
+  <div class="band live"><div class="part-label" style="color:rgba(255,255,255,.6)">Part B — The Admin Dashboard</div>
+  <div class="section-num">B3</div><h2 class="section-title">Product moderation &amp; reports</h2>
+  <p class="lede">Two entry points, one shared enforcement pipeline.</p></div>
+
+  <h4 class="h">Direct moderation — <code>/admin/products</code></h4>
+  <p>Cycle any product between Active, Flagged, and Removed. This is a status flip only — there is no admin capability to edit a listing's title, price, description, or images. If a listing is wrong rather than prohibited (e.g. miscategorized, obviously mispriced by a typo), the current options are Remove-and-ask-the-seller-to-relist, or leave it — there's no in-between "correct it" action.</p>
+
+  <h4 class="h">Prohibited-item flagging — the real enforcement path</h4>
+  <p><code>flagProhibitedItemAction</code> is what should be used for anything violating the <a href="https://atbph.com/prohibited-items">Prohibited Items policy</a> (weapons, drugs, counterfeits, unregistered medicines, live animals, regulated chemicals, IP infringement, unauthorized digital-content resale, academic dishonesty for hire, unlicensed professional advice). It requires a reason, removes the listing, and feeds the 3-strike system (B2). <b>Always use this path, not the plain status toggle</b>, for anything that's actually a policy violation — only the flagging path creates the accountability trail.</p>
+
+  <h4 class="h">Reports queue — <code>/admin/reports</code></h4>
+  <table class="compact">
+    <tr><th>Report target</th><th>Handling</th></tr>
+    <tr><td>Product (listing reports)</td><td>Grouped by product, sorted by report count then recency. <code>confirmListingViolationAction</code> routes into the same flag/warn/auto-suspend pipeline above; <code>dismissListingReportsAction</code> clears them with no effect on the listing.</td></tr>
+    <tr><td>Seller / Livestream / User</td><td>Individually actioned — Mark Reviewed, Resolve, or Dismiss. These do not themselves remove anything or warn anyone; use the seller/product actions above for the actual enforcement, and this queue to track that you looked at it.</td></tr>
+  </table>
+  <p>Resolving or dismissing any report notifies the original reporter in-app — buyers can see their report wasn't ignored.</p>
+
+  <div class="callout warn"><b>What should escalate to the founder (Medium/High):</b> any report alleging counterfeit goods from a Verified/Highly-Rated seller, any report involving a minor, any report alleging an off-platform scam that could implicate ATBP's own liability, and any single listing that accumulates 3+ independent reports before an admin has looked at it.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B3 · Product moderation &amp; reports</span></div>
+</section>
+
+<!-- ================= B4 ORDERS/PAYMENTS/PAYOUTS/DISPUTES ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part B — The Admin Dashboard</div>
+  <div class="section-num">B4</div><h2 class="section-title">Orders, payments, payouts &amp; disputes</h2>
+  <p class="lede">The money path — and where admin control actually stops.</p></div>
+
+  <h4 class="h">Orders — read-only</h4>
+  <p><code>/admin/orders</code> lists the last 100 orders with status badges (<code>PAYMENT_PENDING → PROCESSING → SHIPPED/IN_TRANSIT → DELIVERED → COMPLETED</code>, with <code>CANCELLED</code>/<code>DISPUTED</code> side-states). <b>There is no admin action to directly change an order's status.</b> The only admin-side lever that moves an order's status is resolving a Dispute (below).</p>
+
+  <h4 class="h">Payments — 100% mocked, confirm before relying on this in production</h4>
+  <p>Every <code>PaymentMethodId</code> — GCash, Maya, QR Ph, Card, Online Banking, COD — resolves through <code>MockPaymentProvider</code>, which returns success immediately (COD returns "pending," deferred to delivery). No Xendit, PayMongo, or card-processor integration exists. <span class="tag gap">Planned / Future Feature</span></p>
+
+  <h4 class="h">Payouts — self-serve, automated, mocked</h4>
+  <p>Sellers request payouts themselves from Studio against their available balance (completed-order commissions minus payouts already committed). Standard payout → <code>PROCESSING</code>; instant payout (flat ₱99 fee) → <code>PAID</code> immediately. <code>/admin/transactions</code> is read-only — there is no admin queue to approve, reject, or intervene in a payout. Once a real disbursement provider is wired in, this will need a real failure-handling admin surface; today, a "failed" payout in the mock world essentially can't happen.</p>
+
+  <h4 class="h">Disputes — the actual refund/return mechanism</h4>
+  <p>ATBP has no separate "returns" flow — everything routes through <code>Dispute</code>. Lifecycle: <code>OPEN → UNDER_REVIEW → RESOLVED_REFUND | RESOLVED_DENIED | CLOSED</code>. <b>The admin UI at <code>/admin/disputes</code> only exposes two buttons: Approve Refund and Deny</b> — there's no UI to move a dispute into Under Review or Closed, even though the underlying action supports it.</p>
+  <ul>
+    <li><b>Approve Refund</b> → sets <code>Order.status = CANCELLED</code>, <code>paymentStatus = REFUNDED</code>. No real refund transaction fires (consistent with the mock payment layer) — this is a status flip, and it will need to trigger a real reversal once payments are live.</li>
+    <li><b>Deny</b> → sets <code>Order.status = COMPLETED</code>.</li>
+    <li>The dispute page shows a <b>Protected / Not protected</b> badge based on whether the buyer paid the Buyer Protection Fee. A refund on a "Not protected" order has no platform fund behind it — in practice, that recovery would have to come from the seller, not ATBP.</li>
+  </ul>
+
+  <div class="callout"><b>Legal grounding:</b> ATBP's Terms of Service §8 (Redress Mechanism and Dispute Resolution) commits to acknowledging and acting on a complaint promptly, and — consistent with the Internet Transactions Act (RA 11967) — tells users they may escalate to the DTI's E-Commerce Bureau if a complaint isn't resolved within <b>7 calendar days</b>. Treat 7 days as the hard ceiling for getting any dispute to at least <code>UNDER_REVIEW</code> in practice, even though the UI doesn't enforce that state today.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B4 · Orders, payments, payouts &amp; disputes</span></div>
+</section>
+
+<!-- ================= B5 PRICING/PLANS/PROMOTIONS ================= -->
+<section class="page">
+  <div class="band gold"><div class="part-label" style="color:rgba(74,44,32,.55)">Part B — The Admin Dashboard</div>
+  <div class="section-num" style="color:rgba(74,44,32,.55)">B5</div><h2 class="section-title" style="color:var(--ink-900)">Pricing, plans &amp; promotions</h2>
+  <p class="lede" style="color:var(--ink-800)">One page, three distinct pricing systems.</p></div>
+
+  <h4 class="h">Seller plans</h4>
+  <p><code>/admin/pricing</code> edits <code>SellerPlan</code> rows directly — monthly price, commission %, listing/auction limits, feature flags — for Free, Pro, Premium, BIR_VERIFIED, and Founding Premium. <b>Any change here retroactively affects every seller currently on that plan</b> (the rate is read live via <code>getEffectiveLimits</code>, not locked in until an order is placed — at which point <code>recordCommission</code> bakes that rate into the order's <code>Commission</code> row permanently). <b>Escalate to founder before changing any live plan's commission % or price</b> — this is a company-wide pricing decision, not a routine admin task.</p>
+
+  <h4 class="h">Per-seller overrides</h4>
+  <p><code>SellerPlanOverride</code> lets an admin grant one seller extra listing/auction headroom without changing their plan or commission — the "reward a trusted seller" lever. Requires a free-text reason (visible in the audit log).</p>
+
+  <h4 class="h">Seller-purchased promotions</h4>
+  <p>Sellers buy Boost/Featured/Category Feature/Homepage Feature/Sponsored Campaign placements themselves (<code>buyPromotionAction</code>), paid via the mock provider or a <code>PromotionalCredit</code> ledger. Admin's role is <b>pricing only</b> — editing each <code>PromotionType</code>'s min/max price band and active flag. Admin cannot create, pause, or cancel an individual seller's promotion.</p>
+
+  <h4 class="h">Third-party advertising</h4>
+  <p>Fully admin-created at <code>/admin/advertising</code> — one form creates the advertiser, campaign, ad creative, and placement(s) (Homepage/Category/Search/Seller Page/Event Page) together. Every placement is labeled "Sponsored" on the storefront. <b>Gap:</b> no edit, pause, or delete action exists for a live ad — if a campaign needs to stop early, there is currently no UI lever to do it.</p>
+
+  <h4 class="h">Auctions — built, zero admin surface, currently off</h4>
+  <p><code>AUCTIONS_ENABLED = false</code> in <code>src/lib/feature-flags.ts</code>, gating auctions everywhere including all discovery feeds. The stated internal rationale is to wait for a critical mass of buyers (rough target: ~100k active buyers) before bidding will feel alive rather than half-dead. <b>Even when re-enabled, there is no <code>/admin/auctions</code> route</b> — an admin cannot currently cancel a stuck auction, adjust its end time, or intervene in a bidding dispute by any dedicated tool.</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B5 · Pricing, plans &amp; promotions</span></div>
+</section>
+
+<!-- ================= B6 CONTENT/CATEGORIES/LOCAL ================= -->
+<section class="page">
+  <div class="band teal"><div class="part-label" style="color:rgba(255,255,255,.6)">Part B — The Admin Dashboard</div>
+  <div class="section-num">B6</div><h2 class="section-title">Content, categories &amp; local</h2>
+  <p class="lede">Curation, taxonomy, and real-world presence.</p></div>
+
+  <h4 class="h">ATBP Picks (Collections)</h4>
+  <p>Deliberately hand-curated, not rule-based. Create a collection (slug/title/subtitle/emoji, type Pick/Seasonal/Shops), then add products by exact title search (must resolve to exactly one match) or sellers by @handle. Toggle active/hidden, or delete. These surface on Explore and <code>/picks</code>. <b>Best practice:</b> refresh at least one active collection weekly — a stale "ATBP Picks" shelf undercuts the platform's curated-discovery pitch.</p>
+
+  <h4 class="h">Categories</h4>
+  <p>Create a new top-level category (icon emoji + name, auto-slugified) or delete one (blocked while any product still references it). <b>There's no nesting UI</b> — to make a category a child of another, an admin currently has to edit its <code>parentId</code> directly in the database. <b>There's no rename/re-icon action</b> either — a wrong category name today means delete-and-recreate (only possible once nothing references it), not edit.</p>
+
+  <h4 class="h">Category suggestions</h4>
+  <p>Sellers can submit freeform "Other" tags. Approving one at <code>/admin/category-suggestions</code> is <b>informational only</b> — it does not create a real category. If a suggestion is worth acting on, an admin still has to separately go create it at Categories.</p>
+
+  <h4 class="h">Markets &amp; Events</h4>
+  <p><b>Markets</b> are simple directory entries (name, city, tagline, image, schedule) with no seller/vendor relationship — create, toggle active, delete. <b>Events</b> are richer real-world community events (date, venue, address, admission, categories, organiser) that sellers can self-join or leave, with a status control (Upcoming/Live/Ended/Cancelled) and automatic nearby-user notification on creation. Event-specific promotions share the same pricing table as product promotions but have no dedicated buy/manage UI beyond the shared price-band editor.</p>
+
+  <h4 class="h">Local</h4>
+  <p>"Local" (nearby sellers, nearby products, area selection) is entirely seller- and buyer-managed — there is no admin oversight page for local listings specifically. If a local-area issue comes up (e.g. a seller misrepresenting their location), it routes through the general Seller support or Reports process, not a dedicated local-admin tool.</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>B6 · Content, categories &amp; local</span></div>
+</section>
+
+<!-- ================= C1 DAILY CHECKLIST ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part C — Operating Rhythm</div>
+  <div class="section-num">C1</div><h2 class="section-title">Daily admin checklist</h2>
+  <p class="lede">A daily maintenance cron also runs automatically at 18:00 UTC (Vercel Hobby plan — once/day, ±59 min slop) covering 10 sweeps: settling expired auctions, notifying started/ending-soon auctions, activating scheduled Drops, expiring overdue Yard Sales, expiring stale Tawad offers, pruning old trending events, auto-confirming overdue shipments/service orders, releasing overdue digital-product holds, and settling expired promotions. The checklist below is what still needs a human.</p></div>
+
+  <div class="checklist-col">
+    <div><h4>Every morning</h4>
+      <div class="check"><div class="box"></div>New orders since last check</div>
+      <div class="check"><div class="box"></div>New seller applications (Pending)</div>
+      <div class="check"><div class="box"></div>Open Reports queue</div>
+      <div class="check"><div class="box"></div>Open Disputes queue</div>
+      <div class="check"><div class="box"></div>New Support tickets</div>
+      <div class="check"><div class="box"></div>Anything flagged overnight by users</div>
+      <div class="check"><div class="box"></div>Active Advertising campaigns still look right</div>
+    </div>
+    <div><h4>During the day</h4>
+      <div class="check"><div class="box"></div>Seller support requests</div>
+      <div class="check"><div class="box"></div>Buyer support requests</div>
+      <div class="check"><div class="box"></div>New listing reports as they arrive</div>
+      <div class="check"><div class="box"></div>Prohibited-item flags needing action</div>
+      <div class="check"><div class="box"></div>Anything a Medium/High escalation (see E2)</div>
+    </div>
+    <div><h4>End of day</h4>
+      <div class="check"><div class="box"></div>Any dispute still Open past its 7-day clock</div>
+      <div class="check"><div class="box"></div>Seller issues left unresolved</div>
+      <div class="check"><div class="box"></div>Today's GMV / order count (dashboard)</div>
+      <div class="check"><div class="box"></div>Outstanding support tickets carried to tomorrow</div>
+      <div class="check"><div class="box"></div>Anything escalated to the founder today — confirm it landed</div>
+    </div>
+  </div>
+
+  <div class="callout warn">There is currently <b>no admin-facing fraud/failed-payment alert</b> to check each morning, because payments are mocked and cannot fail in the way a live gateway's would. Once a real PSP is wired in, add "failed payments" and "fraud indicators" as their own daily line items — they're absent from this list on purpose, not by oversight.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>C1 · Daily admin checklist</span></div>
+</section>
+
+<!-- ================= C2 WEEKLY CHECKLIST ================= -->
+<section class="page">
+  <div class="band teal"><div class="part-label" style="color:rgba(255,255,255,.6)">Part C — Operating Rhythm</div>
+  <div class="section-num">C2</div><h2 class="section-title">Weekly admin checklist</h2>
+  <p class="lede">A wider lens than the daily pass — mostly manual today, since no weekly-report tool exists yet.</p></div>
+
+  <div class="grid2">
+    <div class="card"><b>Seller activity.</b> New sellers approved this week; any pending applications aging past a few days.</div>
+    <div class="card"><b>Buyer activity.</b> Order volume trend from the dashboard's 14-day chart.</div>
+    <div class="card"><b>New listings &amp; sales.</b> Spot-check <code>/admin/products</code> for anything that should have been caught by moderation.</div>
+    <div class="card"><b>Top sellers &amp; categories.</b> <span class="tag gap">Not computed</span> — no seller-by-revenue leaderboard or category breakdown exists in code today; this requires a manual query or a new report.</div>
+    <div class="card"><b>Trending products.</b> Skim <code>/trending</code> on the live site — it's fully algorithmic, nothing to configure, just worth knowing what's surfacing.</div>
+    <div class="card"><b>Reports &amp; fraud/abuse.</b> Any pattern across this week's Reports (same seller, same buyer, same product type).</div>
+    <div class="card"><b>Customer complaints.</b> Support ticket volume and themes.</div>
+    <div class="card"><b>Sponsored listings &amp; advertising.</b> Any promotion/ad that should have ended but is stuck Active (the daily cron settles <i>Promotions</i> automatically; third-party <i>Advertisements</i> have no automatic expiry or admin pause action — check these manually).</div>
+    <div class="card"><b>Marketplace liquidity.</b> Rough gut-check: are there enough active listings in the categories buyers are actually browsing (Trending, Deals)? No liquidity metric is computed automatically.</div>
+  </div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>C2 · Weekly admin checklist</span></div>
+</section>
+
+<!-- ================= C3 MONTHLY REVIEW ================= -->
+<section class="page">
+  <div class="band gold"><div class="part-label" style="color:rgba(74,44,32,.55)">Part C — Operating Rhythm</div>
+  <div class="section-num" style="color:rgba(74,44,32,.55)">C3</div><h2 class="section-title" style="color:var(--ink-900)">Monthly business review</h2>
+  <p class="lede" style="color:var(--ink-800)">What ATBP actually measures today, versus what a growing marketplace eventually needs.</p></div>
+
+  <h4 class="h">Computed today, on the /admin dashboard</h4>
+  <table class="compact">
+    <tr><th>Metric</th><th>What it means here</th></tr>
+    <tr><td>GMV</td><td>Sum of <code>Order.total</code> for every non-cancelled order — includes shipping/fees, not scoped to Completed only. Directional, not precise.</td></tr>
+    <tr><td>Total orders / users / sellers</td><td>Simple counts. "Total sellers" counts Approved only; "Pending sellers" tracked separately.</td></tr>
+    <tr><td>Open reports / open disputes</td><td>A live backlog gauge — rising counts are an early warning before they become support-ticket volume.</td></tr>
+    <tr><td>14-day revenue series</td><td>Daily GMV for the trailing 14 days — the only trend chart that exists.</td></tr>
+  </table>
+
+  <h4 class="h">Requested metrics not currently computed — <span class="tag gap">Recommended Future Admin Tools</span></h4>
+  <p>Average Order Value (AOV), buyer/seller retention and cohort analysis, buyer/seller acquisition cost, refund rate, cancellation rate, seller sell-through rate, seller-by-revenue leaderboards, and category-level breakdowns are <b>not computed anywhere in the codebase today</b>. Each is derivable from existing data (Order, Commission, Dispute, SellerProfile rows) but requires new queries/reports to be built — do not assume a number for any of these exists to pull from the admin dashboard.</p>
+  <p>Chargeback rate specifically has <b>no underlying concept to measure</b> yet — there is no chargeback handling anywhere in the code, tracking with there being no live card processor to originate one from.</p>
+
+  <div class="callout"><b>What this means for now:</b> a real monthly business review currently requires an admin (or a developer) to run direct database queries for anything beyond the dashboard's headline numbers. Treat "define and build the missing metrics" itself as a founder-level product priority once monthly reviews become a standing habit.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>C3 · Monthly business review</span></div>
+</section>
+
+<!-- ================= D1 SELLER SUPPORT ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part D — Support &amp; Trust</div>
+  <div class="section-num">D1</div><h2 class="section-title">Seller support playbook</h2>
+  <p class="lede">Ten situations, and the actual lever available for each.</p></div>
+
+  <table class="compact">
+    <tr><th>Situation</th><th>What to actually do</th></tr>
+    <tr><td>Seller can't list / hit their limit</td><td>Check their plan's <code>maxActiveListings</code>/<code>maxNewListingsPerMonth</code> against current usage. If they've genuinely earned more headroom without upgrading, grant a <code>SellerPlanOverride</code> with a reason; otherwise point them at Studio → Plan &amp; Billing to upgrade.</td></tr>
+    <tr><td>Seller can't receive a payout</td><td>Check <code>SellerProfile.status</code> — payouts are blocked outright if suspended. Otherwise check their wallet's <code>availableBalance</code>; a payout request over that amount is rejected by design.</td></tr>
+    <tr><td>Seller wants to edit an order</td><td><span class="tag gap">No admin lever exists.</span> Orders are read-only in <code>/admin/orders</code>. Route this through the seller's own order tools, or a Dispute if it's a genuine problem needing resolution.</td></tr>
+    <tr><td>Seller wants to cancel an order</td><td>No direct "cancel" admin action exists outside Disputes. If warranted, treat it as a dispute and resolve accordingly.</td></tr>
+    <tr><td>Seller receives a buyer complaint</td><td>Check whether a Report or Dispute has actually been filed — a complaint alone (e.g. via messaging, which is not admin-visible) doesn't create either automatically.</td></tr>
+    <tr><td>Seller disputes a refund decision</td><td>Review the Dispute's evidence and the Protected/Not-protected badge before deciding — there's no appeal workflow beyond re-opening the conversation manually; escalate to founder if the seller pushes back hard (Medium).</td></tr>
+    <tr><td>Seller suspects buyer fraud</td><td>No buyer-fraud-specific tool exists. Use Reports (target type User) and manual judgment; suspend the buyer's account via <code>/admin/users</code> only for clear cause.</td></tr>
+    <tr><td>Seller wants to close their store</td><td><span class="tag gap">No graceful self-serve or admin "close shop" action exists</span> — only Suspend, which reads as punitive. Handle manually: confirm no pending orders, then suspend and note the reason as voluntary closure so it doesn't count against future re-review.</td></tr>
+    <tr><td>Seller wants to upgrade/downgrade</td><td>Self-serve via Studio → Plan &amp; Billing (<code>changeSellerPlanAction</code>). Admin has no direct plan-assignment lever (see B2).</td></tr>
+    <tr><td>Seller asks about their commission rate</td><td>Confirm their current plan and its published rate (10% Free/Pro, 8% Premium/Founding). Admin cannot grant a custom rate outside the plan system.</td></tr>
+  </table>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>D1 · Seller support playbook</span></div>
+</section>
+
+<!-- ================= D2 BUYER SUPPORT ================= -->
+<section class="page">
+  <div class="band teal"><div class="part-label" style="color:rgba(255,255,255,.6)">Part D — Support &amp; Trust</div>
+  <div class="section-num">D2</div><h2 class="section-title">Buyer support playbook</h2>
+  <p class="lede">Ten situations, and where they actually route today.</p></div>
+
+  <table class="compact">
+    <tr><th>Situation</th><th>What to actually do</th></tr>
+    <tr><td>Order not received</td><td>Check the shipment's status/tracking (if a real courier is ever active) or the order's status. If past a reasonable window, this is a Dispute.</td></tr>
+    <tr><td>Wrong item received</td><td>Dispute — the only refund/return mechanism that exists.</td></tr>
+    <tr><td>Item arrived damaged</td><td>Dispute, same as above. Ask for photos before approving a refund.</td></tr>
+    <tr><td>Seller isn't responding</td><td>Buyer-seller messaging has <b>no admin visibility</b> today — you cannot check whether a seller actually saw a message. Rely on the buyer's account of the timeline and the order's own status/age.</td></tr>
+    <tr><td>Refund request</td><td>Dispute → Approve Refund or Deny. Check the Protected/Not-protected badge first (see B4) — it changes who ultimately bears the cost.</td></tr>
+    <tr><td>Payment problem</td><td>Today, "payment problem" almost always means a UI/flow question, not a real gateway failure — all payment methods are mocked and effectively cannot fail. Once a live PSP exists, this line item needs a real triage path.</td></tr>
+    <tr><td>Account problem (login, profile)</td><td><code>/admin/users</code> only supports Suspend/Reinstate — there's no admin edit of a buyer's name/email/password. Direct password issues to the standard reset flow.</td></tr>
+    <tr><td>Suspicious seller</td><td>Report (target Seller) + manual review of their listings/warning history.</td></tr>
+    <tr><td>Suspicious product</td><td>Report (target Product) — feeds the listing-reports queue in B3.</td></tr>
+    <tr><td>Chargeback</td><td><span class="tag gap">Not applicable</span> — no card-network chargeback concept exists without a live processor.</td></tr>
+    <tr><td>Wants to cancel before shipment</td><td>No buyer-side or admin-side direct cancel exists outside a Dispute — treat a clean pre-shipment cancellation request as a straightforward Approve Refund.</td></tr>
+  </table>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>D2 · Buyer support playbook</span></div>
+</section>
+
+<!-- ================= D3 TRUST & SAFETY ================= -->
+<section class="page">
+  <div class="band live"><div class="part-label" style="color:rgba(255,255,255,.6)">Part D — Support &amp; Trust</div>
+  <div class="section-num">D3</div><h2 class="section-title">Trust &amp; safety</h2>
+  <p class="lede">What's covered by policy, what's covered by tooling, and the gap between the two.</p></div>
+
+  <table class="compact">
+    <tr><th>Risk area</th><th>Current coverage</th></tr>
+    <tr><td>Prohibited items</td><td><span class="tag exists">Covered</span> Public policy at <code>/prohibited-items</code>, grounded in RA 7394 (Consumer Act), the IP Code, and FDA regulations. Enforcement via <code>flagProhibitedItemAction</code> (B3).</td></tr>
+    <tr><td>Counterfeit / misrepresentation</td><td><span class="tag partial">Manual</span> No automated detection — relies entirely on buyer reports and admin judgment when reviewing a flagged listing's photos/description.</td></tr>
+    <tr><td>Scam / bad-faith sellers</td><td><span class="tag exists">Covered</span> 3-strike warning system (B2) plus manual suspend for clear cause.</td></tr>
+    <tr><td>Fake reviews / manipulated ratings</td><td><span class="tag gap">No tooling</span> Reviews have zero moderation actions in <code>/admin/reviews</code> — no hide, delete, or flag capability exists at all. Any fake-review problem today has to be handled outside the admin panel entirely (e.g. a direct database action), which is not sustainable at scale.</td></tr>
+    <tr><td>Off-platform transactions</td><td><span class="tag gap">No detection</span> No automated signal for buyers/sellers moving a deal off ATBP. Messaging isn't admin-visible (below), so this is invisible unless reported directly.</td></tr>
+    <tr><td>Harassment</td><td><span class="tag partial">Partial</span> Buyer-side user blocking exists (self-serve, <code>BlockedUser</code>), and User/Seller reports can be filed — but there is <b>no admin visibility into message content</b> to investigate a harassment claim directly.</td></tr>
+    <tr><td>IP / copyright complaints</td><td><span class="tag exists">Covered</span> Routes through Reports + the Prohibited Items policy's IP-infringement category.</td></tr>
+    <tr><td>Payment abuse / chargebacks</td><td><span class="tag gap">N/A</span> No live processor, so neither concept currently applies.</td></tr>
+    <tr><td>Account abuse</td><td><span class="tag exists">Covered</span> Suspend/Reinstate at <code>/admin/users</code>.</td></tr>
+  </table>
+
+  <div class="callout warn"><b>The real gap to flag upward:</b> buyer-seller messaging (<code>MessageThread</code>/<code>Message</code>) has zero admin oversight — no route, no moderation action references it anywhere in the codebase. As order volume grows, this is the most likely place for harassment, off-platform-deal-steering, and scam coordination to happen invisibly to Trust &amp; Safety. <span class="tag gap">Recommended Future Admin Tool</span></div>
+  <p class="small">Anything touching actual legal exposure (a real IP takedown demand, a law-enforcement request, a data breach) — <b>requires legal/policy review</b>, not a unilateral admin call.</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>D3 · Trust &amp; safety</span></div>
+</section>
+
+<!-- ================= E1 BUSINESS OPERATIONS ================= -->
+<section class="page">
+  <div class="band"><div class="part-label" style="color:rgba(255,255,255,.6)">Part E — Business &amp; Escalation</div>
+  <div class="section-num">E1</div><h2 class="section-title">Business operations</h2>
+  <p class="lede">The economics, restated for operating decisions — not just the revenue list in A2.</p></div>
+
+  <h4 class="h">Marketplace economics, in one paragraph</h4>
+  <p>ATBP earns primarily from the 10%/8% commission on completed sales, topped up by seller subscriptions (₱699–1,999/mo) for sellers who want more listings and tools, plus smaller flat fees (₱15 processing, ₱99 instant payout, the buyer-paid Buyer Protection Fee) and self-serve seller promotions. None of this requires ATBP to hold inventory or take on merchandising risk — the core cost structure is platform infrastructure (hosting, database, cron, storage) plus people (support, moderation, engineering), not cost of goods.</p>
+
+  <h4 class="h">Costs to monitor as the business grows</h4>
+  <ul>
+    <li><b>Infrastructure scaling.</b> Database connections, image/blob storage, and background cron capacity all scale with GMV and listing count — watch these against the hosting plan's limits well before they become an outage.</li>
+    <li><b>Support headcount vs. ticket volume.</b> With no chat-content moderation tooling and read-only reviews, Trust &amp; Safety work is currently more manual than it should be at scale (see D3) — this is a real cost driver, not just a feature gap.</li>
+    <li><b>Founding Seller cost.</b> The 8% rate + free year of Pro for up to 200 sellers is a real forgone-revenue cost, sized and capped by design (<code>FOUNDING_SELLER_LIMIT = 200</code>) — worth tracking claimed slots against the runway it was budgeted for.</li>
+    <li><b>Payment-gateway integration cost.</b> Whenever a live PSP (Xendit or otherwise) is wired in, budget for its own transaction fees on top of ATBP's own commission — these are two separate costs that shouldn't be confused with each other when pricing is reviewed.</li>
+  </ul>
+
+  <h4 class="h">Future monetization opportunities — <span class="tag gap">not yet implemented</span></h4>
+  <p>A formalized third-party advertising rate card (impressions/CPC billing terms), tiered/featured seller placement subscriptions beyond the current promotion price bands, and any B2B/API revenue are all plausible extensions of what already exists in the schema, but none are built or priced today — do not present any of these as active revenue.</p>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>E1 · Business operations</span></div>
+</section>
+
+<!-- ================= E2 ESCALATION ================= -->
+<section class="page">
+  <div class="band live"><div class="part-label" style="color:rgba(255,255,255,.6)">Part E — Business &amp; Escalation</div>
+  <div class="section-num">E2</div><h2 class="section-title">Emergency &amp; escalation framework</h2>
+  <p class="lede">Three tiers. When in doubt, escalate a level.</p></div>
+
+  <table>
+    <tr><th style="width:70px;">Tier</th><th>Handled by</th><th>Examples</th></tr>
+    <tr><td><span class="tag low">Low</span></td><td>Any admin, same day</td><td>Routine seller approval; a single dismissible report; a normal dispute with clear evidence either way; a standard support ticket.</td></tr>
+    <tr><td><span class="tag medium">Medium</span></td><td>Founder review before acting</td><td>Suspending a seller with meaningful order volume or an already-public dispute; any live pricing/commission change on <code>/admin/pricing</code>; a seller pushing back hard on a denied dispute; a pattern of reports suggesting a systemic issue rather than one bad listing.</td></tr>
+    <tr><td><span class="tag high">High</span></td><td>Founder immediately, legal/policy review as needed</td><td>Suspected fraud at scale; anything implicating payment security once a live PSP exists; a law-enforcement request; a data-privacy incident (unauthorized access/exposure of user data); a major seller dispute threatening legal action; harassment allegations involving a minor; any counterfeit/IP claim from a real brand's legal representative.</td></tr>
+  </table>
+
+  <div class="callout">This handbook does not include specific contact information for founder/legal escalation by design — keep that in your team's actual internal directory, not a document that may circulate. Every High item should also be logged as a Support ticket or Audit Log entry so there's a record independent of whoever handled it.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>E2 · Emergency &amp; escalation framework</span></div>
+</section>
+
+<!-- ================= E3 GLOSSARY ================= -->
+<section class="page">
+  <div class="band gold"><div class="part-label" style="color:rgba(74,44,32,.55)">Part E — Business &amp; Escalation</div>
+  <div class="section-num" style="color:rgba(74,44,32,.55)">E3</div><h2 class="section-title" style="color:var(--ink-900)">Admin glossary</h2>
+  <p class="lede" style="color:var(--ink-800)">A–Z.</p></div>
+
+  <div class="two-col">
+  <dl class="glossary">
+    <dt>ATBP</dt><dd>"At iba pa" — Filipino for "and other things." The marketplace's name and positioning.</dd>
+    <dt>Audit Log</dt><dd>Read-only record of admin actions at <code>/admin/audit-log</code>; not every action type is logged (e.g. admin 2FA changes).</dd>
+    <dt>Auction (ProductAuction)</dt><dd>Fully built, currently disabled site-wide via <code>AUCTIONS_ENABLED</code>. No admin UI exists even when on.</dd>
+    <dt>BIR Verification</dt><dd>Manual admin attestation that a Business seller's BIR registration number is on file — not checked against any government system.</dd>
+    <dt>Buyer Protection Fee</dt><dd>Opt-in, buyer-paid fee (3% + ₱10, capped ₱150) funding a platform-backed refund guarantee.</dd>
+    <dt>Commission</dt><dd>ATBP's cut of a sale — 10% (Free/Pro) or 8% (Premium/Founding). Locked into the order's <code>Commission</code> row at sale time.</dd>
+    <dt>Dispute</dt><dd>The sole refund/return mechanism. <code>OPEN → UNDER_REVIEW → RESOLVED_REFUND/RESOLVED_DENIED → CLOSED</code>.</dd>
+    <dt>Drop</dt><dd>A scheduled product release; flips UPCOMING → LIVE automatically.</dd>
+    <dt>Founding Seller</dt><dd>One of the first 200 approved + BIR-verified Business sellers — permanent 8% commission + free Pro year.</dd>
+    <dt>GMV</dt><dd>As computed today: sum of non-cancelled <code>Order.total</code>. Includes shipping/fees.</dd>
+    <dt>Ninja Van</dt><dd>The only real (non-manual/pickup) shipping integration in code — explicitly marked not production-ready pending webhook signature verification.</dd>
+    <dt>PaymentMethodId</dt><dd>GCASH | MAYA | QR_PH | CARD | ONLINE_BANKING | COD | MOCK — all currently resolve through a mock provider.</dd>
+    <dt>Promotion (seller)</dt><dd>Self-serve, seller-purchased placement (Boost/Featured/Category Feature/Homepage Feature/Sponsored Campaign).</dd>
+    <dt>Report</dt><dd>User-filed flag against a Product/Seller/Livestream/User — feeds the Reports queue.</dd>
+    <dt>SellerPlan</dt><dd>Free, Pro, Premium, BIR_VERIFIED, or Founding Premium — defines commission %, monthly price, and listing/auction limits.</dd>
+    <dt>SellerPlanOverride</dt><dd>Admin-granted exception to a seller's listing/auction <i>limits</i> only — never a commission-rate change.</dd>
+    <dt>SellerWarning</dt><dd>Issued alongside a prohibited-item flag; 3 active warnings auto-suspends the seller.</dd>
+    <dt>Tawad</dt><dd>The buyer offer/counter-offer mechanism on eligible listings.</dd>
+    <dt>Trending</dt><dd>Fully algorithmic (view/save/cart/bid/purchase-weighted); no admin override.</dd>
+    <dt>Yard Sale</dt><dd>A time-boxed pre-loved clear-out event; auto-archives after its end date.</dd>
+  </dl>
+  </div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>E3 · Admin glossary</span></div>
+</section>
+
+<!-- ================= E4 FUTURE TOOLS ================= -->
+<section class="page">
+  <div class="band ink"><div class="part-label" style="color:rgba(255,255,255,.6)">Part E — Business &amp; Escalation</div>
+  <div class="section-num">E4</div><h2 class="section-title">Recommended future admin tools</h2>
+  <p class="lede">Every gap flagged in this handbook, gathered in one place.</p></div>
+
+  <ol>
+    <li><b>Live payment gateway integration</b> (Xendit or equivalent) — the single highest-priority item; everything downstream of payments is mocked until this exists.</li>
+    <li><b>Review moderation</b> — hide/delete/flag actions for <code>/admin/reviews</code>, currently fully read-only.</li>
+    <li><b>Admin visibility into buyer-seller messaging</b> — at minimum a read-only escalation view for Trust &amp; Safety investigations.</li>
+    <li><b>Direct seller plan assignment</b> — let an admin place a specific seller onto a plan without relying on self-serve or the BIR auto-upgrade path.</li>
+    <li><b>Order status control for admins</b> — a supervised way to correct an order's status without routing everything through Disputes.</li>
+    <li><b>Advertisement edit/pause/delete</b> — the schema already supports Paused/Ended states; no UI reaches them.</li>
+    <li><b>A graceful "close my store" flow</b>, distinct from Suspend, for sellers leaving voluntarily.</li>
+    <li><b>Category rename/re-icon and a real nesting UI</b> — today both require direct database edits.</li>
+    <li><b>Payout failure handling</b> — trivial today because payouts are mocked; will need a real admin queue once a live disbursement provider exists.</li>
+    <li><b>Missing monthly-review metrics</b> — AOV, retention/cohort analysis, CAC, refund/cancellation rate, seller-by-revenue leaderboards, category breakdowns (see C3).</li>
+    <li><b>A formal SLA/escalation timer</b> on Reports and Disputes, rather than the flat manual queues that exist today — useful for holding the Terms' 7-day redress commitment consistently as volume grows.</li>
+    <li><b>Auctions admin UI</b> — needed before auctions are re-enabled, since none exists even in the built feature.</li>
+  </ol>
+
+  <div class="callout">None of the above are missing because of an oversight worth worrying about today — ATBP is early, and this list is exactly what "early" looks like. Treat it as a prioritization input, not a criticism of the current build.</div>
+  <div class="footer"><span>ATBP Super Admin Handbook · Confidential</span><span>E4 · Recommended future admin tools</span></div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,556 @@
+<title>ATBP Launch Checklist</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --cream:      #F6F0E3;
+    --cream-deep: #EFE6D2;
+    --ink:        #241F1A;
+    --ink-soft:   #6B5F52;
+    --ink-faint:  #94897A;
+    --forest:     #1B4B3D;
+    --forest-ink: #123329;
+    --forest-tint:#E4EEE9;
+    --terracotta: #C24A2C;
+    --terracotta-tint: #F7E4DC;
+    --gold:       #96690F;
+    --gold-tint:  #F4E9D2;
+    --line:       #E1D5BE;
+    --card:       #FCF9F1;
+    --shadow:     0 1px 0 rgba(36,31,26,0.05);
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --cream:      #211C17;
+      --cream-deep: #1A1613;
+      --ink:        #F2E9D8;
+      --ink-soft:   #C4B7A2;
+      --ink-faint:  #8B7E6C;
+      --forest:     #5CA98C;
+      --forest-ink: #E4EEE9;
+      --forest-tint:#243A32;
+      --terracotta: #E38762;
+      --terracotta-tint: #3A2620;
+      --gold:       #E0B45C;
+      --gold-tint:  #362C18;
+      --line:       #3A332A;
+      --card:       #2A241E;
+      --shadow:     0 1px 0 rgba(0,0,0,0.2);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --cream:      #211C17;
+    --cream-deep: #1A1613;
+    --ink:        #F2E9D8;
+    --ink-soft:   #C4B7A2;
+    --ink-faint:  #8B7E6C;
+    --forest:     #5CA98C;
+    --forest-ink: #E4EEE9;
+    --forest-tint:#243A32;
+    --terracotta: #E38762;
+    --terracotta-tint: #3A2620;
+    --gold:       #E0B45C;
+    --gold-tint:  #362C18;
+    --line:       #3A332A;
+    --card:       #2A241E;
+    --shadow:     0 1px 0 rgba(0,0,0,0.2);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--forest);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--forest-tint);
+    border-radius: 999px;
+    padding: 6px 14px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(34px, 5vw, 46px);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 18px 0 14px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+
+  .lede {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 8px;
+  }
+
+  .lede + .lede {
+    margin-top: 10px;
+  }
+
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 28px 0 4px;
+    padding: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .toc a {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .toc a:hover, .toc a:focus-visible { color: var(--forest); border-color: var(--forest); outline: none; }
+
+  section.tier {
+    margin-top: 64px;
+    scroll-margin-top: 24px;
+  }
+
+  .tier-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+  }
+
+  .tier-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cream);
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+  .tier-1 .tier-num { background: var(--terracotta); }
+  .tier-2 .tier-num { background: var(--gold); }
+  .tier-3 .tier-num { background: var(--forest); }
+
+  .tier-head h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 25px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .tier-sub {
+    font-size: 14px;
+    color: var(--ink-faint);
+    margin: 10px 0 26px;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 4px 28px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .item:last-child { padding-bottom: 4px; }
+
+  .item-name {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    padding-top: 1px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+
+  .status-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+  .status-badge.done { color: var(--forest); background: var(--forest-tint); }
+  .status-badge.partial { color: var(--gold); background: var(--gold-tint); }
+
+  .item.done .item-name > span:first-child,
+  .item.partial .item-name > span:first-child {
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-faint);
+    color: var(--ink-faint);
+  }
+  .item.done .item-why,
+  .item.done .vendors,
+  .item.partial .vendors {
+    opacity: 0.5;
+  }
+
+  .item-why {
+    grid-column: 2;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 2px 0 12px;
+    max-width: 58ch;
+  }
+
+  .vendors {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vendor-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow);
+  }
+
+  .vendor-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  a.vendor-name:hover, a.vendor-name:focus-visible { text-decoration: underline; color: var(--terracotta); outline: none; }
+  .vendor-name .pick {
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--forest);
+    background: var(--forest-tint);
+    border-radius: 4px;
+    padding: 2px 5px;
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+
+  .vendor-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .item-note {
+    grid-column: 2;
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-top: 10px;
+    padding-left: 14px;
+    border-left: 2px solid var(--line);
+  }
+
+  .cost-box {
+    margin-top: 28px;
+    background: var(--forest-tint);
+    border: 1px solid var(--forest);
+    border-radius: 14px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .cost-label {
+    font-size: 13.5px;
+    color: var(--forest-ink);
+    max-width: 44ch;
+  }
+  .cost-figure {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--forest-ink);
+    white-space: nowrap;
+  }
+  .cost-figure span {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.75;
+  }
+
+  .legal-block {
+    margin-top: 64px;
+    background: var(--terracotta-tint);
+    border: 1px solid var(--terracotta);
+    border-radius: 16px;
+    padding: 28px 30px;
+  }
+  .legal-block .eyebrow { background: var(--card); }
+  .legal-block h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 14px 0 8px;
+  }
+  .legal-block p { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 14px; max-width: 62ch; }
+  .legal-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .legal-list .row {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 18px;
+    font-size: 14px;
+    padding: 12px 0;
+    border-top: 1px dashed var(--terracotta);
+  }
+  .legal-list .row:first-child { border-top: none; padding-top: 0; }
+  .legal-list b { color: var(--ink); font-weight: 700; }
+  .legal-list span { color: var(--ink-soft); }
+
+  footer {
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 620px) {
+    .item { grid-template-columns: 1fr; }
+    .item-name { padding-top: 0; }
+    .item-why, .vendors, .item-note { grid-column: 1; }
+    .vendor-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .vendor-price { text-align: left; }
+    .legal-list .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+
+<div class="page">
+  <span class="eyebrow">🚀 Before ATBP takes a real order</span>
+  <h1>What's left to <em>launch</em>.</h1>
+  <p class="lede">The product is done. What's missing now is everything outside the codebase — a real payment processor, a domain, someone to answer a support email. Grouped by how soon each one actually blocks you, with where to get it and roughly what it costs.</p>
+  <p class="lede">Prices are ballpark and change — check the vendor before you commit a budget line to it.</p>
+
+  <nav class="toc">
+    <a href="#tier1">① Must-have</a>
+    <a href="#tier2">② First month</a>
+    <a href="#tier3">③ Later</a>
+    <a href="#legal">Legal &amp; compliance</a>
+  </nav>
+
+  <section class="tier tier-1" id="tier1">
+    <div class="tier-head">
+      <span class="tier-num">1</span>
+      <h2>Must-have before real money moves</h2>
+    </div>
+    <p class="tier-sub">Right now checkout runs on a mock payment provider — every GCash/Maya/card charge "succeeds" instantly with no money moving. Nothing below is optional if that's about to change.</p>
+
+    <div class="item">
+      <div class="item-name">Payment gateway</div>
+      <div class="item-why">Replaces the mock provider. PayMongo and Xendit both speak GCash, Maya, GrabPay, and cards natively — no monthly fee, you pay per transaction, but going live requires a registered business and a bank account on file.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://www.paymongo.com/" target="_blank" rel="noopener noreferrer">PayMongo <span class="pick">recommended</span></a><span class="vendor-price">~2.5% e-wallets · ~3.5% + ₱15 cards</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.xendit.co/en-ph/" target="_blank" rel="noopener noreferrer">Xendit</a><span class="vendor-price">~2.5–3.5% per transaction</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.dragonpay.ph/" target="_blank" rel="noopener noreferrer">DragonPay</a><span class="vendor-price">~₱15–20 flat · adds over-the-counter (7-Eleven, banks)</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Business registration</div>
+      <div class="item-why">Every PH payment gateway requires this before it will release your live API keys — it's the actual bottleneck, budget a few days for approval.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://bnrs.dti.gov.ph/" target="_blank" rel="noopener noreferrer">DTI (sole proprietor)</a><span class="vendor-price">₱200 – ₱2,000</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://esparc.sec.gov.ph/" target="_blank" rel="noopener noreferrer">SEC (corporation)</a><span class="vendor-price">₱5,000 – ₱10,000+</span></div>
+      </div>
+    </div>
+
+    <div class="item done">
+      <div class="item-name"><span>Domain</span><span class="status-badge done">✓ Done</span></div>
+      <div class="item-why">atbph.com — registered, DNS on Cloudflare, connected to Vercel as the production domain and verified live.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener noreferrer">Cloudflare Registrar <span class="pick">recommended</span></a><span class="vendor-price">~$10/yr · sold at cost</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.namecheap.com/" target="_blank" rel="noopener noreferrer">Namecheap</a><span class="vendor-price">~$12–15/yr .com</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://dot.ph/" target="_blank" rel="noopener noreferrer">dot.ph</a><span class="vendor-price">~₱2,000–3,000/yr for .ph / .com.ph</span></div>
+      </div>
+      <div class="item-note">www.atbph.com isn't set up (optional — only the bare domain is needed).</div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Production hosting</div>
+      <div class="item-why">Already on Vercel — but the Hobby plan's terms of service explicitly exclude commercial use. Pro is the paid tier that allows it.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://vercel.com/pricing" target="_blank" rel="noopener noreferrer">Vercel Pro</a><span class="vendor-price">$20/mo per seat</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Production database</div>
+      <div class="item-why">The free Neon tier has no point-in-time recovery — a bad migration or a bug can lose real orders permanently. Also the moment to finally split dev from prod.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://neon.tech/pricing" target="_blank" rel="noopener noreferrer">Neon Launch</a><span class="vendor-price">~$19/mo</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://supabase.com/pricing" target="_blank" rel="noopener noreferrer">Supabase Pro</a><span class="vendor-price">~$25/mo</span></div>
+      </div>
+    </div>
+
+    <div class="item done">
+      <div class="item-name"><span>Transactional email</span><span class="status-badge done">✓ Done</span></div>
+      <div class="item-why">ZeptoMail is live — password reset, guest checkout confirmation, order shipped/delivered, and dispute emails all send for real now. Verified with actual delivered test emails.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://www.zoho.com/zeptomail/" target="_blank" rel="noopener noreferrer">ZeptoMail <span class="pick">your pick</span></a><span class="vendor-price">Pay-as-you-go · ~C$3.13/10K emails</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Terms &amp; Privacy Policy</div>
+      <div class="item-why">The footer already links to /terms and /privacy — a lawyer has reviewed and cleared the drafted language. What's left is filling the placeholders (business name, address, dates, contact emails) with real values.</div>
+      <div class="item-note">Lawyer-reviewed and cleared — no vendor needed here anymore. Just fill in the bracketed placeholders on the live pages.</div>
+    </div>
+
+    <div class="cost-box">
+      <span class="cost-label">Recurring cost to clear Tier 1 (excludes one-time registration &amp; legal drafting)</span>
+      <span class="cost-figure">~$45–60<span> /mo</span></span>
+    </div>
+  </section>
+
+  <section class="tier tier-2" id="tier2">
+    <div class="tier-head">
+      <span class="tier-num">2</span>
+      <h2>Should have within the first month</h2>
+    </div>
+    <p class="tier-sub">Nothing here blocks going live, but each one turns into a real problem the first week real sellers and buyers are using it.</p>
+
+    <div class="item done">
+      <div class="item-name"><span>Product image storage</span><span class="status-badge done">✓ Done</span></div>
+      <div class="item-why">Vercel Blob was already fully wired in — product photos, video, and digital product files all upload through it via a client-direct-upload flow. No separate service needed.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://cloudinary.com/" target="_blank" rel="noopener noreferrer">Cloudinary</a><span class="vendor-price">Free tier ≈ thousands of images/mo</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://vercel.com/storage/blob" target="_blank" rel="noopener noreferrer">Vercel Blob <span class="pick">already in use</span></a><span class="vendor-price">~$0.15/GB stored</span></div>
+      </div>
+    </div>
+
+    <div class="item done">
+      <div class="item-name"><span>Error monitoring</span><span class="status-badge done">✓ Done</span></div>
+      <div class="item-why">Sentry is live — SDK installed, error boundaries wired up, verified end-to-end with a real captured error showing up in the dashboard.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://sentry.io/" target="_blank" rel="noopener noreferrer">Sentry</a><span class="vendor-price">Free to 5,000 errors/mo · then $26/mo</span></div>
+      </div>
+    </div>
+
+    <div class="item partial">
+      <div class="item-name"><span>Support inbox &amp; chat</span><span class="status-badge partial">◐ Half done</span></div>
+      <div class="item-why">A real "we found your order" address, plus somewhere a confused buyer can ask a question without emailing you personally.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://www.zoho.com/mail/" target="_blank" rel="noopener noreferrer">Zoho Mail <span class="pick">your pick</span></a><span class="vendor-price">~$1–4/user/mo — real @atbp inbox</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.tawk.to/" target="_blank" rel="noopener noreferrer">Tawk.to</a><span class="vendor-price">Free live chat</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://crisp.chat/" target="_blank" rel="noopener noreferrer">Crisp</a><span class="vendor-price">Free tier · $25/mo paid</span></div>
+      </div>
+      <div class="item-note">@atbph.com email is live — domain verified, MX record working, mail actually arrives. Live chat (Tawk.to or Crisp) still undecided and not set up.</div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Seller payouts</div>
+      <div class="item-why">At 5–20 sellers, a manual GCash/bank transfer each cycle is fine. It stops being fine past that.</div>
+      <div class="vendors">
+        <div class="vendor-row"><span class="vendor-name">Manual transfer</span><span class="vendor-price">Free, doesn't scale</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.paymongo.com/" target="_blank" rel="noopener noreferrer">PayMongo / Xendit disbursement</a><span class="vendor-price">~₱15–25 flat per payout</span></div>
+      </div>
+      <div class="item-note">Automate this once you're paying more than a handful of sellers by hand each week.</div>
+    </div>
+  </section>
+
+  <section class="tier tier-3" id="tier3">
+    <div class="tier-head">
+      <span class="tier-num">3</span>
+      <h2>Nice to have, later</h2>
+    </div>
+    <p class="tier-sub">Genuinely useful, genuinely not urgent.</p>
+
+    <div class="item">
+      <div class="item-name">Product analytics</div>
+      <div class="item-why">What people actually browse and abandon, beyond what's in the database.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://posthog.com/" target="_blank" rel="noopener noreferrer">PostHog</a><span class="vendor-price">Free tier, generous</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://vercel.com/analytics" target="_blank" rel="noopener noreferrer">Vercel Analytics</a><span class="vendor-price">Bundled with Pro</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">SMS / OTP verification</div>
+      <div class="item-why">Phone verification for sellers, or order-status texts — common in PH marketplaces, not required to start.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://semaphore.co/" target="_blank" rel="noopener noreferrer">Semaphore</a><span class="vendor-price">~₱0.50–1 per SMS, PH-based</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://www.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a><span class="vendor-price">Higher per-SMS, global reach</span></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Uptime monitoring</div>
+      <div class="item-why">A text the moment the site actually goes down, instead of finding out from a seller.</div>
+      <div class="vendors">
+        <div class="vendor-row"><a class="vendor-name" href="https://uptimerobot.com/" target="_blank" rel="noopener noreferrer">UptimeRobot</a><span class="vendor-price">Free tier</span></div>
+        <div class="vendor-row"><a class="vendor-name" href="https://betterstack.com/uptime" target="_blank" rel="noopener noreferrer">Better Stack (Uptime)</a><span class="vendor-price">Free tier, nicer status page</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-block" id="legal">
+    <span class="eyebrow">🇵🇭 Specific to a PH marketplace</span>
+    <h2>Compliance, not code</h2>
+    <p>These don't live in the repo, but a payment processor or a lawyer will ask about them before real transactions flow.</p>
+    <div class="legal-list">
+      <div class="row"><b>BIR registration</b><span>Required once you're operating as a real business collecting payment — tax registration and official receipts.</span></div>
+      <div class="row"><b>NPC registration</b><span>The National Privacy Commission requires registering data processing systems once you're handling personal and payment data at scale. Free to file, easy to forget.</span></div>
+      <div class="row"><b>Seller KYC</b><span>The admin approval queue (seller status: pending → approved) already exists in the app — decide what documentation you'll actually check before approving someone.</span></div>
+    </div>
+  </section>
+
+  <footer>ATBP launch checklist — compiled from the current build. Revisit pricing before budgeting; vendors change terms.</footer>
+</div>
