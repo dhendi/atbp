@@ -5,10 +5,12 @@ import { notifyWishlistersOfRestock, notifyWishlistersOfLowStock } from "@/lib/s
 const LOW_STOCK_THRESHOLD = 2;
 
 /**
- * Conditionally decrements available quantity. Because this is a single
- * `updateMany` guarded by the current quantity in its `where` clause, and
- * SQLite serializes writers, two concurrent Buy Now attempts on the last unit
- * can never both succeed — only one `updateMany` will match a row.
+ * Conditionally decrements available quantity. This is a single atomic
+ * `updateMany` guarded by the current quantity in its `where` clause — on
+ * Postgres, the UPDATE takes a row lock, so a second concurrent call blocks
+ * until the first commits, then re-evaluates `quantityAvailable: { gte }`
+ * against the now-decremented value. Two concurrent Buy Now attempts on the
+ * last unit can never both succeed: only one `updateMany` will match the row.
  */
 export async function reserveInventory(productId: string, quantity: number): Promise<boolean> {
   const result = await prisma.product.updateMany({

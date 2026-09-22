@@ -24,6 +24,8 @@ import { getSavedProductIdSet } from "@/lib/services/wishlist";
 import { getSocialProofMap } from "@/lib/services/social-proof";
 import { getSimilarSellers } from "@/lib/services/discovery";
 import { expireOverdueYardSales } from "@/lib/services/yard-sale";
+import { enrichReviews } from "@/lib/services/reviews";
+import { ReviewCard } from "@/components/domain/review-card";
 import { topIdentityInterests } from "@/lib/interests";
 import { SellerActions } from "./seller-actions";
 
@@ -108,9 +110,13 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
     : [];
   const remindedDropIds = new Set(myDropReminders.map((r) => r.dropId));
 
-  const [savedIds, socialProofMap] = await Promise.all([
+  const [savedIds, socialProofMap, enrichedReviews] = await Promise.all([
     getSavedProductIdSet(session?.user?.id),
     getSocialProofMap([...products, ...featuredProducts].map((p) => ({ id: p.id, quantityAvailable: p.quantityAvailable }))),
+    // Enriched per-viewer (vote state, respond permission) outside the cached
+    // storefront fetch above — that cache is shared across every visitor, so
+    // one viewer's vote/permission state can never leak into it.
+    enrichReviews(reviews, session?.user?.id),
   ]);
   const cardOpts = (id: string) => ({ isSaved: savedIds.has(id), socialProof: socialProofMap.get(id) });
 
@@ -337,36 +343,31 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
           </TabsContent>
 
           <TabsContent value="reviews">
-            {reviews.length === 0 ? (
+            {enrichedReviews.length === 0 ? (
               <EmptyState icon={Star} title="No reviews yet" />
             ) : (
               <div className="space-y-3">
-                {reviews.map((r) => {
-                  const photos = r.photos as string[];
-                  return (
-                    <div key={r.id} className="rounded-2xl border border-ink-200 p-3">
-                      <div className="mb-1 flex items-center justify-between">
-                        <span className="text-sm font-bold text-ink-900">{r.buyer.name}</span>
-                        <div className="flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} size={13} className={i < r.rating ? "fill-gold-400 text-gold-400" : "text-ink-200"} />
-                          ))}
-                        </div>
-                      </div>
-                      {r.product && <p className="mb-1 text-xs text-ink-500">On: {r.product.title}</p>}
-                      {r.comment && <p className="text-sm text-ink-600">{r.comment}</p>}
-                      {photos.length > 0 && (
-                        <div className="mt-2 flex gap-2">
-                          {photos.map((url, i) => (
-                            <div key={i} className="relative h-16 w-16 overflow-hidden rounded-xl bg-ink-100">
-                              <Image src={url} alt={`Photo from ${r.buyer.name}'s review, ${i + 1} of ${photos.length}`} fill className="object-cover" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                {enrichedReviews.map((r) => (
+                  <ReviewCard
+                    key={r.id}
+                    review={{
+                      id: r.id,
+                      rating: r.rating,
+                      comment: r.comment,
+                      photos: r.photos as string[],
+                      createdAt: r.createdAt.toISOString(),
+                      buyerName: r.buyer.name,
+                      buyerReviewCount: r.buyerReviewCount,
+                      helpfulCount: r.helpfulCount,
+                      notHelpfulCount: r.notHelpfulCount,
+                      viewerVote: r.viewerVote,
+                      sellerResponse: r.sellerResponse,
+                      sellerRespondedAt: r.sellerRespondedAt?.toISOString() ?? null,
+                      canRespond: r.canRespond,
+                    }}
+                    extra={r.product && <span>On: {r.product.title}</span>}
+                  />
+                ))}
               </div>
             )}
           </TabsContent>

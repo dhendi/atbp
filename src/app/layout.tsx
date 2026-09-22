@@ -21,7 +21,7 @@ const fraunces = Fraunces({
 const SITE_NAME = "ATBP";
 const SITE_TITLE = "ATBP — Find something different.";
 const SITE_DESCRIPTION =
-  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.";
+  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items — plus services and local snacks — from independent sellers across the Philippines.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -79,7 +79,7 @@ const organizationSchema = {
   url: getSiteUrl(),
   logo: `${getSiteUrl()}/icon.svg`,
   description:
-    "ATBP is an online marketplace where independent sellers across the Philippines list handmade, vintage, pre-loved, and collectible items.",
+    "ATBP is an online marketplace where independent sellers across the Philippines list handmade, vintage, pre-loved, and collectible items, plus services and local snacks.",
   areaServed: { "@type": "Country", name: "Philippines" },
 };
 

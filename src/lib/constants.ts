@@ -53,6 +53,7 @@ export const SELLER_BADGES = [
   { value: "FOUNDING_SELLER", label: "Founding Seller", description: "One of the first shops on ATBP." },
   { value: "SALES_100", label: "100 Sales", description: "Has completed 100+ orders." },
   { value: "SALES_1000", label: "1,000 Sales", description: "Has completed 1,000+ orders." },
+  { value: "NEW_SELLER", label: "New Seller", description: "Joined ATBP in the last 60 days." },
 ] as const;
 
 export type SellerBadge = (typeof SELLER_BADGES)[number]["value"];

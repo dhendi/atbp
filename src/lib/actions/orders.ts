@@ -16,6 +16,7 @@ import { logProductEvent } from "@/lib/trending";
 import { recomputeSellerRating } from "@/lib/services/reviews";
 import { evaluateOrderForFraud } from "@/lib/services/fraud";
 import { checkRateLimit } from "@/lib/services/rate-limit";
+import { notify } from "@/lib/services/notifications";
 import { reviewInputSchema, shippingInfoSchema, disputeInputSchema, firstIssue } from "@/lib/validation";
 
 type FulfillmentMethod = "SHIP" | "PICKUP" | "LOCAL_DELIVERY" | "DIGITAL";
@@ -312,7 +313,7 @@ export async function cancelOrderAction(orderId: string) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
 
-  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, serviceOrder: true } });
+  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, serviceOrder: true, seller: true } });
   if (!order || order.buyerId !== session.user.id) return { error: "Not authorized." };
   if (!["PAYMENT_PENDING", "PROCESSING"].includes(order.status)) {
     return { error: "This order can no longer be cancelled." };
@@ -337,6 +338,7 @@ export async function cancelOrderAction(orderId: string) {
     await releaseInventory(item.productId, item.quantity);
   }
   await prisma.order.update({ where: { id: orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
+  await notify(order.seller.userId, "ORDER_CANCELLED", "Order cancelled", `${order.orderNumber} was cancelled by the buyer.`, "/studio/orders");
   revalidatePath("/orders");
   return { success: true };
 }
@@ -372,8 +374,17 @@ export async function submitReviewAction(orderId: string, rating: number, commen
   if (!reviewResult.success) return { error: firstIssue(reviewResult) };
   ({ rating, comment } = reviewResult.data);
 
-  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true } });
+  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, seller: true } });
   if (!order || order.buyerId !== session.user.id) return { error: "Not authorized." };
+  // Mirrors the frontend's own `canReview` gate in order-actions.tsx — that
+  // check alone isn't enforcement, since this action is reachable directly.
+  // Only a COMPLETED order (the settled end state, past DELIVERED) is
+  // eligible; a still-processing, cancelled, or disputed order is not a
+  // "completed purchase" yet, however far along it looks.
+  if (order.status !== "COMPLETED") return { error: "This order isn't eligible for a review yet." };
+
+  const existingReview = await prisma.review.findUnique({ where: { orderId } });
+  if (existingReview) return { error: "You've already reviewed this order." };
 
   // Only allow reviewing a product that was actually part of this order.
   const validProductId = productId && order.items.some((i) => i.productId === productId) ? productId : order.items[0]?.productId;
@@ -381,6 +392,7 @@ export async function submitReviewAction(orderId: string, rating: number, commen
   const review = await prisma.review.create({
     data: { orderId, sellerId: order.sellerId, productId: validProductId, buyerId: session.user.id, rating, comment, photos: photos ?? [] },
   });
+  await notify(order.seller.userId, "REVIEW_RECEIVED", "New review received", `${order.orderNumber} was just reviewed: ${rating}★.`, `/studio/reviews`);
 
   await recomputeSellerRating(order.sellerId);
 

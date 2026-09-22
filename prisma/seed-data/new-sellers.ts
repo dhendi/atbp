@@ -55,7 +55,9 @@ export const NEW_CATEGORIES = [
   { name: "Trading Cards", slug: "trading-cards", icon: "🎴" },
   { name: "Anime & Manga", slug: "anime", icon: "🌸" },
   { name: "Books", slug: "books", icon: "📚" },
-  { name: "Automotive", slug: "automotive", icon: "🏍️" },
+  // Named distinctly from its parent group ("Automotive & Outdoor") — see
+  // the same note in prisma/seed.ts for Filipino Finds/Fashion/Home & Living.
+  { name: "Auto Parts & Accessories", slug: "automotive", icon: "🏍️" },
   { name: "Beauty", slug: "beauty", icon: "💄" },
   { name: "Jewelry", slug: "jewelry", icon: "💎" },
   { name: "Plants", slug: "plants", icon: "🪴" },

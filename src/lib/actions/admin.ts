@@ -436,8 +436,15 @@ export async function toggleClosetFeaturedAction(closetId: string, featured: boo
 export async function moderateProductAction(productId: string, status: "ACTIVE" | "FLAGGED" | "REMOVED") {
   const admin = await requireAdmin();
   if (!admin) return { error: "Not authorized." };
-  await prisma.product.update({ where: { id: productId }, data: { status } });
+  const product = await prisma.product.update({ where: { id: productId }, data: { status }, include: { seller: true } });
   await logAdminAction(admin.id, "MODERATE_PRODUCT", "Product", productId, { status });
+
+  if (status === "ACTIVE") {
+    await notify(product.seller.userId, "PRODUCT_APPROVED", "Your listing was approved", `"${product.title}" is live on ATBP again.`, `/product/${productId}`);
+  } else if (status === "REMOVED") {
+    await notify(product.seller.userId, "PRODUCT_REJECTED", "Your listing was rejected", `"${product.title}" was reviewed by ATBP and removed from the marketplace.`, "/studio/products");
+  }
+
   revalidatePath("/admin/products");
   updateTag("products");
   return { success: true };

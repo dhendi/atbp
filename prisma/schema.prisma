@@ -56,6 +56,7 @@ model User {
   productBids       ProductBid[]
   claimSlots        ClaimSlot[]
   reviews           Review[]        @relation("BuyerReviews")
+  reviewVotes       ReviewVote[]
   reportsFiled      Report[]        @relation("Reporter")
   reportsReviewed   Report[]        @relation("ReportReviewedBy")
   savedProducts     SavedProduct[]
@@ -622,6 +623,11 @@ model Product {
   // fallback used almost everywhere else. Added once the catalog was large
   // enough that these were full table scans — see lib/services/discovery.ts,
   // lib/trending.ts, and the seller/closet/yard-sale/deals pages.
+  // Studio management pages (Products, Inventory, Deals, Auctions) filter by
+  // sellerId alone or combined with a non-equality/non-status predicate
+  // (status: { not: "REMOVED" }, dealPrice: { not: null }, listingType), which
+  // the status-led composite indexes below can't serve — this covers those.
+  @@index([sellerId])
   @@index([status, categoryId, createdAt])
   @@index([status, sellerId, createdAt])
   @@index([status, closetId, createdAt])
@@ -1423,6 +1429,11 @@ model SavedProduct {
   createdAt   DateTime @default(now())
 
   @@unique([userId, productId])
+  // Restock/price-drop/low-stock wishlist notifications and auction-watcher
+  // lookups all filter by productId alone (fired on every such event) — not
+  // served by the (userId, productId) unique index above since productId
+  // isn't its leading column.
+  @@index([productId])
 }
 
 model Notification {
@@ -1435,6 +1446,11 @@ model Notification {
   linkUrl   String?
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  // The notifications inbox and unread-count queries both filter by userId
+  // (the latter also on read) and the inbox orders by createdAt — this table
+  // had no index at all despite every notify() call inserting into it.
+  @@index([userId, createdAt])
 }
 
 model MessageThread {
@@ -1489,7 +1505,38 @@ model Review {
   hiddenAt     DateTime?
   hiddenById   String? // admin User.id who hid it
 
+  // ---------- "Was this helpful?" voting ----------
+  // Denormalized counters (kept in sync by voteReviewAction, same pattern as
+  // SellerProfile.rating/ratingCount) so rendering a list of reviews never
+  // needs a per-review aggregate query. ReviewVote is the source of truth —
+  // these two columns are a cache of it.
+  helpfulCount    Int @default(0)
+  notHelpfulCount Int @default(0)
+  votes           ReviewVote[]
+
+  // ---------- Seller response ----------
+  // One response per review, from that review's own seller — a 1:1 field on
+  // the row itself rather than a separate table, since a review only ever
+  // gets a single, editable reply.
+  sellerResponse    String?
+  sellerRespondedAt DateTime?
+
   @@index([sellerId, createdAt])
+}
+
+model ReviewVote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  helpful   Boolean // true = "Helpful", false = "Not helpful"
+  createdAt DateTime @default(now())
+
+  // One vote per user per review — voting again with the same or the
+  // opposite choice updates this row rather than creating a second one.
+  @@unique([reviewId, userId])
+  @@index([reviewId])
 }
 
 // ---------- Trust & Safety ----------

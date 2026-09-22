@@ -29,8 +29,9 @@ export async function buyNowAction(productId: string, quantity = 1, personalizat
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
 
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({ where: { id: productId }, include: { seller: true } });
   if (!product) return { error: "Product not found." };
+  if (product.seller.userId === session.user.id) return { error: "You can't buy your own listing." };
   if (product.listingType === "AUCTION") return { error: "This is an auction item. Place a bid instead." };
 
   const ok = await reserveInventory(productId, quantity);

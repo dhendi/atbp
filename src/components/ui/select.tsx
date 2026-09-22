@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Select = SelectPrimitive.Root;
@@ -35,6 +35,13 @@ export function SelectTrigger({ className, children, ...props }: React.Component
   );
 }
 
+// Radix caps the content at the available viewport space on its own, but
+// without an explicit scroll-up/down affordance and a matching max-height on
+// the viewport, a list taller than that space just clips — nothing tells the
+// user more items exist below, and on some inputs (touch, certain trackpads)
+// there's no obvious way to reach them at all. Both pieces below exist so a
+// long list (regions, provinces, a ~1,635-city dataset) stays fully reachable
+// and visibly scrollable instead of silently losing its tail end.
 export function SelectContent({ className, children, ...props }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   return (
     <SelectPrimitive.Portal>
@@ -44,7 +51,15 @@ export function SelectContent({ className, children, ...props }: React.Component
         sideOffset={6}
         {...props}
       >
-        <SelectPrimitive.Viewport className="p-1.5">{children}</SelectPrimitive.Viewport>
+        <SelectPrimitive.ScrollUpButton className="flex h-7 cursor-default items-center justify-center bg-white text-ink-500">
+          <ChevronUp size={14} />
+        </SelectPrimitive.ScrollUpButton>
+        <SelectPrimitive.Viewport className="max-h-[min(21rem,var(--radix-select-content-available-height))] overflow-y-auto p-1.5">
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectPrimitive.ScrollDownButton className="flex h-7 cursor-default items-center justify-center bg-white text-ink-500">
+          <ChevronDown size={14} />
+        </SelectPrimitive.ScrollDownButton>
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   );

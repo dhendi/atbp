@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Radio, Gavel, Hand, Package, Truck, CheckCircle2, UserPlus, Tag, Bell, ShoppingBag, Sparkles, CalendarDays, MapPin, Flag, Megaphone,
+  Radio, Gavel, Hand, Package, Truck, CheckCircle2, UserPlus, Tag, Bell, ShoppingBag, Sparkles, CalendarDays, MapPin, Flag, Megaphone, XCircle, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, timeAgo } from "@/lib/utils";
@@ -37,6 +37,10 @@ const ICONS: Record<string, typeof Bell> = {
   LOCAL_EVENT: CalendarDays,
   NEARBY_SELLER: MapPin,
   REPORT_UPDATE: Flag,
+  PRODUCT_APPROVED: CheckCircle2,
+  PRODUCT_REJECTED: Flag,
+  ORDER_CANCELLED: XCircle,
+  REVIEW_RECEIVED: Star,
 };
 
 export function NotificationsList({ notifications }: { notifications: Notif[] }) {

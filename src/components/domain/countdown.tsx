@@ -76,6 +76,10 @@ export function DateCountdownLabel({ target, onExpire }: { target: string | Date
     update();
     const id = setInterval(update, 30000);
     return () => clearInterval(id);
+    // Same deliberate omission as MiniCountdown above — onExpire is often an
+    // inline callback from the caller, and including it would tear down and
+    // restart this interval on every parent re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target]);
 
   return <>{label}</>;

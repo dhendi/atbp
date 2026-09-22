@@ -13,7 +13,7 @@ import type { SellerBadge } from "@/lib/constants";
  * Thresholds are intentionally conservative for a marketplace this size —
  * tune them as ATBP grows past its initial 10-50 sellers.
  */
-const EARNED_BADGES: SellerBadge[] = ["SALES_100", "SALES_1000", "HIGHLY_RATED", "RISING_SELLER"];
+const EARNED_BADGES: SellerBadge[] = ["SALES_100", "SALES_1000", "HIGHLY_RATED", "RISING_SELLER", "NEW_SELLER"];
 
 const SALES_100_THRESHOLD = 100;
 const SALES_1000_THRESHOLD = 1000;
@@ -23,6 +23,11 @@ const RISING_SELLER_MAX_AGE_DAYS = 90; // "rising" implies new-ish, not an estab
 const RISING_SELLER_WINDOW_DAYS = 30;
 const RISING_SELLER_MIN_RECENT_ORDERS = 5;
 const CONFIRMED_ORDER_STATUSES = ["PROCESSING", "SHIPPED", "IN_TRANSIT", "DELIVERED", "COMPLETED"];
+// Matches the "New Seller" badge description in lib/constants.ts — keep the
+// two in sync. Purely time-based (see the seller's own SellerProfile.createdAt),
+// so this falls off automatically once a seller ages past the window, on the
+// next maintenance-cron run — no separate expiry job needed.
+const NEW_SELLER_MAX_AGE_DAYS = 60;
 
 /** What a single seller currently qualifies for, computed fresh from Order/Review data. */
 export async function computeEarnedBadges(sellerId: string): Promise<SellerBadge[]> {
@@ -36,6 +41,10 @@ export async function computeEarnedBadges(sellerId: string): Promise<SellerBadge
 
   if (seller.ratingCount >= HIGHLY_RATED_MIN_REVIEWS && seller.rating >= HIGHLY_RATED_MIN_RATING) {
     earned.push("HIGHLY_RATED");
+  }
+
+  if (seller.createdAt >= new Date(Date.now() - NEW_SELLER_MAX_AGE_DAYS * 86400000)) {
+    earned.push("NEW_SELLER");
   }
 
   const maxAge = new Date(Date.now() - RISING_SELLER_MAX_AGE_DAYS * 86400000);

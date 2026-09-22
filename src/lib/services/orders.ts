@@ -235,12 +235,16 @@ export async function updateOrderStatus(orderId: string, status: string) {
       await sendEmail(order.guestEmail, "Your order was delivered", `Your order ${order.orderNumber} has been delivered.`);
     }
   }
-  // Only the first DELIVERED/COMPLETED transition counts toward the Closet's
-  // monthly sales cap — deliveredAt being set is what makes this idempotent
-  // even if the status moves DELIVERED -> COMPLETED later. My Shop sellers
-  // are always birVerified (no monthly cap) so this only ever does real work
+  // Only the first DELIVERED/COMPLETED transition counts toward the seller's
+  // real sales count (feeds the SALES_100/SALES_1000/RISING_SELLER badge
+  // criteria in lib/services/badges.ts) and the Closet's monthly sales cap —
+  // deliveredAt being set is what makes this idempotent even if the status
+  // moves DELIVERED -> COMPLETED later. My Shop sellers are always
+  // birVerified (no monthly cap) so the cap check only ever does real work
   // for orders touching Closet items; Yard Sale items have no sales cap at all.
   if (isFirstCompletion) {
+    await prisma.sellerProfile.update({ where: { id: order.sellerId }, data: { totalSales: { increment: 1 } } });
+
     const hasClosetItem = await prisma.orderItem.findFirst({ where: { orderId, product: { closetId: { not: null } } }, select: { id: true } });
     if (hasClosetItem) {
       const closet = await prisma.closet.findUnique({ where: { sellerId: order.sellerId }, select: { id: true } });

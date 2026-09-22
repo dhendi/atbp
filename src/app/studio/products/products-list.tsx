@@ -156,7 +156,7 @@ export function ProductsList({ products }: { products: ProductRow[] }) {
               </div>
               <Badge variant={STATUS_VARIANT[p.status] ?? "outline"}>{p.status.replace("_", " ")}</Badge>
               <FeaturedToggle productId={p.id} initialFeatured={p.featured} />
-              <ProductRowActions productId={p.id} />
+              <ProductRowActions productId={p.id} status={p.status} listingType={p.listingType} />
             </div>
           );
         })}

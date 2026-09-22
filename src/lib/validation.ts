@@ -12,6 +12,8 @@ export const reviewInputSchema = z.object({
   comment: z.string().trim().max(2000, "Review is too long (2000 characters max)"),
 });
 
+export const sellerResponseSchema = z.string().trim().min(1, "Write a response first.").max(1000, "Response is too long (1000 characters max)");
+
 const ID_DOCUMENT_TYPE_VALUES = ID_DOCUMENT_TYPES.map((t) => t.value) as [string, ...string[]];
 
 /** Every seller onboarding path requires this, regardless of casual vs.

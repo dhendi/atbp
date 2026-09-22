@@ -39,7 +39,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Logo />
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-500">
-              A Philippine marketplace for handmade, vintage, pre-loved, and collectible items.
+              A Philippine marketplace for handmade, vintage, pre-loved, and collectible items — plus services and local snacks.
             </p>
           </div>
           {columns.map((col) => (

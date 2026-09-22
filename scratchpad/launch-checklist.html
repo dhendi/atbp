@@ -293,6 +293,36 @@
     border-left: 2px solid var(--line);
   }
 
+  .doc-list {
+    grid-column: 2;
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .doc-list p {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .doc-list ul {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .doc-list li { margin-bottom: 3px; }
+  .doc-list li:last-child { margin-bottom: 0; }
+
+  .legal-list .doc-list { grid-column: 2; margin-top: 8px; }
+  @media (max-width: 620px) {
+    .legal-list .doc-list { grid-column: 1; }
+  }
+
   .cost-box {
     margin-top: 28px;
     background: var(--forest-tint);
@@ -405,10 +435,41 @@
 
     <div class="item">
       <div class="item-name">Business registration</div>
-      <div class="item-why">Every PH payment gateway requires this before it will release your live API keys — it's the actual bottleneck, budget a few days for approval.</div>
+      <div class="item-why">Every PH payment gateway requires this before it will release your live API keys — it's the actual bottleneck, budget a few days for approval. Also the prerequisite for Barangay Clearance → Mayor's Permit → BIR registration below (see Legal &amp; compliance).</div>
       <div class="vendors">
         <div class="vendor-row"><a class="vendor-name" href="https://bnrs.dti.gov.ph/" target="_blank" rel="noopener noreferrer">DTI (sole proprietor)</a><span class="vendor-price">₱200 – ₱2,000</span></div>
         <div class="vendor-row"><a class="vendor-name" href="https://esparc.sec.gov.ph/" target="_blank" rel="noopener noreferrer">SEC (corporation)</a><span class="vendor-price">₱5,000 – ₱10,000+</span></div>
+      </div>
+      <div class="doc-list">
+        <p>If registering as a DTI sole proprietor (the simpler, more common path for a solo founder)</p>
+        <ul>
+          <li>One valid government ID (passport, driver's license, UMID, PhilSys/National ID, etc.)</li>
+          <li>Your proposed business name — check availability first on the DTI site; have 2–3 backups ready</li>
+          <li>Business address and territorial scope (barangay / city / regional / national — this sets the fee)</li>
+          <li>TIN, if you already have one from prior employment or a previous BIR registration</li>
+          <li>Registration fee, paid online</li>
+        </ul>
+      </div>
+      <div class="item-note">If incorporating instead (SEC — a corporation or One Person Corporation), the document set is materially different and more involved: Articles of Incorporation, a Treasurer's Affidavit, proof of paid-up capital, and (for an OPC) a nominee and alternate nominee. Worth a lawyer or accountant for that path rather than DIY.</div>
+    </div>
+
+    <div class="item">
+      <div class="item-name">Business bank account</div>
+      <div class="item-why">A separate, easy-to-miss bottleneck: banks require your DTI/SEC certificate, Mayor's Permit, and BIR Certificate of Registration before they'll open one — so it can't happen until those are done, and it in turn gates both the payment gateway's live-key approval and being able to pay sellers by anything other than your personal account. Budget 1–2 weeks, and start it the moment the Mayor's Permit clears rather than after.</div>
+      <div class="vendors">
+        <div class="vendor-row"><span class="vendor-name">BDO, BPI, Metrobank, UnionBank, etc.</span><span class="vendor-price">Varies — initial deposit + maintaining balance</span></div>
+      </div>
+      <div class="doc-list">
+        <p>Typically required (confirm with your chosen bank — requirements do vary)</p>
+        <ul>
+          <li>DTI Certificate of Registration (or SEC Certificate of Incorporation)</li>
+          <li>Mayor's / Business Permit</li>
+          <li>BIR Certificate of Registration (Form 2303)</li>
+          <li>Barangay Business Clearance</li>
+          <li>Two valid government IDs of the account signatory/ies</li>
+          <li>Initial deposit (varies by bank, often ₱5,000–₱25,000+ for a business account)</li>
+          <li>Company/business seal or stamp, if the bank requires one</li>
+        </ul>
       </div>
     </div>
 
@@ -546,8 +607,61 @@
     <h2>Compliance, not code</h2>
     <p>These don't live in the repo, but a payment processor or a lawyer will ask about them before real transactions flow.</p>
     <div class="legal-list">
-      <div class="row"><b>BIR registration</b><span>Required once you're operating as a real business collecting payment — tax registration and official receipts.</span></div>
-      <div class="row"><b>NPC registration</b><span>The National Privacy Commission requires registering data processing systems once you're handling personal and payment data at scale. Free to file, easy to forget.</span></div>
+      <div class="row">
+        <b>Barangay Business Clearance</b>
+        <span>From the barangay of your registered business address — a prerequisite for the Mayor's Permit below, not optional even for an online-only business tied to a home address. Rules on how strictly this is enforced for digital-only operations vary by LGU — confirm with your barangay directly.</span>
+        <div class="doc-list">
+          <p>Typically required</p>
+          <ul>
+            <li>DTI/SEC Certificate of Registration</li>
+            <li>Valid government ID of the owner/applicant</li>
+            <li>Proof of business address (lease contract; or if home-based, a utility bill plus the property owner's written consent if you're not the owner)</li>
+            <li>Community Tax Certificate (Cedula) — get this at the barangay/city hall if you don't have one</li>
+            <li>Completed barangay clearance application form (provided at the barangay hall)</li>
+            <li>Clearance fee (varies by barangay, commonly a few hundred pesos)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <b>Mayor's / Business Permit</b>
+        <span>Issued by the City or Municipal Hall of your registered address, after the Barangay Clearance. Required before BIR registration.</span>
+        <div class="doc-list">
+          <p>Typically required — varies more by LGU than any other item here</p>
+          <ul>
+            <li>Barangay Business Clearance</li>
+            <li>DTI/SEC Certificate of Registration</li>
+            <li>Community Tax Certificate (Cedula)</li>
+            <li>Contract of Lease (if renting) or Tax Declaration/proof of ownership (if the address is owned)</li>
+            <li>Locational/Zoning Clearance — some LGUs require this even for a home-based online business; ask your city's Business Permits and Licensing Office (BPLO) directly, since this is the detail most likely to surprise you</li>
+            <li>Fire Safety Inspection Certificate (Bureau of Fire Protection) — requirements for a purely online, non-customer-facing business vary by city; confirm before assuming it's waived</li>
+            <li>1x1 or 2x2 ID photos, application form (from the BPLO)</li>
+            <li>Permit fee — based on declared capitalization or gross receipts, varies significantly by LGU</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <b>BIR registration</b>
+        <span>Required once you're operating as a real business collecting payment — tax registration and official receipts. Comes after the Mayor's Permit.</span>
+        <div class="doc-list">
+          <p>Typically required — confirm current specifics with your RDO or an accountant; BIR rules for this have genuinely changed recently</p>
+          <ul>
+            <li>BIR Form 1901 (sole proprietor/self-employed) or Form 1903 (corporation/partnership)</li>
+            <li>DTI Certificate of Registration (or SEC Certificate of Incorporation)</li>
+            <li>Mayor's / Business Permit (or the official receipt for a pending application — some RDOs accept this)</li>
+            <li>Valid government ID</li>
+            <li>Proof of business address</li>
+            <li>Registration of Books of Accounts (manual, loose-leaf, or a Computerized Accounting System)</li>
+            <li>Registration/Authority to Print for your official receipts or invoices, or enrollment in BIR's e-invoicing system if applicable to a platform business</li>
+          </ul>
+        </div>
+        <div class="item-note">The old ₱500 Annual Registration Fee (BIR Form 0605) was removed under the Ease of Paying Taxes Act (RA 11976) in 2024 — don't budget for it, but do confirm with your RDO, since this is exactly the kind of detail that changes and easily goes stale in any generic checklist, including this one.</div>
+      </div>
+      <div class="row">
+        <b>RA 11967 platform registration</b>
+        <span>The Terms, Privacy Policy, Buyer Protection page, and the dispute/redress flow already commit to specific obligations under the Internet Transactions Act (RA 11967) — but the platform itself still needs to register with DTI as an online sales platform/e-marketplace under that law. Separate from plain DTI business-name registration above.</span>
+        <div class="item-note">This is a newer (2023) law with an evolving IRR — the exact registration process and required documents for an "Online Sales Platform" specifically (as distinct from an individual online seller) is the one item on this whole list worth a direct call to DTI or a lawyer rather than guessing from general knowledge.</div>
+      </div>
+      <div class="row"><b>NPC registration</b><span>The National Privacy Commission requires registering data processing systems once you're handling personal and payment data at scale. Free to file, easy to forget. The incident-response half of this is already done — see <code>docs/internal/data-breach-response.md</code> — but that internal procedure still needs a lawyer's sign-off on its NPC-notification timing before relying on it for real.</span></div>
       <div class="row"><b>Seller KYC</b><span>The admin approval queue (seller status: pending → approved) already exists in the app — decide what documentation you'll actually check before approving someone.</span></div>
     </div>
   </section>

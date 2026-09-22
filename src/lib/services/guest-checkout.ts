@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createOrder, type ShippingInfo } from "@/lib/services/orders";
 import { reserveInventory } from "@/lib/services/inventory";
 import { sendEmail } from "@/lib/services/email";
+import { effectivePrice } from "@/lib/deals";
 import type { PaymentMethodId } from "@/lib/payments/provider";
 
 // COD requires a courier that actually collects and remits cash to ATBP —
@@ -75,7 +76,7 @@ export async function createGuestOrder(input: GuestCheckoutInput): Promise<Guest
   const ok = await reserveInventory(product.id, input.quantity);
   if (!ok) return { error: "Sorry, this item just sold out." };
 
-  const unitPrice = product.dealPrice ?? product.price;
+  const unitPrice = effectivePrice(product);
   const order = await createOrder({
     buyerId: null,
     guestEmail: email,

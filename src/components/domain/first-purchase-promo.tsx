@@ -42,6 +42,10 @@ export function FirstPurchasePromo({ initialStatus }: { initialStatus: PromoStat
       // storage unavailable (private mode, etc.) — just show once, no persistence
     }
     if (Date.now() < dismissedUntil || shownThisSession) {
+      // localStorage/sessionStorage don't exist during SSR, so "was this
+      // already dismissed/shown" can only be known after mount — there's no
+      // hydration-safe way to have the initial render already reflect it.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowBadge(true);
       return;
     }

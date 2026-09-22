@@ -8,6 +8,7 @@ import { assertCanCreateListing, assertCanActivateListings } from "@/lib/service
 import { assertCanAddCasualListing } from "@/lib/services/casual-listings";
 import { issueDigitalDownloadTokens } from "@/lib/services/digital-products";
 import { sellerInactiveMessage, idVerificationBlockMessage } from "@/lib/constants";
+import { effectivePrice } from "@/lib/deals";
 import type { PaymentMethodId } from "@/lib/payments/provider";
 import { listingTitleDescriptionSchema, productMoneySchema, productDescriptionSchema, firstIssue } from "@/lib/validation";
 
@@ -122,7 +123,7 @@ export async function orderDigitalProductAction(
       productId: product.id,
       title: product.title,
       imageUrl: (product.images as string[])[0] ?? "",
-      unitPrice: product.dealPrice ?? product.price,
+      unitPrice: effectivePrice(product),
       quantity: 1,
       sourceType: "BUY_NOW",
     }],

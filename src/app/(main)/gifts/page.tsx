@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { GIFT_OCCASIONS, GIFT_RECIPIENTS, GIFT_BUDGETS, getInterest } from "@/lib/interests";
-import { SectionHeader } from "@/components/domain/section-header";
 import { ProductCard } from "@/components/domain/product-card";
 import { EmptyState } from "@/components/domain/empty-state";
 import { getTrendingProductIdSet } from "@/lib/trending";

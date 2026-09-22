@@ -32,8 +32,8 @@ export async function generateMetadata({
   const { q } = await searchParams;
   const title = q ? `Search results for "${q}"` : "Search";
   const description = q
-    ? `Search results for "${q}" on ATBP: handmade, vintage, pre-loved, and collectible finds from independent sellers across the Philippines.`
-    : "Search ATBP for handmade, vintage, pre-loved, and collectible items, plus shops, drops, and events from independent sellers across the Philippines.";
+    ? `Search results for "${q}" on ATBP: handmade, vintage, pre-loved, and collectible finds, plus services and local snacks, from independent sellers across the Philippines.`
+    : "Search ATBP for handmade, vintage, pre-loved, and collectible items, plus services, local snacks, shops, drops, and events, from independent sellers across the Philippines.";
 
   return {
     title,

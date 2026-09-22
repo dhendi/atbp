@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { Package, ArrowRight } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/domain/empty-state";
 import { formatPeso, timeAgo } from "@/lib/utils";

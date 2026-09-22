@@ -241,12 +241,15 @@ async function main() {
     { name: "Collectibles", slug: "collectibles", icon: "🧸" },
     { name: "Art", slug: "art", icon: "🎨" },
     { name: "Custom", slug: "custom", icon: "✨" },
-    { name: "Filipino Finds", slug: "filipino-finds", icon: "🧺" },
+    // Named distinctly from their own parent group below (Filipino Finds,
+    // Fashion & Accessories, Home & Living) — a leaf sharing its parent's
+    // exact name read as a duplicate entry in the categories menu.
+    { name: "Filipino Crafts", slug: "filipino-finds", icon: "🧺" },
     { name: "Local Brands", slug: "local-brands", icon: "🏷️" },
     { name: "Antiques", slug: "antiques", icon: "🏺" },
     { name: "Hobby & Toys", slug: "hobby-toys", icon: "🎲" },
-    { name: "Fashion", slug: "fashion", icon: "👗" },
-    { name: "Home & Living", slug: "home-living", icon: "🏠" },
+    { name: "Clothing & Apparel", slug: "fashion", icon: "👗" },
+    { name: "Home Décor", slug: "home-living", icon: "🏠" },
     ...NEW_CATEGORIES,
     // Food & Snacks subcategories — shelf-stable packaged goods only, never
     // fresh/hot food delivery (see Product.isFood + food attribute fields).

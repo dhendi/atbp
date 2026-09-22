@@ -1,8 +1,9 @@
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { EmptyState } from "@/components/domain/empty-state";
+import { enrichReviews } from "@/lib/services/reviews";
+import { ReviewCard } from "@/components/domain/review-card";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function StudioReviewsPage() {
     include: { buyer: true, order: true, product: true },
     orderBy: { createdAt: "desc" },
   });
+  const enrichedReviews = await enrichReviews(reviews, session!.user.id);
 
   return (
     <div>
@@ -25,42 +27,37 @@ export default async function StudioReviewsPage() {
         </div>
       </div>
 
-      {reviews.length === 0 ? (
+      {enrichedReviews.length === 0 ? (
         <EmptyState icon={Star} title="No reviews yet" description="Reviews appear here once buyers complete an order and rate their purchase." />
       ) : (
         <div className="space-y-2">
-          {reviews.map((r) => {
-            const photos = r.photos as string[];
-            return (
-              <div key={r.id} className={`rounded-card border p-4 ${r.hidden ? "border-ink-100 bg-ink-50 opacity-70" : "border-ink-100 bg-white"}`}>
-                <div className="mb-1 flex items-center justify-between">
-                  <p className="flex items-center gap-2 font-bold text-ink-900">
-                    {r.buyer.name}
-                    {r.hidden && <span className="rounded-full bg-ink-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-600">Hidden by ATBP</span>}
-                  </p>
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} size={14} className={i < r.rating ? "fill-gold-400 text-gold-400" : "text-ink-200"} />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-xs text-ink-400">
-                  Order {r.order.orderNumber}
-                  {r.product && ` · ${r.product.title}`}
-                </p>
-                {r.comment && <p className="mt-2 text-sm text-ink-600">{r.comment}</p>}
-                {photos.length > 0 && (
-                  <div className="mt-2 flex gap-2">
-                    {photos.map((url, i) => (
-                      <div key={i} className="relative h-16 w-16 overflow-hidden rounded-xl bg-ink-100">
-                        <Image src={url} alt="Review photo" fill className="object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {enrichedReviews.map((r) => (
+            <ReviewCard
+              key={r.id}
+              review={{
+                id: r.id,
+                rating: r.rating,
+                comment: r.comment,
+                photos: r.photos as string[],
+                createdAt: r.createdAt.toISOString(),
+                buyerName: r.buyer.name,
+                buyerReviewCount: r.buyerReviewCount,
+                helpfulCount: r.helpfulCount,
+                notHelpfulCount: r.notHelpfulCount,
+                viewerVote: r.viewerVote,
+                sellerResponse: r.sellerResponse,
+                sellerRespondedAt: r.sellerRespondedAt?.toISOString() ?? null,
+                canRespond: r.canRespond,
+                hidden: r.hidden,
+              }}
+              extra={
+                <>
+                  <span>Order {r.order.orderNumber}{r.product && ` · ${r.product.title}`}</span>
+                  {r.hidden && <span className="rounded-full bg-ink-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink-600">Hidden by ATBP</span>}
+                </>
+              }
+            />
+          ))}
         </div>
       )}
     </div>

@@ -38,7 +38,12 @@ export type NotificationType =
   | "OFFER_EXPIRED"
   | "PLATFORM_ANNOUNCEMENT"
   | "ID_VERIFIED"
-  | "ID_REJECTED";
+  | "ID_REJECTED"
+  | "PRODUCT_APPROVED"
+  | "PRODUCT_REJECTED"
+  | "ORDER_CANCELLED"
+  | "REVIEW_RECEIVED"
+  | "REVIEW_RESPONSE";
 
 export async function notify(userId: string, type: NotificationType, title: string, body: string, linkUrl?: string) {
   const notification = await prisma.notification.create({ data: { userId, type, title, body, linkUrl } });

@@ -20,8 +20,9 @@ export async function addToCart(userId: string, productId: string, quantity = 1,
   // PrismaClientKnownRequestError whose message names the model/query
   // internals, and addToCartAction passes caught error messages straight
   // back to the client.
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({ where: { id: productId }, include: { seller: true } });
   if (!product) throw new Error("This item is no longer available.");
+  if (product.seller.userId === userId) throw new Error("You can't buy your own listing.");
   if (product.listingType === "AUCTION") {
     throw new Error("Auction items can't be added to cart. Place a bid instead.");
   }

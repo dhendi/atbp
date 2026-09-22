@@ -44,7 +44,7 @@ export default function OpengraphImage() {
             marginTop: 44,
           }}
         >
-          {["Handmade", "Vintage", "Pre-loved", "Collectibles"].map((tag) => (
+          {["Handmade", "Vintage", "Pre-loved", "Collectibles", "Services", "Snacks"].map((tag) => (
             <div
               key={tag}
               style={{

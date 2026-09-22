@@ -171,18 +171,38 @@ export async function placeBidAction(productId: string, amount: number) {
   const extended = msRemaining <= SNIPE_WINDOW_MS;
   const newEndAt = extended ? new Date(Date.now() + SNIPE_EXTENSION_MS) : auction.endAt;
 
-  const [, updatedAuction] = await prisma.$transaction([
-    prisma.productBid.create({ data: { auctionId: auction.id, userId: session.user.id, amount } }),
-    prisma.productAuction.update({
-      where: { id: auction.id },
-      data: {
-        currentBid: amount,
-        bidCount: { increment: 1 },
-        endAt: newEndAt,
-        extensionCount: extended ? { increment: 1 } : undefined,
-      },
-    }),
-  ]);
+  // The read above (auction.currentBid/bidCount) is stale by the time this
+  // commits if another bid lands concurrently — a plain update here would let
+  // a slower-committing transaction silently overwrite a higher concurrent
+  // bid's currentBid/bidCount. Guard the update with `currentBid: { lt: amount },
+  // bidCount: auction.bidCount` (both must still match what was just read) so
+  // Postgres only applies it if nothing raced past it; a 0-row result means a
+  // concurrent bid won the race, and this one is rolled back and rejected
+  // outright rather than recording a bid against now-stale state. Both
+  // statements share one transaction so a race is never left half-applied
+  // (auction updated but no matching bid row, or vice versa).
+  let updatedAuction: Awaited<ReturnType<typeof prisma.productAuction.findUniqueOrThrow>> | null = null;
+  try {
+    updatedAuction = await prisma.$transaction(async (tx) => {
+      const updated = await tx.productAuction.updateMany({
+        where: { id: auction.id, currentBid: { lt: amount }, bidCount: auction.bidCount },
+        data: {
+          currentBid: amount,
+          bidCount: { increment: 1 },
+          endAt: newEndAt,
+          extensionCount: extended ? { increment: 1 } : undefined,
+        },
+      });
+      if (updated.count === 0) throw new Error("OUTBID_RACE");
+      await tx.productBid.create({ data: { auctionId: auction.id, userId: session.user.id, amount } });
+      return tx.productAuction.findUniqueOrThrow({ where: { id: auction.id } });
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message === "OUTBID_RACE") {
+      return { error: "Someone just placed a higher bid. Please refresh and try again." };
+    }
+    throw err;
+  }
 
   await logProductEvent(productId, "BID", session.user.id);
 
@@ -226,8 +246,13 @@ export async function buyNowAuctionAction(productId: string) {
   if (new Date(auction.startAt) > new Date()) return { error: "This auction hasn't started yet." };
   if (!auction.buyNowPrice) return { error: "Buy It Now isn't available for this auction." };
 
-  await prisma.productAuction.update({
-    where: { id: auction.id },
+  // Guard against two simultaneous Buy It Now clicks on the same one-of-a-kind
+  // item — without the `status: "ACTIVE"` condition, both requests would read
+  // ACTIVE, and whichever update commits last would silently overwrite the
+  // other's winnerUserId, leaving the first buyer's "you won" response
+  // pointing at an auction someone else is now recorded as having won.
+  const claimed = await prisma.productAuction.updateMany({
+    where: { id: auction.id, status: "ACTIVE" },
     data: {
       status: "ENDED",
       currentBid: auction.buyNowPrice,
@@ -236,6 +261,9 @@ export async function buyNowAuctionAction(productId: string) {
       reserveMet: true,
     },
   });
+  if (claimed.count === 0) {
+    return { error: "This item was just bought by someone else." };
+  }
   await prisma.productBid.create({ data: { auctionId: auction.id, userId: session.user.id, amount: auction.buyNowPrice } });
   await logProductEvent(productId, "BID", session.user.id);
 

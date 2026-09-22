@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Home, Store, Tent, Wrench, Building2, Layers, Globe as OnlineIcon } from "lucide-react";
+import { Home, Store, Tent, Wrench, Layers, Globe as OnlineIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
-import useSWR from "swr";
+import { signOut } from "next-auth/react";
+import type { Session } from "next-auth";
 import { Search, Bell, MessageCircle, ShoppingCart, Heart } from "lucide-react";
 import { Logo } from "./logo";
 import { AreaPicker } from "@/components/domain/area-picker";
@@ -35,13 +35,22 @@ const links = [
   { href: "/local", label: "Local" },
 ];
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+interface Counts {
+  unreadNotifications?: number;
+  unreadMessages?: number;
+  cartCount?: number;
+}
 
-export function TopNav({ area, categories }: { area: string | null; categories: CategoryNode[] }) {
+export function TopNav({
+  area, categories, session, counts,
+}: {
+  area: string | null;
+  categories: CategoryNode[];
+  session: Session | null | undefined;
+  counts: Counts | undefined;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
-  const { data: counts } = useSWR(session ? "/api/me/counts" : null, fetcher, { refreshInterval: 15000 });
 
   return (
     <header className="sticky top-0 z-40 hidden md:block border-b border-ink-100 bg-background/90 backdrop-blur-md">

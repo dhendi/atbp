@@ -8,6 +8,7 @@ import { getBecauseYouLookedAt, getBasedOnYourSearches } from "@/lib/services/pe
 import { getTrendingProducts } from "@/lib/trending";
 import { toProductCardData } from "@/lib/product-card-data";
 import { previewCoupon } from "@/lib/services/coupons";
+import { effectivePrice } from "@/lib/deals";
 import { codCapableProviderActive, getShippingOptionsFor } from "@/lib/shipping/registry";
 import { CheckoutClient } from "./checkout-client";
 import { GuestCheckoutClient } from "./guest-checkout-client";
@@ -26,7 +27,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     const product = await prisma.product.findUnique({ where: { id: guest }, include: { seller: true } });
     if (!product || product.status !== "ACTIVE" || product.listingType === "AUCTION") redirect("/cart");
     const quantity = Math.max(1, Math.min(product.quantityAvailable, parseInt(qty ?? "1", 10) || 1));
-    const unitPrice = product.dealPrice ?? product.price;
+    const unitPrice = effectivePrice(product);
     const shippingOptions = product.isDigital ? [] : await getShippingOptionsFor({ declaredValue: unitPrice * quantity });
 
     return (

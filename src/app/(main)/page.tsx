@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem, Briefcase, Cookie } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -32,16 +32,17 @@ import { getFirstPurchasePromoState } from "@/lib/services/coupons";
 import { FirstPurchasePromo } from "@/components/domain/first-purchase-promo";
 import { AUCTIONS_ENABLED } from "@/lib/feature-flags";
 
-// The 4 launch categories — Product.type values, not the topical Category
-// taxonomy (Home & Living, Fashion, etc). This is what "Shop by Category"
-// means for ATBP's beta positioning: what kind of find it is, not what
-// room it goes in. See feature-flags.ts for why Services/Digital
-// Products/Food aren't part of this list.
+// The 4 launch categories (Product.type values) plus Services and Snacks &
+// Pasalubong (topical Category slugs — see feature-flags.ts, both enabled
+// alongside the original 4). Two different filter params under one grid, so
+// each tile carries its own full href rather than assuming ?type= for all.
 const LAUNCH_CATEGORY_TILES = [
-  { type: "HANDMADE", label: "Handmade", icon: Hammer, color: "text-brand-700 bg-brand-100" },
-  { type: "PRE_LOVED", label: "Pre-Loved", icon: Shirt, color: "text-teal-600 bg-teal-100" },
-  { type: "VINTAGE", label: "Vintage", icon: History, color: "text-gold-600 bg-gold-100" },
-  { type: "COLLECTIBLE", label: "Collectibles", icon: Gem, color: "text-ink-900 bg-ink-100" },
+  { href: "/discover?type=HANDMADE", label: "Handmade", icon: Hammer, color: "text-brand-700 bg-brand-100" },
+  { href: "/discover?type=PRE_LOVED", label: "Pre-Loved", icon: Shirt, color: "text-teal-600 bg-teal-100" },
+  { href: "/discover?type=VINTAGE", label: "Vintage", icon: History, color: "text-gold-600 bg-gold-100" },
+  { href: "/discover?type=COLLECTIBLE", label: "Collectibles", icon: Gem, color: "text-ink-900 bg-ink-100" },
+  { href: "/discover?category=services", label: "Services", icon: Briefcase, color: "text-pink-600 bg-pink-100" },
+  { href: "/discover?category=food-and-snacks", label: "Snacks & Pasalubong", icon: Cookie, color: "text-gold-700 bg-gold-100" },
 ];
 
 export const dynamic = "force-dynamic";
@@ -52,7 +53,7 @@ export const dynamic = "force-dynamic";
 // export instead of silently inheriting one from a parent.
 const HOME_TITLE = "ATBP — Find something different.";
 const HOME_DESCRIPTION =
-  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.";
+  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items — plus services and local snacks — from independent sellers across the Philippines.";
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -199,7 +200,7 @@ export default async function HomePage() {
               Find something <em className="italic text-brand-600">different.</em>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-ink-600 md:text-lg">
-              Handmade, vintage, pre-loved, and collectible finds from sellers across the Philippines.
+              Handmade, vintage, pre-loved, and collectible finds — plus services and local snacks — from sellers across the Philippines.
             </p>
 
             <form action="/search" className="mt-6 max-w-md">
@@ -276,17 +277,17 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ---------- SHOP BY CATEGORY — ATBP's 4 launch categories (see
-          feature-flags.ts for why Services/Digital Products/Food aren't
-          part of the beta positioning). Links straight into Discover's
-          existing type filter (?type=), no new backend needed. ---------- */}
+      {/* ---------- SHOP BY CATEGORY — the 4 launch categories plus Services
+          and Snacks & Pasalubong (see feature-flags.ts; Digital Products
+          stays off for now). Links straight into Discover's existing
+          type/category filters, no new backend needed. ---------- */}
       <section>
-        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Handmade, pre-loved, vintage, and collectible finds" />
-        <div className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-4 md:px-6">
+        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Handmade, pre-loved, vintage, collectibles, services, and snacks" />
+        <div className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-3 md:grid-cols-6 md:px-6">
           {LAUNCH_CATEGORY_TILES.map((cat) => (
             <Link
-              key={cat.type}
-              href={`/discover?type=${cat.type}`}
+              key={cat.href}
+              href={cat.href}
               className={`flex flex-col items-center gap-2 rounded-2xl border-2 border-transparent py-5 text-center transition-colors ${cat.color}`}
             >
               <cat.icon size={24} strokeWidth={2.2} />

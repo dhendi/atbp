@@ -26,6 +26,8 @@ import { getTrendingProductIdSet } from "@/lib/trending";
 import { getSavedProductIdSet } from "@/lib/services/wishlist";
 import { getSocialProofMap } from "@/lib/services/social-proof";
 import { getFrequentlyBoughtTogether, getMoreFromShop, getRelatedSearchTags } from "@/lib/services/discovery";
+import { enrichReviews } from "@/lib/services/reviews";
+import { ReviewCard } from "@/components/domain/review-card";
 import { getInterest } from "@/lib/interests";
 import { BundleAddToCart } from "./bundle-add-to-cart";
 import { ProductActions } from "./product-actions";
@@ -127,6 +129,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     prisma.review.findMany({ where: { sellerId: product.sellerId, hidden: false }, include: { buyer: true }, orderBy: { createdAt: "desc" }, take: 5 }),
   ]);
   const reviewCount = await prisma.review.count({ where: { sellerId: product.sellerId, hidden: false } });
+  const enrichedReviews = await enrichReviews(reviews, session?.user?.id);
   const trendingIds = await getTrendingProductIdSet();
   const [relatedSavedIds, relatedSocialProofMap] = await Promise.all([
     getSavedProductIdSet(session?.user?.id),
@@ -554,38 +557,31 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
       <section className="mt-10">
         <h2 className="font-display mb-3 text-lg font-semibold text-ink-900">Reviews ({reviewCount})</h2>
-        {reviews.length === 0 ? (
+        {enrichedReviews.length === 0 ? (
           <p className="text-sm text-ink-500">No reviews yet for this seller.</p>
         ) : (
           <div className="space-y-3">
-            {reviews.map((r) => {
-              const photos = r.photos as string[];
-              return (
-                <div key={r.id} className="rounded-2xl border border-ink-200 p-3">
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-sm font-bold text-ink-900">
-                      {r.buyer.name}
-                      {r.productId === product.id && <Badge variant="subtle">This item</Badge>}
-                    </span>
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} size={13} className={i < r.rating ? "fill-gold-400 text-gold-400" : "text-ink-200"} />
-                      ))}
-                    </div>
-                  </div>
-                  {r.comment && <p className="text-sm text-ink-600">{r.comment}</p>}
-                  {photos.length > 0 && (
-                    <div className="mt-2 flex gap-2">
-                      {photos.map((url, i) => (
-                        <div key={i} className="relative h-16 w-16 overflow-hidden rounded-xl bg-ink-100">
-                          <Image src={url} alt={`Photo from ${r.buyer.name}'s review, ${i + 1} of ${photos.length}`} fill className="object-cover" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {enrichedReviews.map((r) => (
+              <ReviewCard
+                key={r.id}
+                review={{
+                  id: r.id,
+                  rating: r.rating,
+                  comment: r.comment,
+                  photos: r.photos as string[],
+                  createdAt: r.createdAt.toISOString(),
+                  buyerName: r.buyer.name,
+                  buyerReviewCount: r.buyerReviewCount,
+                  helpfulCount: r.helpfulCount,
+                  notHelpfulCount: r.notHelpfulCount,
+                  viewerVote: r.viewerVote,
+                  sellerResponse: r.sellerResponse,
+                  sellerRespondedAt: r.sellerRespondedAt?.toISOString() ?? null,
+                  canRespond: r.canRespond,
+                }}
+                extra={r.productId === product.id && <Badge variant="subtle">This item</Badge>}
+              />
+            ))}
           </div>
         )}
       </section>

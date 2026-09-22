@@ -1,19 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-import useSWR from "swr";
+import type { Session } from "next-auth";
 import { Search, Bell, ShoppingCart, User } from "lucide-react";
 import { LogoMark } from "./logo";
 import { CategoriesMenu, type CategoryNode } from "@/components/domain/categories-menu";
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+interface Counts {
+  unreadNotifications?: number;
+  cartCount?: number;
+}
 
 /** Etsy-style order: categories, logo, search, notifications, cart, profile —
  * one dense row rather than a logo/area cluster plus a separate icon cluster. */
-export function MobileTopBar({ categories }: { categories: CategoryNode[] }) {
-  const { data: session } = useSession();
-  const { data: counts } = useSWR(session ? "/api/me/counts" : null, fetcher, { refreshInterval: 15000 });
+export function MobileTopBar({
+  categories, session, counts,
+}: {
+  categories: CategoryNode[];
+  session: Session | null | undefined;
+  counts: Counts | undefined;
+}) {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-1.5 border-b border-ink-100 bg-white/90 px-3 backdrop-blur-md md:hidden">
