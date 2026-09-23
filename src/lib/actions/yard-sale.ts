@@ -95,7 +95,11 @@ export async function becomeYardSaleSellerAction(input: CasualOnboardingInput & 
   if (customTags.length > 0) {
     await prisma.categoryTagSuggestion.createMany({ data: customTags.map((tag) => ({ sellerId: seller.id, tag })) });
   }
-  await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  // Never downgrade an ADMIN account to SELLER — see closet.ts's
+  // becomeClosetSellerAction for why.
+  if (session.user.role !== "ADMIN") {
+    await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  }
 
   const yardSale = await prisma.yardSale.create({
     data: {

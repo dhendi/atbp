@@ -313,7 +313,11 @@ export async function becomeSellerAction(input: {
       data: customTags.map((tag) => ({ sellerId: seller.id, tag })),
     });
   }
-  await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  // Never downgrade an ADMIN account to SELLER — see closet.ts's
+  // becomeClosetSellerAction for why.
+  if (session.user.role !== "ADMIN") {
+    await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  }
 
   return { success: true };
 }

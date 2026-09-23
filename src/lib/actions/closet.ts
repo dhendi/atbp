@@ -67,7 +67,12 @@ export async function becomeClosetSellerAction(input: CasualOnboardingInput) {
   if (customTags.length > 0) {
     await prisma.categoryTagSuggestion.createMany({ data: customTags.map((tag) => ({ sellerId: seller.id, tag })) });
   }
-  await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  // Never downgrade an ADMIN account to SELLER — role is a single field, not
+  // a set, so an admin who tests/uses a seller flow on their own account
+  // would otherwise silently and permanently lose admin access.
+  if (session.user.role !== "ADMIN") {
+    await prisma.user.update({ where: { id: session.user.id }, data: { role: "SELLER" } });
+  }
 
   const closet = await prisma.closet.create({
     data: { sellerId: seller.id, title: `${input.shopName}'s Closet`, city: input.province },
