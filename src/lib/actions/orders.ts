@@ -74,15 +74,16 @@ export async function checkoutAction(
   if (items.length === 0) return { error: "No items selected." };
 
   // A BUY_NOW cart item reserves its own stock the moment it's created (see
-  // buyNowAction) — for a single-unit item that reservation itself flips the
-  // product to SOLD_OUT immediately, before the buyer ever reaches checkout.
-  // That SOLD_OUT is this buyer's own hold, not evidence someone else beat
-  // them to it, so it must not block their own checkout. A regular
+  // buyNowAction), and a CLAIM item the moment its livestream slot is won
+  // (see claimSlot) — for a single-unit item that reservation itself flips
+  // the product to SOLD_OUT immediately, before the buyer ever reaches
+  // checkout. That SOLD_OUT is this buyer's own hold, not evidence someone
+  // else beat them to it, so it must not block their own checkout. A regular
   // (MARKETPLACE) item going SOLD_OUT before checkout genuinely does mean
   // someone else bought the last one, so that case still blocks.
   const unavailable = items.find((i) => {
     if (i.product.status === "ACTIVE") return false;
-    if (i.product.status === "SOLD_OUT" && i.sourceType === "BUY_NOW") return false;
+    if (i.product.status === "SOLD_OUT" && (i.sourceType === "BUY_NOW" || i.sourceType === "CLAIM")) return false;
     return true;
   });
   if (unavailable) {

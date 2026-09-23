@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notify } from "@/lib/services/notifications";
+import { reserveInventory } from "@/lib/services/inventory";
 
 export interface ClaimResult {
   success: boolean;
@@ -35,7 +36,22 @@ export async function claimSlot(livestreamProductId: string, slotNumber: number,
     where: { id: livestreamProductId },
     include: { product: true },
   });
-  if (!lp) return { success: false, message: "This item is no longer available." };
+  if (!lp) {
+    await revertClaim(slot.id);
+    return { success: false, message: "This item is no longer available." };
+  }
+
+  // A livestream product is still the same Product sold through the regular
+  // marketplace and BUY_NOW at the same time — winning a numbered slot here
+  // doesn't by itself stop someone else buying the last real unit through
+  // another channel unless this also reserves it, the same way BUY_NOW
+  // reserves stock the moment it's added to a cart. Without this, two buyers
+  // could each walk away thinking they own the same physical last unit.
+  const reserved = await reserveInventory(lp.productId, 1);
+  if (!reserved) {
+    await revertClaim(slot.id);
+    return { success: false, message: "This item just sold out." };
+  }
 
   const cart = await prisma.cart.upsert({
     where: { userId },
@@ -71,4 +87,15 @@ export async function claimSlot(livestreamProductId: string, slotNumber: number,
   );
 
   return { success: true, message: `Item #${slotNumber} claimed! Added to your cart.`, slotNumber };
+}
+
+/** Puts a slot back to AVAILABLE — used when claimSlot has to bail out after
+ * already winning the CLAIMED flip (the livestream product vanished, or the
+ * underlying stock is actually gone), so the slot doesn't stay stuck
+ * CLAIMED-but-nothing-in-a-cart for someone else to never be able to claim. */
+async function revertClaim(slotId: string) {
+  await prisma.claimSlot.updateMany({
+    where: { id: slotId, status: "CLAIMED" },
+    data: { status: "AVAILABLE", claimedByUserId: null, claimedAt: null },
+  });
 }
