@@ -82,7 +82,7 @@ export function CategoryMultiSelect({
   return (
     <div className="space-y-1.5">
       <Label>What do you primarily sell?</Label>
-      <p className="text-xs text-ink-500">Tap the field to browse all options, or type to search — pick as many as apply. This powers search and discovery, it doesn&apos;t limit what you can actually list.</p>
+      <p className="text-xs text-ink-500">Tap the field to browse all options, or type to search. Pick as many as apply. This powers search and discovery, it doesn&apos;t limit what you can actually list.</p>
 
       <div className="relative">
         <Input

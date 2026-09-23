@@ -59,10 +59,10 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 
   const title = interest ? `${interest.label} Finds` : categoryName ?? "Explore";
   const description = interest
-    ? `Shop ${interest.label.toLowerCase()} finds on ATBP: handmade, vintage, pre-loved, and collectible items, plus services and local snacks, from independent sellers across the Philippines.`
+    ? `Shop ${interest.label.toLowerCase()} finds on ATBP: handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.`
     : categoryName
       ? `Browse ${categoryName} listings on ATBP from independent sellers across the Philippines. Filter by price, condition, province, and more.`
-      : "Browse handmade, vintage, pre-loved, and collectible finds — plus services and local snacks — from independent sellers across the Philippines. Filter by category, interest, price, and more.";
+      : "Browse handmade, vintage, pre-loved, and collectible finds from independent sellers across the Philippines. Filter by category, interest, price, and more.";
 
   return {
     title,

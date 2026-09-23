@@ -51,7 +51,7 @@ export const dynamic = "force-dynamic";
 // export instead of silently inheriting one from a parent.
 const HOME_TITLE = "ATBP — Find something different.";
 const HOME_DESCRIPTION =
-  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items — plus services and local snacks — from independent sellers across the Philippines.";
+  "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.";
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -198,7 +198,7 @@ export default async function HomePage() {
               Find something <em className="italic text-brand-600">different.</em>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-ink-600 md:text-lg">
-              Handmade, vintage, pre-loved, and collectible finds — plus services and local snacks — from sellers across the Philippines.
+              Handmade, vintage, pre-loved, and collectible finds from sellers across the Philippines.
             </p>
 
             <form action="/search" className="mt-6 max-w-md">

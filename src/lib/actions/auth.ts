@@ -31,6 +31,10 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
 
   const { name, username, email, password } = parsed.data;
   const marketingOptIn = formData.get("marketingOptIn") === "on";
+  const agreedToTerms = formData.get("agreedToTerms") === "on";
+  if (!agreedToTerms) {
+    return { error: "Please agree to the Terms of Service and Privacy Policy to continue." };
+  }
 
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existing) {
@@ -39,7 +43,7 @@ export async function signupAction(_prevState: unknown, formData: FormData) {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { name, username, email, passwordHash, role: "BUYER", marketingOptIn },
+    data: { name, username, email, passwordHash, role: "BUYER", marketingOptIn, termsAgreedAt: new Date() },
   });
   await prisma.cart.create({ data: { userId: user.id } });
   await claimGuestOrders(user.id, email);

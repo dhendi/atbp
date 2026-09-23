@@ -3,8 +3,10 @@
 import bcrypt from "bcryptjs";
 import { randomInt } from "crypto";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { sendEmail } from "@/lib/services/email";
 import { checkRateLimit } from "@/lib/services/rate-limit";
+import { isPlaceholderEmail } from "@/lib/phone";
 
 const OTP_TTL_MS = 5 * 60_000; // 5 minutes
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,4 +38,48 @@ export async function requestEmailOtpAction(rawEmail: string) {
   );
 
   return { success: true as const, email };
+}
+
+/** Sends a verification code to the *currently signed-in* user's own email —
+ * for the "verify your email" banner (see EmailVerificationBanner), not for
+ * logging in. Reuses the exact same EmailOtpToken mechanism as
+ * requestEmailOtpAction, just scoped to the session's own address rather
+ * than an arbitrary typed-in one. */
+export async function requestVerificationEmailAction() {
+  const session = await auth();
+  if (!session?.user) return { error: "Please log in first." };
+  if (isPlaceholderEmail(session.user.email!)) return { error: "This account doesn't have a real email to verify." };
+
+  return requestEmailOtpAction(session.user.email!);
+}
+
+/** Verifies a code sent via requestVerificationEmailAction against the
+ * signed-in user's own email and marks it verified — a dedicated action
+ * rather than reusing the "email-otp" sign-in provider, since this is
+ * confirming an already-authenticated session's address, not establishing a
+ * new one. */
+export async function confirmVerificationCodeAction(code: string) {
+  const session = await auth();
+  if (!session?.user) return { error: "Please log in first." };
+  const email = session.user.email!;
+
+  if (!(await checkRateLimit(`email-otp-verify:${email}`, 10, 15 * 60_000))) {
+    return { error: "Too many attempts. Please wait a while and try again." };
+  }
+
+  const token = await prisma.emailOtpToken.findFirst({
+    where: { email, consumedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!token || token.attempts >= 5) return { error: "That code didn't work. Request a new one." };
+
+  const valid = await bcrypt.compare(code.trim(), token.codeHash);
+  if (!valid) {
+    await prisma.emailOtpToken.update({ where: { id: token.id }, data: { attempts: { increment: 1 } } });
+    return { error: "That code didn't work." };
+  }
+  await prisma.emailOtpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
+  await prisma.user.update({ where: { id: session.user.id }, data: { emailVerifiedAt: new Date() } });
+
+  return { success: true as const };
 }

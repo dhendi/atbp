@@ -59,7 +59,7 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
     });
     setLoading(false);
     if ("error" in res) return toast.error(res.error);
-    toast.success("Your Yard Sale is live! We're verifying your ID — you can keep listing in the meantime.");
+    toast.success("Your Yard Sale is live! We're verifying your ID, and you can keep listing in the meantime.");
     router.push("/studio/yard-sale");
     router.refresh();
   }

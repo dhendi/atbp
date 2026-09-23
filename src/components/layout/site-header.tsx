@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { TopNav } from "./top-nav";
 import { MobileTopBar } from "./mobile-top-bar";
+import { EmailVerificationBanner } from "@/components/domain/email-verification-banner";
 import type { CategoryNode } from "@/components/domain/categories-menu";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -21,6 +22,7 @@ export function SiteHeader({ area, categories }: { area: string | null; categori
     <>
       <TopNav area={area} categories={categories} session={session} counts={counts} />
       <MobileTopBar area={area} categories={categories} session={session} counts={counts} />
+      <EmailVerificationBanner />
     </>
   );
 }

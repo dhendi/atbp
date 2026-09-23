@@ -30,6 +30,7 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
   const fromPromo = searchParams.get("promo") === "welcome";
   const [loading, setLoading] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(fromPromo);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPhoneFlow, setShowPhoneFlow] = useState(false);
   const [showEmailOtpFlow, setShowEmailOtpFlow] = useState(false);
 
@@ -41,8 +42,13 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!agreedToTerms) {
+      toast.error("Please agree to the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
     setLoading(true);
     const formData = new FormData(e.currentTarget);
+    formData.set("agreedToTerms", "on");
     const result = await signupAction(null, formData);
     if (result.error) {
       toast.error(result.error);
@@ -98,12 +104,27 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
       <h1 className="text-xl font-extrabold text-ink-900">Create your account</h1>
       <p className="mt-1 text-sm text-ink-500">Join the home for Filipino makers, collectors, and buyers.</p>
 
-      <div className="mt-6 space-y-2">
-        <SocialLoginButtons googleEnabled={googleEnabled} facebookEnabled={facebookEnabled} />
-        <Button type="button" variant="outline" size="lg" className="w-full" onClick={() => setShowEmailOtpFlow(true)}>
+      <label className="mt-5 flex items-start gap-2.5 rounded-xl border border-ink-100 bg-ink-50 p-3 text-xs text-ink-700">
+        <input
+          type="checkbox"
+          checked={agreedToTerms}
+          onChange={(e) => setAgreedToTerms(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-brand-500"
+          required
+        />
+        <span>
+          I agree to ATBP&apos;s{" "}
+          <Link href="/terms" target="_blank" className="font-semibold text-ink-900 hover:underline">Terms of Service</Link> and{" "}
+          <Link href="/privacy" target="_blank" className="font-semibold text-ink-900 hover:underline">Privacy Policy</Link>.
+        </span>
+      </label>
+
+      <div className="mt-3 space-y-2">
+        <SocialLoginButtons googleEnabled={googleEnabled} facebookEnabled={facebookEnabled} disabled={!agreedToTerms} />
+        <Button type="button" variant="outline" size="lg" className="w-full" disabled={!agreedToTerms} onClick={() => setShowEmailOtpFlow(true)}>
           <Mail size={16} /> Continue with an emailed code
         </Button>
-        <Button type="button" variant="outline" size="lg" className="w-full" onClick={() => setShowPhoneFlow(true)}>
+        <Button type="button" variant="outline" size="lg" className="w-full" disabled={!agreedToTerms} onClick={() => setShowPhoneFlow(true)}>
           <Smartphone size={16} /> Continue with mobile number
         </Button>
       </div>
@@ -141,14 +162,9 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
             <span className="text-ink-500">Required to unlock 10% off your first purchase (up to ₱100) — no spam, unsubscribe anytime.</span>
           </span>
         </label>
-        <Button type="submit" variant="brand" size="lg" className="w-full" disabled={loading}>
+        <Button type="submit" variant="brand" size="lg" className="w-full" disabled={loading || !agreedToTerms}>
           {loading ? "Creating account..." : "Sign up"}
         </Button>
-        <p className="text-center text-[11px] text-ink-400">
-          By signing up, you agree to ATBP&apos;s{" "}
-          <Link href="/terms" className="font-semibold text-ink-600 hover:underline">Terms of Service</Link> and{" "}
-          <Link href="/privacy" className="font-semibold text-ink-600 hover:underline">Privacy Policy</Link>.
-        </p>
       </form>
 
       <p className="mt-6 text-center text-sm text-ink-500">

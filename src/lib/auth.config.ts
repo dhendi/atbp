@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { isPlaceholderEmail } from "@/lib/phone";
 
 /**
  * Shared auth config, used both by lib/auth.ts (full config, adds the
@@ -58,13 +59,18 @@ export const authConfig: NextAuthConfig = {
       if (token.id) {
         const current = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true, sessionVersion: true, twoFactorAuth: { select: { verifiedAt: true } } },
+          select: { role: true, sessionVersion: true, email: true, emailVerifiedAt: true, twoFactorAuth: { select: { verifiedAt: true } } },
         });
         if (!current || current.sessionVersion !== token.sessionVersion) {
           return null;
         }
         token.role = current.role;
         token.has2FA = !!current.twoFactorAuth?.verifiedAt;
+        // A phone-signup account's email is an unusable placeholder (see
+        // isPlaceholderEmail) — nothing to verify there, so it counts as
+        // verified for gating purposes rather than nudging someone to
+        // "verify" an address they never actually provided.
+        token.hasVerifiedEmail = !!current.emailVerifiedAt || isPlaceholderEmail(current.email);
       }
 
       return token;
@@ -75,6 +81,7 @@ export const authConfig: NextAuthConfig = {
         session.user.role = token.role as string;
         session.user.username = token.username as string;
         session.user.has2FA = !!token.has2FA;
+        session.user.hasVerifiedEmail = !!token.hasVerifiedEmail;
       }
       return session;
     },

@@ -49,7 +49,7 @@ export default async function SellPage() {
 
       {/* ---------- WHY SELL ON ATBP — only real, implemented benefits ---------- */}
       <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <WhySellCard icon={Search} title="Buyers looking for unique finds" desc="ATBP is built around Handmade, Pre-Loved, Vintage, and Collectibles — plus Services and Snacks & Pasalubong — not a general everything-store." />
+        <WhySellCard icon={Search} title="Buyers looking for unique finds" desc="ATBP is built around Handmade, Pre-Loved, Vintage, and Collectibles (plus Services and Snacks & Pasalubong), not a general everything-store." />
         <WhySellCard icon={Star} title="Your own shop and reviews" desc="A real shop page, ratings from actual buyers, and a seller profile that builds up over time." />
         <WhySellCard icon={Wallet} title="A simple, transparent cut" desc="10% marketplace commission (8% on Premium). No listing fees, no signup cost." />
       </div>

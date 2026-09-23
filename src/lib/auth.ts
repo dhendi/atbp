@@ -70,7 +70,17 @@ async function findOrCreateOAuthUser(email: string, name: string, image: string 
   const username = await uniqueUsernameFrom(name || normalizedEmail.split("@")[0]);
   const passwordHash = await bcrypt.hash(randomUUID(), 10);
   const user = await prisma.user.create({
-    data: { email: normalizedEmail, passwordHash, name: name || username, username, avatarUrl: image ?? undefined },
+    data: {
+      email: normalizedEmail, passwordHash, name: name || username, username, avatarUrl: image ?? undefined,
+      // Google/Facebook already verified this address before ever handing it
+      // to us — no separate email-verification step needed. termsAgreedAt is
+      // implicit consent at first sign-in, same as the email/phone OTP paths
+      // (see findOrCreateByEmail/findOrCreateByPhone below); the explicit
+      // checkbox gate lives on the /signup page's button, not in here, since
+      // this same code path also runs for a first-time OAuth login from /login.
+      emailVerifiedAt: new Date(),
+      termsAgreedAt: new Date(),
+    },
   });
   await prisma.cart.create({ data: { userId: user.id } });
   return user;
@@ -88,7 +98,9 @@ async function findOrCreateByEmail(email: string) {
   const username = await uniqueUsernameFrom(email.split("@")[0]);
   const passwordHash = await bcrypt.hash(randomUUID(), 10);
   const user = await prisma.user.create({
-    data: { email, passwordHash, name: "ATBP Member", username },
+    // termsAgreedAt is implicit consent at first sign-in via this method —
+    // same reasoning as findOrCreateOAuthUser above.
+    data: { email, passwordHash, name: "ATBP Member", username, termsAgreedAt: new Date() },
   });
   await prisma.cart.create({ data: { userId: user.id } });
   return user;
@@ -121,6 +133,9 @@ async function findOrCreateByPhone(phone: string) {
       username,
       phone,
       phoneVerifiedAt: new Date(),
+      // Implicit consent at first sign-in via this method — same reasoning
+      // as findOrCreateOAuthUser above.
+      termsAgreedAt: new Date(),
     },
   });
   await prisma.cart.create({ data: { userId: user.id } });
@@ -149,6 +164,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const dbUser = await findOrCreateOAuthUser(user.email, user.name ?? "", user.image ?? null);
       if (dbUser.role === "SUSPENDED") return false;
+
+      // Matched an existing account (e.g. one originally created by password
+      // signup, never verified) rather than creating a new one — Google/
+      // Facebook just proved they own this address, so it's verified now too,
+      // same "prove it once, keep it forever" shape as the OTP providers.
+      if (!dbUser.emailVerifiedAt) {
+        await prisma.user.update({ where: { id: dbUser.id }, data: { emailVerifiedAt: new Date() } });
+      }
 
       // Overwrite the provider-supplied fields with our own DB-backed identity
       // so the jwt callback (which runs right after with this same `user`)

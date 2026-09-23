@@ -7,6 +7,10 @@ declare module "next-auth" {
       role: string;
       username: string;
       has2FA: boolean;
+      // Named distinctly from NextAuth's own built-in `emailVerified` (a
+      // `Date | null` on its core User/AdapterUser types) to avoid an
+      // unsatisfiable boolean-vs-Date intersection with DefaultSession["user"].
+      hasVerifiedEmail: boolean;
     } & DefaultSession["user"];
   }
 
@@ -22,5 +26,6 @@ declare module "next-auth/jwt" {
     role: string;
     username: string;
     has2FA: boolean;
+    hasVerifiedEmail: boolean;
   }
 }

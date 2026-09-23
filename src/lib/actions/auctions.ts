@@ -282,6 +282,9 @@ export async function completeAuctionPurchaseAction(
 ) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+  if (!session.user.hasVerifiedEmail) {
+    return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
+  }
 
   const shippingResult = shippingInfoSchema.safeParse(shipping);
   if (!shippingResult.success) return { error: firstIssue(shippingResult) };

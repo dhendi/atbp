@@ -32,6 +32,9 @@ export async function checkoutAction(
 ) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+  if (!session.user.hasVerifiedEmail) {
+    return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
+  }
 
   if (!(await checkRateLimit(`checkout:${session.user.id}`, 10, 5 * 60_000))) {
     return { error: "Too many checkout attempts. Please wait a few minutes and try again." };

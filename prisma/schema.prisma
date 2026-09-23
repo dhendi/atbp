@@ -82,6 +82,12 @@ model User {
   // (e.g. first-purchase) can be issued to this account. See lib/services/coupons.ts.
   marketingOptIn Boolean @default(false)
 
+  // Set the moment this account agrees to the Terms of Service + Privacy
+  // Policy — recorded (not just shown as text) across every signup path:
+  // password form, email-code, mobile-code, and OAuth. Never cleared or
+  // re-required afterward.
+  termsAgreedAt DateTime?
+
   // ---------- Local notification categories (Phase 5) ----------
   notifyLocalDrops    Boolean @default(true)
   notifyLocalEvents   Boolean @default(true)

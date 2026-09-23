@@ -26,8 +26,8 @@ function FacebookIcon() {
 }
 
 export function SocialLoginButtons({
-  callbackUrl, googleEnabled, facebookEnabled,
-}: { callbackUrl?: string; googleEnabled: boolean; facebookEnabled: boolean }) {
+  callbackUrl, googleEnabled, facebookEnabled, disabled,
+}: { callbackUrl?: string; googleEnabled: boolean; facebookEnabled: boolean; disabled?: boolean }) {
   if (!googleEnabled && !facebookEnabled) return null;
   return (
     <div className="space-y-2">
@@ -37,6 +37,7 @@ export function SocialLoginButtons({
           variant="outline"
           size="lg"
           className="w-full"
+          disabled={disabled}
           onClick={() => signIn("google", { callbackUrl: callbackUrl || "/" })}
         >
           <GoogleIcon /> Continue with Google
@@ -48,6 +49,7 @@ export function SocialLoginButtons({
           variant="outline"
           size="lg"
           className="w-full"
+          disabled={disabled}
           onClick={() => signIn("facebook", { callbackUrl: callbackUrl || "/" })}
         >
           <FacebookIcon /> Continue with Facebook
