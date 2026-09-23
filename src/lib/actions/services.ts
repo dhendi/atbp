@@ -27,6 +27,7 @@ export async function becomeCasualServiceSellerAction(input: {
   province: string;
   idDocumentType: string;
   idDocumentUrl: string;
+  selfiePhotoUrl: string;
 }) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
@@ -37,7 +38,7 @@ export async function becomeCasualServiceSellerAction(input: {
   const handleTaken = await prisma.sellerProfile.findUnique({ where: { handle: input.handle } });
   if (handleTaken) return { error: "That shop handle is already taken." };
 
-  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl });
+  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl, selfiePhotoUrl: input.selfiePhotoUrl });
   if (!idResult.success) return { error: firstIssue(idResult) };
 
   const seller = await prisma.sellerProfile.create({
@@ -49,6 +50,7 @@ export async function becomeCasualServiceSellerAction(input: {
       sellerKind: "INDIVIDUAL",
       idDocumentType: idResult.data.idDocumentType,
       idDocumentUrl: idResult.data.idDocumentUrl,
+      selfiePhotoUrl: idResult.data.selfiePhotoUrl,
       idSubmittedAt: new Date(),
       status: "APPROVED",
     },

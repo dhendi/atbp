@@ -22,6 +22,7 @@ const ID_DOCUMENT_TYPE_VALUES = ID_DOCUMENT_TYPES.map((t) => t.value) as [string
 export const sellerIdVerificationInputSchema = z.object({
   idDocumentType: z.enum(ID_DOCUMENT_TYPE_VALUES, { message: "Choose the type of ID you're uploading." }),
   idDocumentUrl: z.string().trim().min(1, "Upload a photo of your ID before continuing."),
+  selfiePhotoUrl: z.string().trim().min(1, "Take a live selfie before continuing."),
 });
 
 /** Business sellers only — the actual BIR Certificate of Registration

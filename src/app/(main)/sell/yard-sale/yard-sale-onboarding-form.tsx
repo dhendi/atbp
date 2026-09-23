@@ -29,6 +29,7 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [idDocumentType, setIdDocumentType] = useState("");
   const [idDocumentUrl, setIdDocumentUrl] = useState("");
+  const [selfiePhotoUrl, setSelfiePhotoUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -39,6 +40,7 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
       return toast.error("Please choose at least one category for what you're selling.");
     }
     if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
+    if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
     setLoading(true);
     const res = await becomeYardSaleSellerAction({
       shopName,
@@ -49,6 +51,7 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
       customCategoryTags: customTags,
       idDocumentType,
       idDocumentUrl,
+      selfiePhotoUrl,
       title: title.trim() || `${shopName}'s Yard Sale`,
       city: province,
       startDate,
@@ -110,6 +113,8 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
           onDocumentTypeChange={setIdDocumentType}
           url={idDocumentUrl}
           onUrlChange={setIdDocumentUrl}
+          selfieUrl={selfiePhotoUrl}
+          onSelfieUrlChange={setSelfiePhotoUrl}
         />
       </div>
 

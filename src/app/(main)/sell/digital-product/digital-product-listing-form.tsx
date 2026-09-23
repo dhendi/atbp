@@ -28,6 +28,7 @@ export function DigitalProductListingForm({ needsOnboarding, categories }: { nee
   const [province, setProvince] = useState("");
   const [idDocumentType, setIdDocumentType] = useState("");
   const [idDocumentUrl, setIdDocumentUrl] = useState("");
+  const [selfiePhotoUrl, setSelfiePhotoUrl] = useState("");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -44,6 +45,7 @@ export function DigitalProductListingForm({ needsOnboarding, categories }: { nee
     if (needsOnboarding) {
       if (!shopName.trim() || !handle.trim() || !province) return toast.error("Fill in your shop name, handle, and area.");
       if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
+      if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
     }
     if (!title.trim() || !description.trim()) return toast.error("Add a title and description.");
     if (!categoryId) return toast.error("Choose a category.");
@@ -55,7 +57,7 @@ export function DigitalProductListingForm({ needsOnboarding, categories }: { nee
 
     setLoading(true);
     if (needsOnboarding) {
-      const onboard = await becomeCasualServiceSellerAction({ shopName, handle: handle.toLowerCase(), province, idDocumentType, idDocumentUrl });
+      const onboard = await becomeCasualServiceSellerAction({ shopName, handle: handle.toLowerCase(), province, idDocumentType, idDocumentUrl, selfiePhotoUrl });
       if ("error" in onboard) {
         setLoading(false);
         return toast.error(onboard.error);
@@ -95,6 +97,8 @@ export function DigitalProductListingForm({ needsOnboarding, categories }: { nee
               onDocumentTypeChange={setIdDocumentType}
               url={idDocumentUrl}
               onUrlChange={setIdDocumentUrl}
+              selfieUrl={selfiePhotoUrl}
+              onSelfieUrlChange={setSelfiePhotoUrl}
             />
           </div>
         </div>

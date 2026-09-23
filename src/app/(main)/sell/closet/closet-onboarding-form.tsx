@@ -22,6 +22,7 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [idDocumentType, setIdDocumentType] = useState("");
   const [idDocumentUrl, setIdDocumentUrl] = useState("");
+  const [selfiePhotoUrl, setSelfiePhotoUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -31,6 +32,7 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
       return toast.error("Please choose at least one category for what you're selling.");
     }
     if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
+    if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
     setLoading(true);
     const res = await becomeClosetSellerAction({
       shopName,
@@ -41,6 +43,7 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
       customCategoryTags: customTags,
       idDocumentType,
       idDocumentUrl,
+      selfiePhotoUrl,
     });
     setLoading(false);
     if ("error" in res) return toast.error(res.error);
@@ -84,6 +87,8 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
           onDocumentTypeChange={setIdDocumentType}
           url={idDocumentUrl}
           onUrlChange={setIdDocumentUrl}
+          selfieUrl={selfiePhotoUrl}
+          onSelfieUrlChange={setSelfiePhotoUrl}
         />
       </div>
 

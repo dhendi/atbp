@@ -23,6 +23,7 @@ interface CasualOnboardingInput {
   customCategoryTags?: string[];
   idDocumentType: string;
   idDocumentUrl: string;
+  selfiePhotoUrl: string;
 }
 
 /** Creates the SellerProfile + Closet together for a brand-new casual
@@ -39,7 +40,7 @@ export async function becomeClosetSellerAction(input: CasualOnboardingInput) {
   if (handleTaken) return { error: "That shop handle is already taken." };
   if (!isValidArea(input.province)) return { error: "Please choose a valid city from the picker." };
 
-  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl });
+  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl, selfiePhotoUrl: input.selfiePhotoUrl });
   if (!idResult.success) return { error: firstIssue(idResult) };
 
   const customTags = (input.customCategoryTags ?? []).map((t) => t.trim()).filter(Boolean);
@@ -57,6 +58,7 @@ export async function becomeClosetSellerAction(input: CasualOnboardingInput) {
       sellerKind: "INDIVIDUAL",
       idDocumentType: idResult.data.idDocumentType,
       idDocumentUrl: idResult.data.idDocumentUrl,
+      selfiePhotoUrl: idResult.data.selfiePhotoUrl,
       idSubmittedAt: new Date(),
       primaryCategories: input.primaryCategories,
       status: "APPROVED",

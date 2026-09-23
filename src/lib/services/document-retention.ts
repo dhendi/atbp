@@ -30,12 +30,13 @@ const ID_RETENTION_DAYS = 90;
 export async function purgeExpiredIdDocuments() {
   const cutoff = new Date(Date.now() - ID_RETENTION_DAYS * 24 * 60 * 60_000);
   const expired = await prisma.sellerProfile.findMany({
-    where: { idVerified: true, idVerifiedAt: { lt: cutoff }, idDocumentUrl: { not: null } },
-    select: { id: true, idDocumentUrl: true },
+    where: { idVerified: true, idVerifiedAt: { lt: cutoff }, OR: [{ idDocumentUrl: { not: null } }, { selfiePhotoUrl: { not: null } }] },
+    select: { id: true, idDocumentUrl: true, selfiePhotoUrl: true },
   });
 
   for (const seller of expired) {
     await deleteDocumentBlob(seller.idDocumentUrl);
-    await prisma.sellerProfile.update({ where: { id: seller.id }, data: { idDocumentUrl: null } });
+    await deleteDocumentBlob(seller.selfiePhotoUrl);
+    await prisma.sellerProfile.update({ where: { id: seller.id }, data: { idDocumentUrl: null, selfiePhotoUrl: null } });
   }
 }

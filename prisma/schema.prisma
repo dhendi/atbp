@@ -213,6 +213,7 @@ model SellerProfile {
   // lib/constants.ts for how an unverified/rejected ID affects new listings.
   idDocumentType   String? // PHILSYS_ID | PASSPORT | DRIVERS_LICENSE | UMID | POSTAL_ID | VOTERS_ID
   idDocumentUrl    String?
+  selfiePhotoUrl   String? // live camera selfie, taken alongside the ID — same admin-review-only handling as idDocumentUrl
   idSubmittedAt    DateTime?
   idVerified       Boolean   @default(false)
   idVerifiedAt     DateTime?

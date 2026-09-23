@@ -78,7 +78,7 @@ export function ProductModerationActions({
   }
 
   return (
-    <div className="flex gap-1.5">
+    <div className="flex flex-wrap gap-1.5">
       {status !== "ACTIVE" && <Button size="sm" variant="outline" disabled={pending} onClick={() => apply("ACTIVE")}>Approve</Button>}
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>

@@ -92,12 +92,12 @@ export async function reopenStoreAction() {
  * lib/constants.ts for how a rejected/unverified ID pauses new listings
  * until this is resolved. Clears idRejectedReason and resets the review
  * clock (idSubmittedAt), same as a first-time submission. */
-export async function resubmitIdDocumentAction(input: { idDocumentType: string; idDocumentUrl: string; businessLicenseUrl?: string }) {
+export async function resubmitIdDocumentAction(input: { idDocumentType: string; idDocumentUrl: string; selfiePhotoUrl: string; businessLicenseUrl?: string }) {
   const seller = await requireSeller();
   if (!seller) return { error: "You need a seller account." };
   if (seller.idVerified) return { error: "Your ID is already verified." };
 
-  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl });
+  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl, selfiePhotoUrl: input.selfiePhotoUrl });
   if (!idResult.success) return { error: firstIssue(idResult) };
 
   let businessLicenseUrl: string | undefined;
@@ -110,6 +110,7 @@ export async function resubmitIdDocumentAction(input: { idDocumentType: string; 
   // Delete the superseded file(s) after the DB write succeeds — never before,
   // so a failed update can't leave the profile pointing at a deleted blob.
   const previousIdUrl = seller.idDocumentUrl;
+  const previousSelfieUrl = seller.selfiePhotoUrl;
   const previousLicenseUrl = businessLicenseUrl ? seller.businessLicenseUrl : null;
 
   await prisma.sellerProfile.update({
@@ -117,12 +118,14 @@ export async function resubmitIdDocumentAction(input: { idDocumentType: string; 
     data: {
       idDocumentType: idResult.data.idDocumentType,
       idDocumentUrl: idResult.data.idDocumentUrl,
+      selfiePhotoUrl: idResult.data.selfiePhotoUrl,
       idSubmittedAt: new Date(),
       idRejectedReason: null,
       ...(businessLicenseUrl ? { businessLicenseUrl } : {}),
     },
   });
   await deleteDocumentBlob(previousIdUrl);
+  await deleteDocumentBlob(previousSelfieUrl);
   await deleteDocumentBlob(previousLicenseUrl);
 
   revalidatePath("/studio/settings");

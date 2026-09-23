@@ -23,6 +23,7 @@ export function IdVerificationPanel({
   const [resubmitting, setResubmitting] = useState(false);
   const [idDocType, setIdDocType] = useState("");
   const [idDocUrl, setIdDocUrl] = useState("");
+  const [selfieUrl, setSelfieUrl] = useState("");
   const [licenseUrl, setLicenseUrl] = useState("");
 
   if (idVerified) {
@@ -39,9 +40,10 @@ export function IdVerificationPanel({
 
   function submitResubmit() {
     if (!idDocType || !idDocUrl) return toast.error("Upload your ID before submitting.");
+    if (!selfieUrl) return toast.error("Take a live selfie before submitting.");
     if (needsBusinessLicense && !licenseUrl) return toast.error("Upload your BIR Certificate of Registration before submitting.");
     startTransition(async () => {
-      const res = await resubmitIdDocumentAction({ idDocumentType: idDocType, idDocumentUrl: idDocUrl, businessLicenseUrl: licenseUrl || undefined });
+      const res = await resubmitIdDocumentAction({ idDocumentType: idDocType, idDocumentUrl: idDocUrl, selfiePhotoUrl: selfieUrl, businessLicenseUrl: licenseUrl || undefined });
       if ("error" in res) { toast.error(res.error); return; }
       toast.success("Sent for review");
       setResubmitting(false);
@@ -66,7 +68,14 @@ export function IdVerificationPanel({
           <div className="mt-3 space-y-3 rounded-xl border border-ink-200 bg-white p-3">
             <div className="space-y-1.5">
               <Label>New ID</Label>
-              <IdDocumentUploader documentType={idDocType} onDocumentTypeChange={setIdDocType} url={idDocUrl} onUrlChange={setIdDocUrl} />
+              <IdDocumentUploader
+                documentType={idDocType}
+                onDocumentTypeChange={setIdDocType}
+                url={idDocUrl}
+                onUrlChange={setIdDocUrl}
+                selfieUrl={selfieUrl}
+                onSelfieUrlChange={setSelfieUrl}
+              />
             </div>
             {needsBusinessLicense && (
               <div className="space-y-1.5">

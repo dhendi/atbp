@@ -3,46 +3,24 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { MapPin, Navigation } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { PhLocationPicker } from "@/components/domain/ph-location-picker";
+import { LocationListPicker } from "@/components/domain/ph-location-picker";
 import { cn } from "@/lib/utils";
-import { nearestArea } from "@/lib/local-shared";
 import { setAreaAction } from "@/lib/actions/local";
 
 export function AreaPicker({ area, compact = false }: { area: string | null; compact?: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState<string | null>(null);
-  const [locating, setLocating] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function choose(next: string) {
-    setLoading(next);
+    setLoading(true);
     const res = await setAreaAction(next);
-    setLoading(null);
+    setLoading(false);
     if ("error" in res) return toast.error(res.error);
     setOpen(false);
     router.refresh();
-  }
-
-  function useMyLocation() {
-    if (!navigator.geolocation) {
-      toast.error("Location isn't available in this browser.");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocating(false);
-        choose(nearestArea(pos.coords.latitude, pos.coords.longitude));
-      },
-      () => {
-        setLocating(false);
-        toast.error("Couldn't get your location. Pick a city instead.");
-      },
-      { timeout: 8000 }
-    );
   }
 
   return (
@@ -65,16 +43,7 @@ export function AreaPicker({ area, compact = false }: { area: string | null; com
             <DialogTitle>Your area</DialogTitle>
             <DialogDescription>Used to show what&apos;s nearby: sellers, pickup options, and local drops.</DialogDescription>
           </DialogHeader>
-
-          <Button type="button" variant="outline" className="w-full justify-start gap-2" onClick={useMyLocation} disabled={locating}>
-            <Navigation size={15} />
-            {locating ? "Finding you..." : "Use my location"}
-          </Button>
-
-          <div className="mt-3 space-y-1.5">
-            <p className="text-xs font-semibold text-ink-500">Or choose a region, province, then city</p>
-            <PhLocationPicker value={area} onChange={choose} disabled={!!loading} />
-          </div>
+          <LocationListPicker value={area} onChange={choose} disabled={loading} />
         </DialogContent>
       </Dialog>
     </>

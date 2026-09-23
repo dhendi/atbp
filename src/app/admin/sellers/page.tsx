@@ -35,9 +35,9 @@ export default async function AdminSellersPage() {
       ) : (
         <div className="space-y-2">
           {sellers.map((s) => (
-            <div key={s.id} className="flex flex-wrap items-center gap-3 rounded-card border border-ink-100 bg-white p-3.5">
+            <div key={s.id} className="flex flex-col gap-3 rounded-card border border-ink-100 bg-white p-3.5 sm:flex-row sm:flex-wrap sm:items-center">
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 font-bold text-ink-900">
+                <p className="flex flex-wrap items-center gap-2 font-bold text-ink-900">
                   <Link href={`/admin/sellers/${s.id}`} className="hover:underline">{s.shopName}</Link>
                   <Badge variant={STATUS_VARIANT[s.status] ?? "outline"}>{s.status}</Badge>
                   {s.foundingSeller && <FoundingSellerBadge />}
@@ -47,8 +47,8 @@ export default async function AdminSellersPage() {
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-ink-500">@{s.handle} · {s.user.email} · {s.province ?? "N/A"}</p>
-                <p className="mt-0.5 flex items-center gap-1 text-xs text-ink-500">
+                <p className="break-words text-xs text-ink-500">@{s.handle} · {s.user.email} · {s.province ?? "N/A"}</p>
+                <p className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-ink-500">
                   {s.sellerKind === "BUSINESS" ? (
                     <>
                       Business · BIR {s.birRegistrationNumber ?? "N/A"}
@@ -63,10 +63,12 @@ export default async function AdminSellersPage() {
                   )}
                 </p>
               </div>
-              <div className="text-right text-xs text-ink-500">
-                {formatCompactNumber(s.followerCount)} followers · {formatCompactNumber(s.totalSales)} sales
+              <div className="flex items-center justify-between gap-3 sm:justify-end sm:gap-4">
+                <div className="text-xs text-ink-500 sm:text-right">
+                  {formatCompactNumber(s.followerCount)} followers · {formatCompactNumber(s.totalSales)} sales
+                </div>
+                <SellerModerationActions sellerId={s.id} status={s.status} sellerKind={s.sellerKind} birVerified={s.birVerified} />
               </div>
-              <SellerModerationActions sellerId={s.id} status={s.status} sellerKind={s.sellerKind} birVerified={s.birVerified} />
             </div>
           ))}
         </div>

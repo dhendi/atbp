@@ -98,6 +98,7 @@ export default async function AdminSellerDetailPage({ params }: { params: Promis
               {seller.idVerifiedAt && ` on ${seller.idVerifiedAt.toLocaleDateString("en-PH", { month: "long", day: "numeric", year: "numeric" })}`}
             </p>
             <ViewDocumentLink sellerId={seller.id} url={seller.idDocumentUrl} documentKind="ID" label="View submitted document" />
+            {seller.selfiePhotoUrl && <ViewDocumentLink sellerId={seller.id} url={seller.selfiePhotoUrl} documentKind="SELFIE" label="View live selfie" />}
           </div>
         </div>
       ) : (
@@ -115,6 +116,7 @@ export default async function AdminSellerDetailPage({ params }: { params: Promis
               </p>
               {seller.idRejectedReason && <p className="mt-0.5 text-xs text-live-700">Previously rejected: {seller.idRejectedReason}</p>}
               <ViewDocumentLink sellerId={seller.id} url={seller.idDocumentUrl} documentKind="ID" label="View submitted document" />
+              {seller.selfiePhotoUrl && <ViewDocumentLink sellerId={seller.id} url={seller.selfiePhotoUrl} documentKind="SELFIE" label="View live selfie" />}
             </div>
           </div>
           <SellerIdReviewActions sellerId={seller.id} />

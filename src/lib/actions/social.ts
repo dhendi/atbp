@@ -259,6 +259,7 @@ export async function becomeSellerAction(input: {
   businessLicenseUrl?: string;
   idDocumentType: string;
   idDocumentUrl: string;
+  selfiePhotoUrl: string;
   primaryCategories: string[]; // official Category slugs
   customCategoryTags?: string[]; // "Other" freeform tags, sent for admin review — never blocks onboarding
 }) {
@@ -273,7 +274,7 @@ export async function becomeSellerAction(input: {
 
   if (!isValidArea(input.province)) return { error: "Please choose a valid city from the picker." };
 
-  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl });
+  const idResult = sellerIdVerificationInputSchema.safeParse({ idDocumentType: input.idDocumentType, idDocumentUrl: input.idDocumentUrl, selfiePhotoUrl: input.selfiePhotoUrl });
   if (!idResult.success) return { error: firstIssue(idResult) };
 
   if (input.sellerKind === "BUSINESS" && !input.birRegistrationNumber?.trim()) {
@@ -301,6 +302,7 @@ export async function becomeSellerAction(input: {
       businessLicenseUrl: input.sellerKind === "BUSINESS" ? input.businessLicenseUrl!.trim() : null,
       idDocumentType: idResult.data.idDocumentType,
       idDocumentUrl: idResult.data.idDocumentUrl,
+      selfiePhotoUrl: idResult.data.selfiePhotoUrl,
       idSubmittedAt: new Date(),
       primaryCategories: input.primaryCategories,
       status: "PENDING",
