@@ -241,6 +241,12 @@ async function main() {
     { name: "Collectibles", slug: "collectibles", icon: "🧸" },
     { name: "Art", slug: "art", icon: "🎨" },
     { name: "Custom", slug: "custom", icon: "✨" },
+    // Merges what used to be two separate things — Services' one surviving
+    // category (Illustration & Art Commissions) and Digital Products' Digital
+    // Art, Wallpapers & Stickers — into one Handmade & Art category. Both are
+    // digital-art work; splitting them by Product.kind (SERVICE vs.
+    // DIGITAL_PRODUCT) never needed a separate Category to begin with.
+    { name: "Digital Art", slug: "digital-art", icon: "🖼️" },
     // Named distinctly from their own parent group below (Filipino Finds,
     // Fashion & Accessories, Home & Living) — a leaf sharing its parent's
     // exact name read as a duplicate entry in the categories menu.
@@ -264,19 +270,17 @@ async function main() {
     { name: "Spreads", slug: "spreads", icon: "🍯" },
     { name: "Snack Boxes", slug: "snack-boxes", icon: "📦" },
     { name: "Gift Boxes", slug: "food-gift-boxes", icon: "🎁" },
-    // ---------- ATBP Services: Services (kind="SERVICE") ----------
-    // Trimmed down to just art commissions per product decision — the
-    // original 31-category list (graphic design, web dev, tutoring, etc.)
-    // was too granular for how few Service sellers ATBP actually has.
-    { name: "Illustration & Art Commissions", slug: "illustration-art-commissions", icon: "🎨" },
     // ---------- ATBP Services: Digital Products (kind="DIGITAL_PRODUCT") ----------
+    // The Services parent group and its standalone browse page were removed —
+    // Illustration & Art Commissions now lives under Handmade & Art as
+    // "Digital Art" above, alongside what used to be a separate Digital
+    // Products category for the same kind of work.
     { name: "3D Print Designs & STL Files", slug: "stl-3d-print-designs", icon: "🧊" },
     { name: "Canva/PowerPoint/Sheets Templates", slug: "canva-ppt-templates", icon: "📊" },
     { name: "Lightroom Presets & Photoshop Actions", slug: "lightroom-presets-ps-actions", icon: "🎞️" },
     { name: "Ebooks & Guides", slug: "ebooks-guides", icon: "📘" },
     { name: "Printables & Digital Planners", slug: "printables-planners", icon: "🗒️" },
     { name: "Fonts", slug: "fonts", icon: "🔤" },
-    { name: "Digital Art, Wallpapers & Stickers", slug: "digital-art-wallpapers-stickers", icon: "🖼️" },
     { name: "Notion Templates", slug: "notion-templates", icon: "🗂️" },
     { name: "Website & Shopify Themes", slug: "website-shopify-themes", icon: "🛍️" },
     { name: "UI Kits & Figma Files", slug: "ui-kits-figma-files", icon: "🎛️" },
@@ -298,7 +302,7 @@ async function main() {
   // Categories" from being an overwhelming wall of chips. Products keep their
   // existing (leaf) categoryId; only parentId is set here.
   const CATEGORY_GROUPS: { name: string; slug: string; icon: string; children: string[] }[] = [
-    { name: "Handmade & Art", slug: "handmade-art", icon: "🎨", children: ["handmade", "art", "custom"] },
+    { name: "Handmade & Art", slug: "handmade-art", icon: "🎨", children: ["handmade", "art", "custom", "digital-art"] },
     { name: "Vintage & Pre-Loved", slug: "vintage-preloved", icon: "🕰️", children: ["pre-loved", "vintage", "antiques"] },
     { name: "Collectibles & Hobbies", slug: "collectibles-hobbies", icon: "🧸", children: ["collectibles", "hobby-toys", "trading-cards", "anime", "gaming", "music", "books"] },
     { name: "Fashion & Accessories", slug: "fashion-accessories", icon: "👗", children: ["fashion", "jewelry", "bags", "streetwear", "beauty"] },
@@ -313,14 +317,10 @@ async function main() {
       children: ["food-snacks", "cookies", "candies", "chocolates", "chips", "nuts", "dried-snacks", "coffee-tea", "sauces-condiments", "spreads", "snack-boxes", "food-gift-boxes"],
     },
     {
-      name: "Services", slug: "services", icon: "💼",
-      children: ["illustration-art-commissions"],
-    },
-    {
       name: "Digital Products", slug: "digital-products", icon: "💾",
       children: [
         "stl-3d-print-designs", "canva-ppt-templates", "lightroom-presets-ps-actions", "ebooks-guides", "printables-planners", "fonts",
-        "digital-art-wallpapers-stickers", "notion-templates", "website-shopify-themes", "ui-kits-figma-files", "mockups-icon-packs",
+        "notion-templates", "website-shopify-themes", "ui-kits-figma-files", "mockups-icon-packs",
         "game-assets", "music-beats-sfx", "stock-photos-video", "video-templates", "craft-cut-files",
       ],
     },

@@ -23,13 +23,22 @@ export default async function SellDigitalProductPage() {
   const session = await auth();
   if (!session?.user) redirect("/login?callbackUrl=/sell/digital-product");
 
-  const [seller, categoryGroups] = await Promise.all([
+  const [seller, categoryGroups, digitalArtCategory] = await Promise.all([
     prisma.sellerProfile.findUnique({ where: { userId: session.user.id } }),
     getCategoriesWithChildren(),
+    prisma.category.findUnique({ where: { slug: "digital-art" } }),
   ]);
   if (seller?.status === "SUSPENDED") redirect("/sell");
 
   const digitalProducts = categoryGroups.find((g) => g.slug === "digital-products");
+  // Digital Art now lives under Handmade & Art (it's shared with Services'
+  // Illustration & Art Commissions — see prisma/seed.ts), not under Digital
+  // Products, but a digital-download art file is still exactly the kind of
+  // thing this form lists, so it's offered here too.
+  const categoryOptions = [
+    ...(digitalArtCategory ? [digitalArtCategory] : []),
+    ...(digitalProducts?.children ?? []),
+  ];
 
   return (
     <div className="mx-auto max-w-lg px-4 pb-10 pt-8 md:px-6">
@@ -44,7 +53,7 @@ export default async function SellDigitalProductPage() {
       </div>
       <DigitalProductListingForm
         needsOnboarding={!seller}
-        categories={(digitalProducts?.children ?? []).map((c) => ({ id: c.id, name: c.name, icon: c.icon }))}
+        categories={categoryOptions.map((c) => ({ id: c.id, name: c.name, icon: c.icon }))}
       />
     </div>
   );

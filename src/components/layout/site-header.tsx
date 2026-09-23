@@ -20,7 +20,7 @@ export function SiteHeader({ area, categories }: { area: string | null; categori
   return (
     <>
       <TopNav area={area} categories={categories} session={session} counts={counts} />
-      <MobileTopBar categories={categories} session={session} counts={counts} />
+      <MobileTopBar area={area} categories={categories} session={session} counts={counts} />
     </>
   );
 }

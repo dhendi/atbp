@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Handshake } from "lucide-react";
-import { getCategoriesWithChildren } from "@/lib/categories";
 import { ServiceListingForm } from "./service-listing-form";
 
 export const dynamic = "force-dynamic";
@@ -23,13 +22,11 @@ export default async function SellServicePage() {
   const session = await auth();
   if (!session?.user) redirect("/login?callbackUrl=/sell/service");
 
-  const [seller, categoryGroups] = await Promise.all([
+  const [seller, digitalArtCategory] = await Promise.all([
     prisma.sellerProfile.findUnique({ where: { userId: session.user.id } }),
-    getCategoriesWithChildren(),
+    prisma.category.findUnique({ where: { slug: "digital-art" } }),
   ]);
   if (seller?.status === "SUSPENDED") redirect("/sell");
-
-  const services = categoryGroups.find((g) => g.slug === "services");
 
   return (
     <div className="mx-auto max-w-lg px-4 pb-10 pt-8 md:px-6">
@@ -44,7 +41,7 @@ export default async function SellServicePage() {
       </div>
       <ServiceListingForm
         needsOnboarding={!seller}
-        categories={(services?.children ?? []).map((c) => ({ id: c.id, name: c.name, icon: c.icon }))}
+        categories={digitalArtCategory ? [{ id: digitalArtCategory.id, name: digitalArtCategory.name, icon: digitalArtCategory.icon }] : []}
       />
     </div>
   );

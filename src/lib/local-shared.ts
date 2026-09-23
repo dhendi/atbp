@@ -30,7 +30,19 @@ export interface PhRegion {
 // couple of highly-urbanized cities outside NCR (Cotabato City, Isabela
 // City) are likewise province-independent and get their own single-city
 // bucket within their region.
-export const PH_LOCATIONS = phLocationsData as PhRegion[];
+// The source JSON's region order comes straight from the PSGC API response,
+// which isn't in any sensible reading order (see scripts/generate-ph-locations.js)
+// — sorted here into the conventional NCR/CAR, Luzon, Visayas, Mindanao,
+// BARMM order every region picker/list should show instead.
+const REGION_DISPLAY_ORDER = [
+  "NCR", "CAR", "Region I", "Region II", "Region III", "Region IV-A", "MIMAROPA",
+  "Region V", "Region VI", "Region VII", "Region VIII",
+  "Region IX", "Region X", "Region XI", "Region XII", "Region XIII", "BARMM",
+];
+
+export const PH_LOCATIONS = (phLocationsData as PhRegion[])
+  .slice()
+  .sort((a, b) => REGION_DISPLAY_ORDER.indexOf(a.name) - REGION_DISPLAY_ORDER.indexOf(b.name));
 
 // Flat list of every selectable city/municipality name — the pre-existing
 // shape most call sites (province fields, DB matching) still just need.

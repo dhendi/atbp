@@ -14,15 +14,21 @@ export const LIVESTREAMS_ENABLED = false;
 
 // ---------- Launch category scope ----------
 // ATBP's beta launch positioning is Handmade, Pre-loved, Vintage, and
-// Collectibles specifically — see the homepage hero copy. Services, Digital
-// Products, and Snacks & Pasalubong (formerly "Food & Snacks") are real,
-// coded features (their listing forms, checkout paths, and Studio tooling
-// all work), but promoting a category before the marketplace has real
-// supply/demand in it risks a new visitor thinking ATBP is a general
-// everything-marketplace on day one. Flip these on later without touching
-// anything else — the underlying pages, actions, and data model don't change.
-// Services and Snacks & Pasalubong are open at launch (real seller demand
-// expected); Digital Products stays off until there's real supply.
+// Collectibles specifically — see the homepage hero copy. Digital Products
+// and Snacks & Pasalubong (formerly "Food & Snacks") are real, coded features
+// (their listing forms, checkout paths, and Studio tooling all work), but
+// promoting a category before the marketplace has real supply/demand in it
+// risks a new visitor thinking ATBP is a general everything-marketplace on
+// day one. Flip these on later without touching anything else — the
+// underlying pages, actions, and data model don't change. Snacks &
+// Pasalubong is open at launch (real seller demand expected); Digital
+// Products stays off until there's real supply.
+//
+// Services no longer has its own browse page or Category group (its one
+// surviving category, Illustration & Art Commissions, merged into Handmade &
+// Art's "Digital Art" — see prisma/seed.ts) — SERVICES_ENABLED now only
+// gates the "Offer a Service" card on /sell; sellers can still list and sell
+// services, there's just no dedicated /services destination for buyers.
 export const SERVICES_ENABLED = true;
 export const DIGITAL_PRODUCTS_ENABLED = false;
 export const FOOD_ENABLED = true;
@@ -38,7 +44,6 @@ export const MARKETS_ENABLED = false;
 // Category" grid, the Sell page) without deleting the Category rows
 // themselves or touching how categoryId filtering works everywhere else.
 export const LAUNCH_HIDDEN_CATEGORY_SLUGS = new Set([
-  ...(SERVICES_ENABLED ? [] : ["services"]),
   ...(DIGITAL_PRODUCTS_ENABLED ? [] : ["digital-products"]),
   ...(FOOD_ENABLED ? [] : ["food-and-snacks"]),
 ]);
