@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem, Briefcase, Cookie } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -32,17 +32,15 @@ import { getFirstPurchasePromoState } from "@/lib/services/coupons";
 import { FirstPurchasePromo } from "@/components/domain/first-purchase-promo";
 import { AUCTIONS_ENABLED } from "@/lib/feature-flags";
 
-// The 4 launch categories (Product.type values) plus Services and Snacks &
-// Pasalubong (topical Category slugs — see feature-flags.ts, both enabled
-// alongside the original 4). Two different filter params under one grid, so
-// each tile carries its own full href rather than assuming ?type= for all.
+// The 4 launch categories (Product.type values) — Services and Snacks &
+// Pasalubong used to have tiles here too, but Services is down to a single
+// category and both are better discovered via their own destinations
+// (QuickNav, category browse) than as peers of these 4 core product types.
 const LAUNCH_CATEGORY_TILES = [
   { href: "/discover?type=HANDMADE", label: "Handmade", icon: Hammer, color: "text-brand-700 bg-brand-100" },
   { href: "/discover?type=PRE_LOVED", label: "Pre-Loved", icon: Shirt, color: "text-teal-600 bg-teal-100" },
   { href: "/discover?type=VINTAGE", label: "Vintage", icon: History, color: "text-gold-600 bg-gold-100" },
   { href: "/discover?type=COLLECTIBLE", label: "Collectibles", icon: Gem, color: "text-ink-900 bg-ink-100" },
-  { href: "/discover?category=services", label: "Services", icon: Briefcase, color: "text-pink-600 bg-pink-100" },
-  { href: "/discover?category=food-and-snacks", label: "Snacks & Pasalubong", icon: Cookie, color: "text-gold-700 bg-gold-100" },
 ];
 
 export const dynamic = "force-dynamic";
@@ -277,13 +275,12 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ---------- SHOP BY CATEGORY — the 4 launch categories plus Services
-          and Snacks & Pasalubong (see feature-flags.ts; Digital Products
-          stays off for now). Links straight into Discover's existing
-          type/category filters, no new backend needed. ---------- */}
+      {/* ---------- SHOP BY CATEGORY — the 4 launch categories. Links straight
+          into Discover's existing type/category filters, no new backend
+          needed. ---------- */}
       <section>
-        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Handmade, pre-loved, vintage, collectibles, services, and snacks" />
-        <div className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-3 md:grid-cols-6 md:px-6">
+        <SectionHeader eyebrow="Browse" title="Shop by Category" subtitle="Handmade, pre-loved, vintage, and collectibles" />
+        <div className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-4 md:px-6">
           {LAUNCH_CATEGORY_TILES.map((cat) => (
             <Link
               key={cat.href}

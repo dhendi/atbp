@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gavel, Shirt, Tent, Store, Briefcase } from "lucide-react";
+import { Gavel, Shirt, Tent, Store, FolderHeart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AUCTIONS_ENABLED, SERVICES_ENABLED, MARKETS_ENABLED } from "@/lib/feature-flags";
+import { AUCTIONS_ENABLED, MARKETS_ENABLED } from "@/lib/feature-flags";
 
 // Explore/Deals/Trending used to live here too, but they're already primary
 // nav (top-nav/bottom-nav) — repeating them was a second, competing set of
@@ -12,10 +12,13 @@ import { AUCTIONS_ENABLED, SERVICES_ENABLED, MARKETS_ENABLED } from "@/lib/featu
 // destinations that don't have their own primary-nav slot but are still a
 // main feature of ATBP — real routes, shown on both the homepage and Explore.
 // Markets is off at launch — see MARKETS_ENABLED in lib/feature-flags.ts.
+// Services used to have a slot here too, but with just one category left
+// under it (see prisma/seed.ts), it no longer carries its own tile here —
+// Collections (saved boards) took its place.
 const items = [
   { href: "/closets", label: "Closet", icon: Shirt, color: "text-gold-600 bg-gold-100" },
   { href: "/yard-sales", label: "Yard Sale", icon: Tent, color: "text-teal-600 bg-teal-100" },
-  ...(SERVICES_ENABLED ? [{ href: "/services", label: "Services", icon: Briefcase, color: "text-pink-500 bg-pink-100" }] : []),
+  { href: "/collections", label: "Collections", icon: FolderHeart, color: "text-pink-500 bg-pink-100" },
   ...(MARKETS_ENABLED ? [{ href: "/markets", label: "Markets", icon: Store, color: "text-brand-700 bg-brand-100" }] : []),
   ...(AUCTIONS_ENABLED ? [{ href: "/auctions", label: "Auctions", icon: Gavel, color: "text-ink-900 bg-ink-100" }] : []),
 ];
