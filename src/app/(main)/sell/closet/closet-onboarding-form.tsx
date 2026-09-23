@@ -47,7 +47,7 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
     });
     setLoading(false);
     if ("error" in res) return toast.error(res.error);
-    toast.success("Your Closet is open!");
+    toast.success("Your Closet is open! We're verifying your ID — you can keep listing in the meantime.");
     router.push("/studio/closet");
     router.refresh();
   }

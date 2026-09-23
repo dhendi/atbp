@@ -23,14 +23,14 @@ export default async function AdminAdvertisingPage() {
       ) : (
         <div className="mb-6 space-y-2">
           {ads.map((ad) => (
-            <div key={ad.id} className="flex items-center justify-between rounded-2xl border border-ink-100 p-3">
-              <div className="min-w-0">
+            <div key={ad.id} className="flex flex-col gap-3 rounded-2xl border border-ink-100 p-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-ink-900">{ad.campaign.advertiser.name} · {ad.campaign.name}</p>
                 <p className="text-xs text-ink-500">
                   {ad.placements.map((p) => p.placement).join(", ")} · {ad.impressions} views · {ad.clicks} clicks
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={ad.status === "ACTIVE" ? "live" : "subtle"}>{ad.status}</Badge>
                 <AdActions adId={ad.id} status={ad.status} />
               </div>

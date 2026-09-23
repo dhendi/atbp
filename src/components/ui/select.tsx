@@ -27,9 +27,9 @@ export function SelectTrigger({ className, children, ...props }: React.Component
       )}
       {...props}
     >
-      {children}
+      <span className="min-w-0 flex-1 truncate text-left">{children}</span>
       <SelectPrimitive.Icon>
-        <ChevronDown size={16} className="text-ink-400" />
+        <ChevronDown size={16} className="shrink-0 text-ink-400" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );

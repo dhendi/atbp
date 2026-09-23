@@ -30,7 +30,7 @@ export function AdActions({ adId, status }: { adId: string; status: string }) {
   }
 
   return (
-    <div className="flex shrink-0 gap-1.5">
+    <div className="flex flex-wrap gap-1.5">
       {status !== "ACTIVE" && <Button size="sm" variant="outline" disabled={pending} onClick={() => setStatus("ACTIVE")}>Resume</Button>}
       {status === "ACTIVE" && <Button size="sm" variant="outline" disabled={pending} onClick={() => setStatus("PAUSED")}>Pause</Button>}
       {status !== "ENDED" && <Button size="sm" variant="ghost" disabled={pending} onClick={() => setStatus("ENDED")}>End</Button>}
