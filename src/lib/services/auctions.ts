@@ -43,30 +43,43 @@ export async function finalizeIfExpired(auctionId: string) {
 
   if (topBid) {
     const product = auction.livestreamProduct.product;
-    await reserveInventory(product.id, 1);
-    const order = await createOrder({
-      buyerId: topBid.userId,
-      sellerId: product.sellerId,
-      items: [
-        {
-          productId: product.id,
-          title: product.title,
-          imageUrl: (product.images as string[])[0] ?? "",
-          unitPrice: topBid.amount,
-          quantity: 1,
-          sourceType: "AUCTION",
-        },
-      ],
-      shipping: await defaultShippingFor(topBid.userId),
-      paymentMethod: "MOCK",
-    });
-    await notify(
-      topBid.userId,
-      "AUCTION_WON",
-      "SOLD! You won the auction 🎉",
-      `You won ${product.title} for ${formatPeso(topBid.amount)}. Order ${order.orderNumber} created.`,
-      `/orders/${order.id}`
-    );
+    const reserved = await reserveInventory(product.id, 1);
+    if (reserved) {
+      const order = await createOrder({
+        buyerId: topBid.userId,
+        sellerId: product.sellerId,
+        items: [
+          {
+            productId: product.id,
+            title: product.title,
+            imageUrl: (product.images as string[])[0] ?? "",
+            unitPrice: topBid.amount,
+            quantity: 1,
+            sourceType: "AUCTION",
+          },
+        ],
+        shipping: await defaultShippingFor(topBid.userId),
+        paymentMethod: "MOCK",
+      });
+      await notify(
+        topBid.userId,
+        "AUCTION_WON",
+        "SOLD! You won the auction 🎉",
+        `You won ${product.title} for ${formatPeso(topBid.amount)}. Order ${order.orderNumber} created.`,
+        `/orders/${order.id}`
+      );
+    } else {
+      // The item was already out of stock through some other path by the
+      // time the auction closed — don't promise an order for stock that
+      // doesn't exist; the winning bidder needs a human to sort this out.
+      await notify(
+        topBid.userId,
+        "AUCTION_WON",
+        "You won the auction, but we hit a snag",
+        `You won the bid for "${product.title}", but it just went out of stock. Our team will reach out to make this right.`,
+        `/product/${product.id}`
+      );
+    }
   }
 
   return updated;

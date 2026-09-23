@@ -14,6 +14,9 @@ import { getStoreClosureBlockers } from "@/lib/actions/seller-account";
 import { grantFoundingSeller, revokeFoundingSeller, getFoundingSellerAvailability } from "@/lib/services/founding-seller";
 import { recomputeSellerRating } from "@/lib/services/reviews";
 import { updateOrderStatus } from "@/lib/services/orders";
+import { releaseInventory } from "@/lib/services/inventory";
+import { reversePromoRedemption } from "@/lib/services/promo";
+import { reverseCouponRedemption } from "@/lib/services/coupons";
 import { adminReasonSchema, broadcastInputSchema, productTitleSchema, productDescriptionSchema, productMoneySchema, firstIssue } from "@/lib/validation";
 
 // Auto-suspend threshold for the prohibited-items warning flow — 3 active
@@ -513,7 +516,7 @@ export async function resolveDisputeAction(
   const dispute = await prisma.dispute.update({
     where: { id: disputeId },
     data: { status, ...(isTerminal ? { resolvedAt: new Date() } : {}) },
-    include: { order: true },
+    include: { order: { include: { items: true } } },
   });
   await logAdminAction(admin.id, status === "UNDER_REVIEW" ? "REVIEW_DISPUTE" : "RESOLVE_DISPUTE", "Dispute", disputeId, { status, orderNumber: dispute.order.orderNumber });
 
@@ -529,7 +532,37 @@ export async function resolveDisputeAction(
   }
 
   if (status === "RESOLVED_REFUND") {
-    await prisma.order.update({ where: { id: dispute.orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
+    // submitDisputeAction doesn't block disputing an order the buyer already
+    // cancelled themselves — if that's what happened, cancelOrderAction
+    // already released inventory, decremented totalSales, and reversed any
+    // promo/coupon for this order, so doing it all again here would
+    // double-restock and double-reverse. Only unwind once.
+    const alreadyCancelled = dispute.order.status === "CANCELLED";
+    // A disputed order can already be DELIVERED/COMPLETED (deliveredAt set,
+    // seller's totalSales already counted) by the time it's refunded — unlike
+    // a buyer's own pre-fulfillment cancelOrderAction, this has to unwind
+    // that: clear deliveredAt (also what the Closet/casual-listing monthly
+    // sales cap counts by) and decrement totalSales, or a refunded order
+    // keeps permanently counting as a real sale.
+    const wasCompleted = !!dispute.order.deliveredAt;
+    await prisma.order.update({
+      where: { id: dispute.orderId },
+      data: { status: "CANCELLED", paymentStatus: "REFUNDED", deliveredAt: null },
+    });
+    if (!alreadyCancelled) {
+      if (wasCompleted) {
+        await prisma.sellerProfile.update({ where: { id: dispute.order.sellerId }, data: { totalSales: { decrement: 1 } } });
+      }
+      // Digital products' download tokens are issued the instant the order is
+      // created (same reasoning as cancelOrderAction) — nothing to release.
+      if (dispute.order.fulfillmentMethod !== "DIGITAL_PRODUCT") {
+        for (const item of dispute.order.items) {
+          await releaseInventory(item.productId, item.quantity);
+        }
+      }
+      await reversePromoRedemption(dispute.orderId);
+      await reverseCouponRedemption(dispute.orderId);
+    }
     await tellDisputant("Refund approved", `Your dispute for order ${dispute.order.orderNumber} was resolved with a refund.`);
   } else if (status === "UNDER_REVIEW") {
     await tellDisputant("Your dispute is under review", `We're actively looking into your dispute for order ${dispute.order.orderNumber}, and we'll follow up with a decision soon.`);

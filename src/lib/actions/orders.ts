@@ -5,8 +5,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createOrder, updateOrderStatus, type ShippingInfo } from "@/lib/services/orders";
 import { reserveInventory, releaseInventory } from "@/lib/services/inventory";
-import { tryApplyPromoCode } from "@/lib/services/promo";
-import { previewCoupon, finalizeCouponUsage } from "@/lib/services/coupons";
+import { tryApplyPromoCode, reversePromoRedemption } from "@/lib/services/promo";
+import { previewCoupon, finalizeCouponUsage, reverseCouponRedemption } from "@/lib/services/coupons";
 import { getSelectedArea } from "@/lib/services/local";
 import { expireOverdueYardSales } from "@/lib/services/yard-sale";
 import { codCapableProviderActive } from "@/lib/shipping/registry";
@@ -337,6 +337,8 @@ export async function cancelOrderAction(orderId: string) {
   for (const item of order.items) {
     await releaseInventory(item.productId, item.quantity);
   }
+  await reversePromoRedemption(orderId);
+  await reverseCouponRedemption(orderId);
   await prisma.order.update({ where: { id: orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
   await notify(order.seller.userId, "ORDER_CANCELLED", "Order cancelled", `${order.orderNumber} was cancelled by the buyer.`, "/studio/orders");
   revalidatePath("/orders");

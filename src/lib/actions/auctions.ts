@@ -298,8 +298,18 @@ export async function completeAuctionPurchaseAction(
 
   if (auction.status !== "ENDED") return { error: "This auction hasn't ended yet." };
   if (auction.winnerUserId !== session.user.id) return { error: "Only the winning bidder can complete this purchase." };
-  if (auction.purchasedAt) return { error: "This item has already been purchased." };
   if (product.quantityAvailable <= 0 || product.status === "SOLD_OUT") return { error: "This item is no longer available." };
+
+  // Claim the purchase atomically before doing anything else — same guarded
+  // `updateMany` pattern as buyNowAuctionAction. Without this, a double-click
+  // or retried request could both pass the earlier `purchasedAt` read (it's
+  // only written at the very end, after order creation, commission, and a
+  // payment-provider call) and create two orders for the same one-of-one item.
+  const claimed = await prisma.productAuction.updateMany({
+    where: { id: auction.id, purchasedAt: null },
+    data: { purchasedAt: new Date() },
+  });
+  if (claimed.count === 0) return { error: "This item has already been purchased." };
 
   const amount = auction.currentBid;
   const shippingFee = 90;
@@ -349,8 +359,8 @@ export async function completeAuctionPurchaseAction(
   }
 
   // An auction item is one-of-one by construction — sold out the instant it's paid for.
+  // (purchasedAt was already claimed atomically above.)
   await prisma.product.update({ where: { id: product.id }, data: { quantityAvailable: 0, status: "SOLD_OUT" } });
-  await prisma.productAuction.update({ where: { id: auction.id }, data: { purchasedAt: new Date() } });
   await logProductEvent(productId, "PURCHASE", session.user.id);
 
   await notify(product.seller.userId, "ORDER_CONFIRMED", "Auction item sold", `${order.orderNumber}: the winning bidder completed checkout for "${product.title}".`, `/studio/orders`);

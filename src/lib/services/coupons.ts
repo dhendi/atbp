@@ -134,3 +134,17 @@ export async function recordCouponRedemption(couponId: string, userId: string, o
 export async function finalizeCouponUsage(couponId: string) {
   await prisma.coupon.updateMany({ where: { id: couponId, status: "ACTIVE" }, data: { status: "USED", usedAt: new Date() } });
 }
+
+/** Undoes recordCouponRedemption + finalizeCouponUsage — called when an
+ * order that redeemed a coupon is cancelled or refunded, so a one-time
+ * coupon (e.g. the first-purchase welcome offer) isn't permanently burned
+ * for a discount the buyer never actually got. A no-op if this order never
+ * redeemed one, or if the coupon isn't currently USED (e.g. already reversed). */
+export async function reverseCouponRedemption(orderId: string) {
+  const redemption = await prisma.couponRedemption.findUnique({ where: { orderId } });
+  if (!redemption) return;
+  await prisma.$transaction([
+    prisma.couponRedemption.delete({ where: { id: redemption.id } }),
+    prisma.coupon.updateMany({ where: { id: redemption.couponId, status: "USED" }, data: { status: "ACTIVE", usedAt: null } }),
+  ]);
+}

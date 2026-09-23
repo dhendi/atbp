@@ -29,3 +29,16 @@ export async function recordPromoRedemption(promoCodeId: string, userId: string,
     prisma.promoCode.update({ where: { id: promoCodeId }, data: { redemptionCount: { increment: 1 } } }),
   ]);
 }
+
+/** Undoes recordPromoRedemption — called when an order that redeemed a promo
+ * code is cancelled or refunded, so the redemption doesn't permanently count
+ * against the code's maxRedemptions/perUserLimit for a discount the buyer
+ * never actually got. A no-op if this order never redeemed one. */
+export async function reversePromoRedemption(orderId: string) {
+  const redemption = await prisma.promoRedemption.findUnique({ where: { orderId } });
+  if (!redemption) return;
+  await prisma.$transaction([
+    prisma.promoRedemption.delete({ where: { id: redemption.id } }),
+    prisma.promoCode.update({ where: { id: redemption.promoCodeId }, data: { redemptionCount: { decrement: 1 } } }),
+  ]);
+}
