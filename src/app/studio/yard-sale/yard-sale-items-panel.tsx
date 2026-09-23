@@ -73,17 +73,21 @@ export function YardSaleItemsPanel({
       {items.length > 0 && (
         <div className="space-y-2">
           {items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3 rounded-card border border-ink-100 bg-white p-3">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink-100">
-                {item.images[0] && <Image src={item.images[0]} alt={item.title} fill className="object-cover" />}
+            <div key={item.id} className="flex flex-col gap-3 rounded-card border border-ink-100 bg-white p-3 sm:flex-row sm:items-center">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink-100">
+                  {item.images[0] && <Image src={item.images[0]} alt={item.title} fill className="object-cover" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-bold text-ink-900">{item.title}</p>
+                  <p className="text-xs text-ink-500">{conditionLabel(item.condition)} · {formatPeso(item.price)}</p>
+                </div>
+                <Badge variant={STATUS_VARIANT[item.status] ?? "outline"}>{item.status.replace("_", " ")}</Badge>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-ink-900">{item.title}</p>
-                <p className="text-xs text-ink-500">{conditionLabel(item.condition)} · {formatPeso(item.price)}</p>
+              <div className="flex flex-wrap gap-1.5">
+                <TawadSettingsDialog productId={item.id} tawadEnabled={item.tawadEnabled} tawadFloor={item.tawadFloor} tawadCeiling={item.tawadCeiling} />
+                <Button size="sm" variant="outline" disabled={pending} onClick={() => remove(item.id)}>Remove</Button>
               </div>
-              <Badge variant={STATUS_VARIANT[item.status] ?? "outline"}>{item.status.replace("_", " ")}</Badge>
-              <TawadSettingsDialog productId={item.id} tawadEnabled={item.tawadEnabled} tawadFloor={item.tawadFloor} tawadCeiling={item.tawadCeiling} />
-              <Button size="sm" variant="outline" disabled={pending} onClick={() => remove(item.id)}>Remove</Button>
             </div>
           ))}
         </div>

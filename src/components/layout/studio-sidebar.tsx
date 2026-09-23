@@ -95,22 +95,31 @@ export function StudioSidebar({ birVerified = false }: { birVerified?: boolean }
         </Link>
       </aside>
 
-      <nav className="no-scrollbar sticky top-0 z-20 flex items-center gap-1 overflow-x-auto border-b border-ink-100 bg-white px-3 py-2 md:hidden">
-        {items.map((item) => {
-          const active = item.href === "/studio" ? pathname === "/studio" : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "shrink-0 rounded-full px-3 py-1.5 text-xs font-bold whitespace-nowrap",
-                active ? "bg-brand-500 text-white" : "bg-ink-100 text-ink-600"
-              )}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="sticky top-0 z-20 flex items-center gap-2 border-b border-ink-100 bg-white px-2 py-2 md:hidden">
+        <Link
+          href="/"
+          aria-label="Back to ATBP"
+          className="flex shrink-0 items-center justify-center rounded-full p-1.5 text-ink-500 hover:bg-ink-100"
+        >
+          <ChevronLeft size={18} />
+        </Link>
+        <div className="no-scrollbar flex flex-1 items-center gap-1 overflow-x-auto">
+          {items.map((item) => {
+            const active = item.href === "/studio" ? pathname === "/studio" : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1.5 text-xs font-bold whitespace-nowrap",
+                  active ? "bg-brand-500 text-white" : "bg-ink-100 text-ink-600"
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
     </>
   );

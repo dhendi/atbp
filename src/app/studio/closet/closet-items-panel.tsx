@@ -75,24 +75,31 @@ export function ClosetItemsPanel({
 
       {items.length > 0 && (
         <div className="space-y-2">
+          <p className="text-xs font-bold uppercase tracking-wide text-ink-400">My closet items</p>
           {items.map((item) => {
             const stale = !!item.staleNudgeSentAt && item.status === "ACTIVE";
             return (
-              <div key={item.id} className={`flex items-center gap-3 rounded-card border p-3 ${stale ? "border-gold-300 bg-gold-50" : "border-ink-100 bg-white"}`}>
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink-100">
-                  {item.images[0] && <Image src={item.images[0]} alt={item.title} fill className="object-cover" />}
+              <div
+                key={item.id}
+                className={`flex flex-col gap-3 rounded-card border p-3 sm:flex-row sm:items-center ${stale ? "border-gold-300 bg-gold-50" : "border-ink-100 bg-white"}`}
+              >
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-ink-100">
+                    {item.images[0] && <Image src={item.images[0]} alt={item.title} fill className="object-cover" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-ink-900">{item.title}</p>
+                    <p className="text-xs text-ink-500">{conditionLabel(item.condition)} · {formatPeso(item.price)}</p>
+                    {stale && (
+                      <p className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-gold-700">
+                        <Clock size={11} /> Still have this? Listed 90+ days ago.
+                      </p>
+                    )}
+                  </div>
+                  {/* ACTIVE is the expected default for every item under "My closet items" — only worth a badge when it's an exception (sold out, paused). */}
+                  {item.status !== "ACTIVE" && <Badge variant={STATUS_VARIANT[item.status] ?? "outline"}>{item.status.replace("_", " ")}</Badge>}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-ink-900">{item.title}</p>
-                  <p className="text-xs text-ink-500">{conditionLabel(item.condition)} · {formatPeso(item.price)}</p>
-                  {stale && (
-                    <p className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-gold-700">
-                      <Clock size={11} /> Still have this? Listed 90+ days ago.
-                    </p>
-                  )}
-                </div>
-                <Badge variant={STATUS_VARIANT[item.status] ?? "outline"}>{item.status.replace("_", " ")}</Badge>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {stale && <Button size="sm" variant="brand" disabled={pending} onClick={() => confirm(item.id)}>Still have it</Button>}
                   <TawadSettingsDialog productId={item.id} tawadEnabled={item.tawadEnabled} tawadFloor={item.tawadFloor} tawadCeiling={item.tawadCeiling} />
                   <Button size="sm" variant="outline" disabled={pending} onClick={() => remove(item.id)}>Remove</Button>

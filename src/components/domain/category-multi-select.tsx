@@ -39,8 +39,13 @@ export function CategoryMultiSelect({
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return categories.filter((c) => !selected.includes(c.slug) && c.name.toLowerCase().includes(q)).slice(0, MAX_SUGGESTIONS);
+    const available = categories.filter((c) => !selected.includes(c.slug));
+    // Empty query = "browse all" (the whole point of showing a dropdown on
+    // focus is for someone who doesn't know what the choices are), so it
+    // isn't capped to MAX_SUGGESTIONS the way a typed search is — the list
+    // just scrolls instead.
+    if (!q) return [...available].sort((a, b) => a.name.localeCompare(b.name));
+    return available.filter((c) => c.name.toLowerCase().includes(q)).slice(0, MAX_SUGGESTIONS);
   }, [query, categories, selected]);
 
   const exactMatch = categories.some((c) => c.name.toLowerCase() === query.trim().toLowerCase());
@@ -72,12 +77,12 @@ export function CategoryMultiSelect({
     else addCustomTag();
   }
 
-  const showDropdown = isOpen && query.trim().length > 0;
+  const showDropdown = isOpen && (query.trim().length > 0 || suggestions.length > 0);
 
   return (
     <div className="space-y-1.5">
       <Label>What do you primarily sell?</Label>
-      <p className="text-xs text-ink-500">Type to search, then pick as many as apply. This powers search and discovery, it doesn&apos;t limit what you can actually list.</p>
+      <p className="text-xs text-ink-500">Tap the field to browse all options, or type to search — pick as many as apply. This powers search and discovery, it doesn&apos;t limit what you can actually list.</p>
 
       <div className="relative">
         <Input
@@ -94,7 +99,7 @@ export function CategoryMultiSelect({
           placeholder="e.g. Handmade, Vintage, Cookies..."
         />
         {showDropdown && (
-          <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-ink-200 bg-white shadow-lg">
+          <div className="absolute z-10 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-ink-200 bg-white shadow-lg">
             {suggestions.map((c) => (
               <button
                 key={c.slug}
