@@ -83,13 +83,13 @@ export function YardSaleOnboardingForm({ categories }: { categories: CategoryOpt
         <PhLocationPicker value={province || null} onChange={setProvince} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
+        <div className="min-w-0 space-y-1.5">
           <Label>Starts</Label>
-          <Input type="date" value={startDate} min={todayISO()} onChange={(e) => setStartDate(e.target.value)} required />
+          <Input type="date" className="min-w-0 appearance-none px-3" value={startDate} min={todayISO()} onChange={(e) => setStartDate(e.target.value)} required />
         </div>
-        <div className="space-y-1.5">
+        <div className="min-w-0 space-y-1.5">
           <Label>Ends</Label>
-          <Input type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} required />
+          <Input type="date" className="min-w-0 appearance-none px-3" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} required />
         </div>
       </div>
       <p className="text-xs text-ink-500">Up to 1 month. It closes automatically once the end date passes.</p>
