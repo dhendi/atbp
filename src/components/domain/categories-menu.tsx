@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { LAUNCH_HIDDEN_CATEGORY_SLUGS } from "@/lib/feature-flags";
@@ -45,22 +48,36 @@ export function CategoriesMenu({
         {iconOnly ? <Menu size={20} /> : (<><Menu size={15} /> Categories</>)}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-h-[28rem] w-72 overflow-y-auto">
-        {categories.filter((cat) => !LAUNCH_HIDDEN_CATEGORY_SLUGS.has(cat.slug)).map((cat) => (
-          <div key={cat.slug}>
-            <DropdownMenuItem asChild>
+        {categories.filter((cat) => !LAUNCH_HIDDEN_CATEGORY_SLUGS.has(cat.slug)).map((cat) =>
+          cat.children.length === 0 ? (
+            <DropdownMenuItem key={cat.slug} asChild>
               <Link href={`/discover?category=${cat.slug}`} className="font-bold text-ink-900">
                 <span>{cat.icon}</span> {cat.name}
               </Link>
             </DropdownMenuItem>
-            {cat.children.map((child) => (
-              <DropdownMenuItem key={child.slug} asChild>
-                <Link href={`/discover?category=${child.slug}`} className="pl-8 font-normal text-ink-600">
-                  {child.name}
-                </Link>
-              </DropdownMenuItem>
-            ))}
-          </div>
-        ))}
+          ) : (
+            // Groups open a side flyout (hover on desktop, tap on mobile) so the
+            // main list stays short; the first row of the flyout is the group itself.
+            <DropdownMenuSub key={cat.slug}>
+              <DropdownMenuSubTrigger className="font-bold text-ink-900">
+                <span>{cat.icon}</span> {cat.name}
+                <ChevronRight size={14} className="ml-auto text-ink-400" />
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="max-h-[24rem] w-64 overflow-y-auto">
+                <DropdownMenuItem asChild>
+                  <Link href={`/discover?category=${cat.slug}`} className="font-bold text-ink-900">All {cat.name}</Link>
+                </DropdownMenuItem>
+                {cat.children.map((child) => (
+                  <DropdownMenuItem key={child.slug} asChild>
+                    <Link href={`/discover?category=${child.slug}`} className="font-normal text-ink-600">
+                      {child.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

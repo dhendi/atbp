@@ -254,7 +254,7 @@ async function main() {
     { name: "Local Brands", slug: "local-brands", icon: "🏷️" },
     { name: "Antiques", slug: "antiques", icon: "🏺" },
     { name: "Hobby & Toys", slug: "hobby-toys", icon: "🎲" },
-    { name: "Clothing & Apparel", slug: "fashion", icon: "👗" },
+    { name: "Clothes", slug: "fashion", icon: "👗" },
     { name: "Home Décor", slug: "home-living", icon: "🏠" },
     ...NEW_CATEGORIES,
     // Food & Snacks subcategories — shelf-stable packaged goods only, never

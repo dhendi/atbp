@@ -41,3 +41,33 @@ export function DropdownMenuSeparator({ className, ...props }: React.ComponentPr
 export function DropdownMenuLabel({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Label>) {
   return <DropdownMenuPrimitive.Label className={cn("px-3 py-1.5 text-xs font-bold uppercase text-ink-400", className)} {...props} />;
 }
+
+export const DropdownMenuSub = DropdownMenuPrimitive.Sub;
+
+export function DropdownMenuSubTrigger({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger>) {
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      className={cn(
+        "flex cursor-pointer select-none items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-700 outline-none transition-colors data-[highlighted]:bg-ink-100 data-[state=open]:bg-ink-100 data-[highlighted]:text-ink-900",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.SubContent
+        sideOffset={6}
+        collisionPadding={8}
+        className={cn(
+          "z-50 min-w-[12rem] rounded-2xl border border-ink-100 bg-white p-1.5 shadow-xl animate-rise-in",
+          className
+        )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  );
+}
