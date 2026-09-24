@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, ChevronRight } from "lucide-react";
+import { Menu, ChevronRight, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -34,8 +35,20 @@ export function CategoriesMenu({
   triggerClassName?: string;
   iconOnly?: boolean;
 }) {
+  // A side flyout doesn't fit a phone-width screen (it gets cut off), so on
+  // narrow viewports each group expands in place instead.
+  const [narrow, setNarrow] = useState(false);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setNarrow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(o) => { if (!o) setOpenSlug(null); }}>
       <DropdownMenuTrigger
         className={cn(
           iconOnly
@@ -55,6 +68,29 @@ export function CategoriesMenu({
                 <span>{cat.icon}</span> {cat.name}
               </Link>
             </DropdownMenuItem>
+          ) : narrow ? (
+            <div key={cat.slug}>
+              <DropdownMenuItem
+                onSelect={(e) => { e.preventDefault(); setOpenSlug(openSlug === cat.slug ? null : cat.slug); }}
+                className="font-bold text-ink-900"
+                aria-expanded={openSlug === cat.slug}
+              >
+                <span>{cat.icon}</span> {cat.name}
+                {openSlug === cat.slug ? <ChevronDown size={14} className="ml-auto text-ink-400" /> : <ChevronRight size={14} className="ml-auto text-ink-400" />}
+              </DropdownMenuItem>
+              {openSlug === cat.slug && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/discover?category=${cat.slug}`} className="pl-8 font-bold text-ink-900">All {cat.name}</Link>
+                  </DropdownMenuItem>
+                  {cat.children.map((child) => (
+                    <DropdownMenuItem key={child.slug} asChild>
+                      <Link href={`/discover?category=${child.slug}`} className="pl-8 font-normal text-ink-600">{child.name}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </>
+              )}
+            </div>
           ) : (
             // Groups open a side flyout (hover on desktop, tap on mobile) so the
             // main list stays short; the first row of the flyout is the group itself.
