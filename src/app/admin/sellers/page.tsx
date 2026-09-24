@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/domain/empty-state";
 import { FoundingSellerBadge } from "@/components/domain/founding-seller-badge";
 import { formatCompactNumber } from "@/lib/utils";
 import { purgeExpiredIdDocuments } from "@/lib/services/document-retention";
+import { AdminSearch } from "@/components/domain/admin-search";
 import { SellerModerationActions } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -17,21 +18,27 @@ const STATUS_VARIANT: Record<string, "success" | "outline" | "live" | "subtle"> 
   CLOSED: "subtle",
 };
 
-export default async function AdminSellersPage() {
+export default async function AdminSellersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q } = await searchParams;
+  const query = q?.trim().slice(0, 100) ?? "";
   // Lazy, on-view retention cleanup — same pattern as expireOverdueYardSales,
   // since this app has no cron. See purgeExpiredIdDocuments for what it does.
   await purgeExpiredIdDocuments();
 
   const sellers = await prisma.sellerProfile.findMany({
+    where: query
+      ? { OR: [{ shopName: { contains: query, mode: "insensitive" } }, { handle: { contains: query, mode: "insensitive" } }, { user: { email: { contains: query, mode: "insensitive" } } }] }
+      : undefined,
     include: { user: true, _count: { select: { warnings: { where: { active: true } } } } },
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-extrabold text-ink-900">Sellers</h1>
+      <h1 className="mb-4 text-2xl font-extrabold text-ink-900">Sellers</h1>
+      <AdminSearch action="/admin/sellers" query={query} placeholder="Search shop, handle or email" />
       {sellers.length === 0 ? (
-        <EmptyState icon={Store} title="No sellers yet" />
+        <EmptyState icon={Store} title={query ? "No matching sellers" : "No sellers yet"} />
       ) : (
         <div className="space-y-2">
           {sellers.map((s) => (

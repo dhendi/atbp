@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/domain/empty-state";
+import { AdminSearch } from "@/components/domain/admin-search";
 import { UserModerationActions } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -13,14 +14,23 @@ const ROLE_VARIANT: Record<string, "brand" | "gold" | "live" | "subtle"> = {
   SUSPENDED: "live",
 };
 
-export default async function AdminUsersPage() {
-  const users = await prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: 200 });
+export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q } = await searchParams;
+  const query = q?.trim().slice(0, 100) ?? "";
+  const users = await prisma.user.findMany({
+    where: query
+      ? { OR: [{ name: { contains: query, mode: "insensitive" } }, { username: { contains: query, mode: "insensitive" } }, { email: { contains: query, mode: "insensitive" } }] }
+      : undefined,
+    orderBy: { createdAt: "desc" },
+    take: 200,
+  });
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-extrabold text-ink-900">Users</h1>
+      <h1 className="mb-4 text-2xl font-extrabold text-ink-900">Users</h1>
+      <AdminSearch action="/admin/users" query={query} placeholder="Search name, username or email" />
       {users.length === 0 ? (
-        <EmptyState icon={Users} title="No users" />
+        <EmptyState icon={Users} title={query ? "No matching users" : "No users"} />
       ) : (
         <div className="space-y-2">
           {users.map((u) => (

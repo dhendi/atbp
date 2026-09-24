@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ export function YardSaleItemsPanel({
 }: { yardSaleId: string; items: YardSaleItem[]; categories: QuickItemCategoryOption[]; defaultCity: string }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [confirmingClose, setConfirmingClose] = useState(false);
 
   function remove(productId: string) {
     startTransition(async () => {
@@ -48,13 +49,13 @@ export function YardSaleItemsPanel({
   }
 
   function closeEarly() {
-    if (!confirm("Close this Yard Sale now? Its remaining items will be archived and you can start a new one right away.")) return;
     startTransition(async () => {
       const res = await closeYardSaleEarlyAction(yardSaleId);
       if ("error" in res && res.error) {
         toast.error(res.error);
         return;
       }
+      setConfirmingClose(false);
       toast.success("Yard Sale closed");
       router.refresh();
     });
@@ -93,7 +94,17 @@ export function YardSaleItemsPanel({
         </div>
       )}
 
-      <Button variant="destructive" size="sm" disabled={pending} onClick={closeEarly}>Close Yard Sale early</Button>
+      {confirmingClose ? (
+        <div className="space-y-2 rounded-card border border-live-200 bg-live-50 p-3">
+          <p className="text-xs text-ink-700">Close this Yard Sale now? Its remaining items will be archived and you can start a new one right away.</p>
+          <div className="flex gap-2">
+            <Button variant="destructive" size="sm" disabled={pending} onClick={closeEarly}>{pending ? "Closing..." : "Yes, close it"}</Button>
+            <Button variant="outline" size="sm" disabled={pending} onClick={() => setConfirmingClose(false)}>Keep it open</Button>
+          </div>
+        </div>
+      ) : (
+        <Button variant="destructive" size="sm" disabled={pending} onClick={() => setConfirmingClose(true)}>Close Yard Sale early</Button>
+      )}
     </div>
   );
 }
