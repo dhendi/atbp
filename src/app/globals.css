@@ -211,3 +211,19 @@ body {
 .tilt-r { transform: rotate(2.5deg); }
 .tilt-l-sm { transform: rotate(-2deg); }
 .tilt-r-sm { transform: rotate(1.5deg); }
+
+/* Mobile Safari gives date/time inputs an intrinsic width wider than a
+   half-width grid column, so they poked out past their card. Let them (and the
+   grid/flex cell that holds them) shrink to the column instead. */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"] {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+:is(.grid, .flex) > :has(> input[type="date"], > input[type="datetime-local"], > input[type="time"]) {
+  min-width: 0;
+}
