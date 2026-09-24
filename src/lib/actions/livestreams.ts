@@ -51,7 +51,7 @@ export async function createLivestreamAction(input: {
 
   let order = 0;
   for (const p of input.products) {
-    await addProductInternal(stream.id, p, order++);
+    await addProductInternal(stream.id, seller.id, p, order++);
   }
 
   const followers = await prisma.follow.findMany({ where: { sellerId: seller.id } });
@@ -63,9 +63,18 @@ export async function createLivestreamAction(input: {
   return { success: true, streamId: stream.id };
 }
 
-async function addProductInternal(livestreamId: string, p: StreamProductInput, order: number) {
-  const product = await prisma.product.findUnique({ where: { id: p.productId } });
+async function addProductInternal(livestreamId: string, sellerId: string, p: StreamProductInput, order: number) {
+  // Must be the caller's own live listing: without the sellerId check a seller
+  // could put ANOTHER seller's product into their stream, set its auction
+  // start price to 1, and let an alt account "win" it (the order lands on the
+  // victim's shop). Auction numbers are also bounded here, not trusted.
+  const product = await prisma.product.findFirst({ where: { id: p.productId, sellerId, status: "ACTIVE" } });
   if (!product) return null;
+  if (p.mode === "AUCTION") {
+    if (p.startPrice !== undefined && (!Number.isFinite(p.startPrice) || p.startPrice < 1 || p.startPrice > 10_000_000)) return null;
+    if (p.minIncrement !== undefined && (!Number.isFinite(p.minIncrement) || p.minIncrement < 1 || p.minIncrement > 1_000_000)) return null;
+    if (p.durationSec !== undefined && (!Number.isInteger(p.durationSec) || p.durationSec < 30 || p.durationSec > 3600)) return null;
+  }
 
   const lp = await prisma.livestreamProduct.create({
     data: {
@@ -96,7 +105,8 @@ export async function addProductToStreamAction(livestreamId: string, input: Stre
   if (!stream) return { error: "Livestream not found." };
 
   const count = await prisma.livestreamProduct.count({ where: { livestreamId } });
-  await addProductInternal(livestreamId, input, count);
+  const added = await addProductInternal(livestreamId, seller.id, input, count);
+  if (!added) return { error: "That product can't be added to this stream." };
   revalidatePath(`/studio/livestreams/${livestreamId}`);
   revalidatePath(`/live/${livestreamId}`);
   return { success: true };
@@ -202,6 +212,10 @@ export async function featureProductAction(livestreamId: string, livestreamProdu
   const stream = await prisma.livestream.findFirst({ where: { id: livestreamId, sellerId: seller.id } });
   if (!stream) return { error: "Livestream not found." };
 
+  // The livestream product must belong to THIS stream: featuring another
+  // stream's item would end its active item and wipe its live auction bids.
+  const belongs = await prisma.livestreamProduct.findFirst({ where: { id: livestreamProductId, livestreamId }, select: { id: true } });
+  if (!belongs) return { error: "That item isn't part of this stream." };
   await featureProductInternal(livestreamProductId);
   revalidatePath(`/live/${livestreamId}`);
   revalidatePath(`/studio/livestreams/${livestreamId}`);

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createGuestOrder, getOrderByTrackingToken, createAccountFromGuest } from "@/lib/services/guest-checkout";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import type { ShippingInfo } from "@/lib/services/orders";
-import type { PaymentMethodId } from "@/lib/payments/provider";
+import { isClientPaymentMethod, type PaymentMethodId } from "@/lib/payments/provider";
 
 // Scope note: guest checkout is deliberately narrower than the account-holder
 // checkout in lib/actions/orders.ts — one product, one seller, prepaid only,
@@ -29,6 +29,8 @@ export async function guestCheckoutAction(input: {
 }) {
   const email = input.email.trim().toLowerCase();
   if (!email || !email.includes("@")) return { error: "Enter a valid email." };
+  if (!isClientPaymentMethod(input.paymentMethod)) return { error: "Choose a valid payment method." };
+  if (!Number.isInteger(input.quantity) || input.quantity < 1 || input.quantity > 20) return { error: "Choose a quantity between 1 and 20." };
   if (!input.phone.trim()) return { error: "Enter a phone number." };
 
   // Keyed by email, not a userId (there isn't one) — same pattern as
@@ -87,7 +89,8 @@ export async function getGuestOrderAction(token: string) {
  * account in immediately via next-auth/react's signIn("credentials", ...)
  * after this returns success. */
 export async function convertGuestToAccountAction(email: string, name: string, password: string) {
-  if (password.length < 6) return { error: "Password must be at least 6 characters." };
+  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+  if (password.length > 128) return { error: "Password is too long." };
   if (!(await checkRateLimit(`guest-convert:${email.trim().toLowerCase()}`, 5, 15 * 60_000))) {
     return { error: "Too many attempts. Please wait a while before trying again." };
   }
@@ -108,8 +111,14 @@ export async function submitGuestDisputeAction(token: string, reason: string, de
   const order = await getOrderByTrackingToken(token);
   if (!order) return { error: "This tracking link is invalid or has expired." };
   if (order.dispute) return { error: "A dispute is already open for this order." };
+  if (["CANCELLED", "DISPUTED", "PAYMENT_PENDING"].includes(order.status) || order.paymentStatus === "REFUNDED") {
+    return { error: "This order can't be disputed right now." };
+  }
+  const reasonText = String(reason ?? "").trim();
+  const detailsText = String(details ?? "").trim();
+  if (!reasonText || reasonText.length > 200 || detailsText.length > 3000) return { error: "Please describe the problem (keep it under 3000 characters)." };
 
-  await prisma.dispute.create({ data: { orderId: order.id, raisedById: null, reason, details } });
+  await prisma.dispute.create({ data: { orderId: order.id, raisedById: null, reason: reasonText, details: detailsText } });
   await prisma.order.update({ where: { id: order.id }, data: { status: "DISPUTED" } });
   return { success: true };
 }

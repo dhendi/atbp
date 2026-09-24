@@ -11,6 +11,7 @@ import { effectivePrice } from "@/lib/deals";
 import { autoTagsForProduct } from "@/lib/interests";
 import { AUCTIONS_ENABLED } from "@/lib/feature-flags";
 import { isSellerInactive, sellerNotApprovedMessage } from "@/lib/constants";
+import { safeHttpsUrl } from "@/lib/safe-url";
 import {
   listingTitleDescriptionSchema,
   productUpdateInputSchema,
@@ -257,9 +258,10 @@ export async function createProductAction(input: ProductInput) {
 }
 
 export async function updateProductAction(productId: string, input: Partial<ProductInput> & { status?: string }) {
-  const wantsToActivate = input.status === "ACTIVE";
-  const seller = wantsToActivate ? await requireActiveSeller() : await requireSeller();
-  if (!seller) return wantsToActivate ? { error: "Your seller account is suspended. You can't activate listings right now." } : { error: "Not authorized." };
+  // A suspended or closed seller can't edit listings at all (price/description
+  // changes on a suspended shop were previously allowed).
+  const seller = await requireActiveSeller();
+  if (!seller) return { error: "Your seller account isn't active, so listings can't be changed right now." };
 
   const existing = await prisma.product.findFirst({ where: { id: productId, sellerId: seller.id } });
   if (!existing) return { error: "Product not found." };
@@ -286,8 +288,46 @@ export async function updateProductAction(productId: string, input: Partial<Prod
     if (!activeCheck.allowed) return { error: activeCheck.error };
   }
 
-  const { auction: _auction, dealStartAt, dealEndAt, localDeliveryAreas, ...rest } = input;
-  const data: Record<string, unknown> = { ...rest };
+  // Whitelist, not spread: the client sends this object, and spreading it
+  // straight into prisma.product.update let a seller write columns that
+  // belong to ATBP (sellerId, soldCount, featured, kind, listingType,
+  // rightsAttestedAt, digitalFileUrls, admin moderation status, ...).
+  const { dealStartAt, dealEndAt, localDeliveryAreas } = input;
+  const data: Record<string, unknown> = {};
+  const EDITABLE_KEYS = [
+    "title", "description", "videoUrl", "price", "compareAtPrice", "categoryId", "type", "condition", "sku",
+    "shippingInfo", "sellingModes", "dealPrice", "shippingAvailable", "pickupAvailable", "localDeliveryAvailable",
+    "isDigital", "digitalFileUrl", "digitalDeliveryInstructions", "madeToOrder", "productionTimeDays",
+    "customizationOptions", "personalizationInstructions", "maxOrderQuantity", "isFood", "shelfStable",
+    "expiryInfo", "ingredients", "allergens", "foodShippingNotes",
+  ] as const;
+  for (const key of EDITABLE_KEYS) {
+    if (input[key] !== undefined) data[key] = input[key];
+  }
+  if (input.images !== undefined) {
+    const imgs = Array.isArray(input.images) ? input.images.map((u) => safeHttpsUrl(u)) : null;
+    if (!imgs || imgs.length > 12 || imgs.some((u) => !u)) return { error: "One of the product images isn't valid." };
+    data.images = imgs;
+  }
+  if (input.digitalFileUrl) {
+    const safe = safeHttpsUrl(input.digitalFileUrl);
+    if (!safe) return { error: "The digital file link must be a full https:// address." };
+    data.digitalFileUrl = safe;
+  }
+  if (input.categoryId !== undefined) {
+    const category = await prisma.category.findUnique({ where: { id: input.categoryId }, select: { id: true } });
+    if (!category) return { error: "Choose a valid category." };
+  }
+  if (input.status !== undefined) {
+    if (!["ACTIVE", "DRAFT", "ARCHIVED"].includes(input.status)) return { error: "That status can't be set here." };
+    // FLAGGED and REMOVED are set by ATBP moderation (or the seller's own
+    // delete); a seller editing the status must not be able to undo them.
+    if (["FLAGGED", "REMOVED"].includes(existing.status)) return { error: "This listing can't be changed right now. Contact support if you think that's a mistake." };
+    data.status = input.status;
+  }
+  if (input.quantity !== undefined && (!Number.isInteger(input.quantity) || input.quantity < 0 || input.quantity > 1_000_000)) {
+    return { error: "Quantity must be a whole number from 0 to 1,000,000." };
+  }
   if (dealStartAt !== undefined) data.dealStartAt = dealStartAt ? new Date(dealStartAt) : null;
   if (dealEndAt !== undefined) data.dealEndAt = dealEndAt ? new Date(dealEndAt) : null;
   if (localDeliveryAreas !== undefined || input.localDeliveryAvailable !== undefined) {
@@ -351,8 +391,10 @@ export async function bulkUpdateProductStatusAction(productIds: string[], status
     }
   }
 
+  // Skips FLAGGED and REMOVED: those come from ATBP moderation (or the
+  // seller's own delete) and a bulk publish must not be a way to undo them.
   const result = await prisma.product.updateMany({
-    where: { id: { in: productIds }, sellerId: seller.id, listingType: "FIXED" },
+    where: { id: { in: productIds }, sellerId: seller.id, listingType: "FIXED", status: { notIn: ["FLAGGED", "REMOVED"] } },
     data: { status },
   });
   revalidatePath("/studio/products");

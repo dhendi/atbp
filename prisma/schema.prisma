@@ -1087,6 +1087,12 @@ model Cart {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Set for the duration of a checkout so a double-click, a retry, or a
+  // second tab can't run the same cart through checkout twice (which would
+  // create duplicate orders). Stale locks (a crashed request) expire on their
+  // own; see checkoutAction.
+  checkoutLockedAt DateTime?
+
   items CartItem[]
 }
 

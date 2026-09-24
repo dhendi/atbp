@@ -1,5 +1,6 @@
 import { del } from "@vercel/blob";
 import { prisma } from "@/lib/prisma";
+import { isBlobUrlUnder, ID_DOCUMENT_BLOB_PREFIX } from "@/lib/safe-url";
 
 /** Best-effort delete of a seller ID/license document blob — used both when
  * a seller resubmits (the old, now-superseded file would otherwise sit in
@@ -8,6 +9,12 @@ import { prisma } from "@/lib/prisma";
  * already-gone blob is not an error worth surfacing. */
 export async function deleteDocumentBlob(url: string | null | undefined) {
   if (!url) return;
+  // Only ever delete something that was uploaded as an ID document. These
+  // URLs came from a client-submitted field, so without this a seller could
+  // point the field at any blob (e.g. another shop's product photo) and have
+  // it deleted on resubmit. Older documents uploaded before the prefix
+  // existed are simply left in place.
+  if (!isBlobUrlUnder(url, ID_DOCUMENT_BLOB_PREFIX)) return;
   try {
     await del(url);
   } catch {

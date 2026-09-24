@@ -29,7 +29,12 @@ function AuthCard({ children }: { children: React.ReactNode }) {
 export function LoginForm({ googleEnabled, facebookEnabled }: { googleEnabled: boolean; facebookEnabled: boolean }) {
   const router = useRouter();
   const params = useSearchParams();
-  const callbackUrl = params.get("callbackUrl") || "/";
+  // Only same-site relative paths: a raw ?callbackUrl=https://evil.tld (or
+  // //evil.tld, or a backslash variant) would otherwise send someone off-site
+  // right after they authenticate, since router.push follows whatever it's given.
+  const rawCallback = params.get("callbackUrl") || "/";
+  const callbackUrl =
+    rawCallback.startsWith("/") && !rawCallback.startsWith("//") && !rawCallback.includes("\\") ? rawCallback : "/";
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");

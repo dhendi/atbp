@@ -9,6 +9,7 @@ import { authConfig } from "@/lib/auth.config";
 import { verifyTotp } from "@/lib/services/totp";
 import { normalizePhMobile } from "@/lib/phone";
 import { checkRateLimit } from "@/lib/services/rate-limit";
+import { claimGuestOrders } from "@/lib/services/guest-checkout";
 
 const LOGIN_RATE_LIMIT = 5; // failed attempts per email per rolling window
 const LOGIN_RATE_WINDOW_MS = 15 * 60_000;
@@ -41,6 +42,34 @@ async function verifyTwoFactorCode(userId: string, code: string | undefined): Pr
   }
   return false;
 }
+
+/** True when this account has 2FA turned on. The password path enforces TOTP
+ * itself (verifyTwoFactorCode); the OAuth and emailed/texted-code paths have
+ * no TOTP step, so they must refuse these accounts outright, otherwise anyone
+ * who can read the inbox (or holds the Google login) walks straight past 2FA. */
+async function hasTwoFactorEnabled(userId: string): Promise<boolean> {
+  const record = await prisma.twoFactorAuth.findUnique({ where: { userId } });
+  return !!record?.verifiedAt;
+}
+
+/** An account created by password (or guest conversion) whose email was never
+ * verified may have been registered by someone who doesn't own that inbox.
+ * When the real owner later proves ownership through Google or an emailed
+ * code, that password belongs to the squatter, so it's rotated to an unusable
+ * value and every existing session is revoked (sessionVersion bump) before
+ * the owner is let in. Verified accounts are left untouched. */
+async function neutralizeUnverifiedTakeover(user: { id: string; emailVerifiedAt: Date | null }) {
+  if (user.emailVerifiedAt) return;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: await bcrypt.hash(randomUUID(), 10), sessionVersion: { increment: 1 } },
+  });
+}
+
+// Compared against when the email doesn't exist, so a missing account costs
+// the same bcrypt time as a wrong password and login timing doesn't reveal
+// which emails are registered.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync("not-a-real-password", 10);
 
 /** Turns a name/email into a valid, available username — Google/Facebook
  * profiles don't come with one, unlike our own signup form which requires
@@ -157,20 +186,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,
-    signIn: async ({ user, account }) => {
+    signIn: async ({ user, account, profile }) => {
       const provider = account?.provider;
       if (provider !== "google" && provider !== "facebook") return true;
       if (!user.email) return false;
+      // Never trust a provider email the provider itself hasn't verified:
+      // matching accounts by email would otherwise let someone attach an
+      // unverified address to a victim's existing account.
+      if (provider === "google" && (profile as { email_verified?: boolean } | undefined)?.email_verified !== true) return false;
 
-      const dbUser = await findOrCreateOAuthUser(user.email, user.name ?? "", user.image ?? null);
+      let dbUser = await findOrCreateOAuthUser(user.email, user.name ?? "", user.image ?? null);
       if (dbUser.role === "SUSPENDED") return false;
+      // No TOTP step exists on this path, so an account with 2FA on must use
+      // password + code instead.
+      if (await hasTwoFactorEnabled(dbUser.id)) return false;
 
       // Matched an existing account (e.g. one originally created by password
-      // signup, never verified) rather than creating a new one — Google/
+      // signup, never verified) rather than creating a new one. Google/
       // Facebook just proved they own this address, so it's verified now too,
-      // same "prove it once, keep it forever" shape as the OTP providers.
+      // same "prove it once, keep it forever" shape as the OTP providers. Any
+      // password that account was registered with is the squatter's, though.
       if (!dbUser.emailVerifiedAt) {
-        await prisma.user.update({ where: { id: dbUser.id }, data: { emailVerifiedAt: new Date() } });
+        await neutralizeUnverifiedTakeover(dbUser);
+        dbUser = await prisma.user.update({ where: { id: dbUser.id }, data: { emailVerifiedAt: new Date() } });
+        await claimGuestOrders(dbUser.id, dbUser.email);
       }
 
       // Overwrite the provider-supplied fields with our own DB-backed identity
@@ -205,7 +244,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (await isLoginRateLimited(normalizedEmail)) return null;
 
         const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-        const valid = user ? await bcrypt.compare(password, user.passwordHash) : false;
+        const valid = await bcrypt.compare(password, user ? user.passwordHash : DUMMY_PASSWORD_HASH) && !!user;
         const twoFactorOk = user ? await verifyTwoFactorCode(user.id, code) : false;
         if (!user || !valid || !twoFactorOk || user.role === "SUSPENDED") {
           await prisma.loginAttempt.create({ data: { email: normalizedEmail } });
@@ -257,6 +296,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = await findOrCreateByPhone(phone);
         if (user.role === "SUSPENDED") return null;
+        if (await hasTwoFactorEnabled(user.id)) return null;
         // A number that was previously unverified (e.g. entered for shipping)
         // is now proven — record it the same way a first-time verification would.
         if (!user.phoneVerifiedAt) {
@@ -305,12 +345,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
         await prisma.emailOtpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
 
-        const user = await findOrCreateByEmail(email);
+        let user = await findOrCreateByEmail(email);
         if (user.role === "SUSPENDED") return null;
+        // No TOTP step on this path: an account with 2FA on must use
+        // password + code, otherwise inbox access alone would bypass 2FA.
+        if (await hasTwoFactorEnabled(user.id)) return null;
         // An account that signed up via password (never verified) is now
-        // proven — record it the same way a first-time verification would.
+        // proven to this inbox's owner. Whatever password it was registered
+        // with may belong to a squatter, so that's neutralized first.
         if (!user.emailVerifiedAt) {
-          await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } });
+          await neutralizeUnverifiedTakeover(user);
+          user = await prisma.user.update({ where: { id: user.id }, data: { emailVerifiedAt: new Date() } });
+          await claimGuestOrders(user.id, user.email);
         }
 
         return {

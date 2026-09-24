@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -33,8 +34,16 @@ export const maxDuration = 60;
  * env var) so this can't be triggered by an outside request.
  */
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Fail closed: with CRON_SECRET unset, the old comparison against the
+  // literal string "Bearer undefined" would have let anyone in.
+  const secret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get("authorization") ?? "";
+  const expected = `Bearer ${secret}`;
+  const authorized =
+    !!secret &&
+    authHeader.length === expected.length &&
+    timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected));
+  if (!authorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -14,7 +14,16 @@ export async function getCartWithItems(userId: string) {
   });
 }
 
+const MAX_CART_LINE_QUANTITY = 99;
+
+function assertValidQuantity(quantity: number) {
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_CART_LINE_QUANTITY) {
+    throw new Error(`Choose a quantity between 1 and ${MAX_CART_LINE_QUANTITY}.`);
+  }
+}
+
 export async function addToCart(userId: string, productId: string, quantity = 1, personalizationNote?: string) {
+  assertValidQuantity(quantity);
   const cart = await getOrCreateCart(userId);
   // findUnique + explicit check, not findUniqueOrThrow — that throws a
   // PrismaClientKnownRequestError whose message names the model/query
@@ -37,7 +46,7 @@ export async function addToCart(userId: string, productId: string, quantity = 1,
     ? await prisma.cartItem.findFirst({ where: { cartId: cart.id, productId, sourceType: "MARKETPLACE", personalizationNote: null } })
     : null;
   if (existing) {
-    return prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: existing.quantity + quantity } });
+    return prisma.cartItem.update({ where: { id: existing.id }, data: { quantity: Math.min(existing.quantity + quantity, MAX_CART_LINE_QUANTITY) } });
   }
   return prisma.cartItem.create({
     data: { cartId: cart.id, productId, quantity, unitPrice: effectivePrice(product), sourceType: "MARKETPLACE", personalizationNote },
@@ -80,6 +89,11 @@ export async function moveSavedToCart(userId: string, productId: string, quantit
 
 export async function updateCartItemQuantity(userId: string, cartItemId: string, quantity: number) {
   const cart = await getOrCreateCart(userId);
-  if (quantity <= 0) return removeCartItem(userId, cartItemId);
-  return prisma.cartItem.updateMany({ where: { id: cartItemId, cartId: cart.id }, data: { quantity } });
+  if (!Number.isFinite(quantity) || quantity <= 0) return removeCartItem(userId, cartItemId);
+  assertValidQuantity(quantity);
+  // Only regular marketplace lines are adjustable. A BUY_NOW / CLAIM /
+  // AUCTION line already reserved exactly its own units when it was created
+  // and checkout won't reserve more, so raising its quantity here would hand
+  // the buyer extra units at the reserved price with nothing held for them.
+  return prisma.cartItem.updateMany({ where: { id: cartItemId, cartId: cart.id, sourceType: "MARKETPLACE" }, data: { quantity } });
 }

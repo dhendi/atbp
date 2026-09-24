@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ID_DOCUMENT_TYPES } from "@/lib/constants";
+import { isBlobUrlUnder, ID_DOCUMENT_BLOB_PREFIX } from "@/lib/safe-url";
 
 /** Shared runtime-validation schemas for server actions that take free-form
  * user input. Compile-time types don't stop a crafted request from sending
@@ -21,13 +22,13 @@ const ID_DOCUMENT_TYPE_VALUES = ID_DOCUMENT_TYPES.map((t) => t.value) as [string
  * unverified ID affects new listings after signup. */
 export const sellerIdVerificationInputSchema = z.object({
   idDocumentType: z.enum(ID_DOCUMENT_TYPE_VALUES, { message: "Choose the type of ID you're uploading." }),
-  idDocumentUrl: z.string().trim().min(1, "Upload a photo of your ID before continuing."),
-  selfiePhotoUrl: z.string().trim().min(1, "Take a live selfie before continuing."),
+  idDocumentUrl: z.string().trim().min(1, "Upload a photo of your ID before continuing.").refine((v) => isBlobUrlUnder(v, ID_DOCUMENT_BLOB_PREFIX), "That ID upload isn't valid. Please upload it again."),
+  selfiePhotoUrl: z.string().trim().min(1, "Take a live selfie before continuing.").refine((v) => isBlobUrlUnder(v, ID_DOCUMENT_BLOB_PREFIX), "That selfie upload isn't valid. Please take it again."),
 });
 
 /** Business sellers only — the actual BIR Certificate of Registration
  * document, not just the typed registration number. */
-export const businessLicenseInputSchema = z.string().trim().min(1, "Upload your BIR Certificate of Registration before continuing.");
+export const businessLicenseInputSchema = z.string().trim().min(1, "Upload your BIR Certificate of Registration before continuing.").refine((v) => isBlobUrlUnder(v, ID_DOCUMENT_BLOB_PREFIX), "That document upload isn't valid. Please upload it again.");
 
 export const shippingInfoSchema = z.object({
   name: z.string().trim().min(1, "Enter a name").max(120),

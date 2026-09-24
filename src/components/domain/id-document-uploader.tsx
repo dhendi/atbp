@@ -13,7 +13,7 @@ import { ID_DOCUMENT_TYPES } from "@/lib/constants";
  * api/upload/route.ts) and always exactly one file, since there's only ever
  * one current document of a given kind on file. */
 async function uploadDocument(file: File): Promise<string> {
-  const blob = await upload(file.name, file, {
+  const blob = await upload(`id-documents/${file.name}`, file, {
     access: "public",
     handleUploadUrl: "/api/upload",
     clientPayload: "id-document",

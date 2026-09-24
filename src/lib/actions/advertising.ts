@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { safeHttpsUrl } from "@/lib/safe-url";
 import { logAdminAction } from "@/lib/services/audit-log";
 
 async function requireAdmin() {
@@ -28,6 +29,12 @@ export async function createAdvertiserAndAdAction(input: CreateAdInput) {
   const admin = await requireAdmin();
   if (!admin) return { error: "Not authorized." };
   if (input.placements.length === 0) return { error: "Pick at least one placement." };
+  // The click route redirects straight to this, so anything but a plain https
+  // URL (javascript:, data:, garbage) would be a redirect gadget.
+  const destinationUrl = safeHttpsUrl(input.destinationUrl);
+  if (!destinationUrl) return { error: "The destination link must be a full https:// address." };
+  const creativeImageUrl = safeHttpsUrl(input.creativeImageUrl);
+  if (!creativeImageUrl) return { error: "The creative image link isn't valid." };
 
   const advertiser = await prisma.advertiser.create({
     data: { name: input.advertiserName, contactEmail: input.contactEmail, status: "APPROVED" },
@@ -39,7 +46,7 @@ export async function createAdvertiserAndAdAction(input: CreateAdInput) {
     },
   });
   const ad = await prisma.advertisement.create({
-    data: { campaignId: campaign.id, creativeImageUrl: input.creativeImageUrl, destinationUrl: input.destinationUrl, cpc: input.cpc, status: "ACTIVE" },
+    data: { campaignId: campaign.id, creativeImageUrl, destinationUrl, cpc: input.cpc, status: "ACTIVE" },
   });
   await prisma.adPlacement.createMany({
     data: input.placements.map((placement) => ({ advertisementId: ad.id, placement })),

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { notify } from "@/lib/services/notifications";
 import { logProductEvent } from "@/lib/trending";
 import { genOrderNumber } from "@/lib/utils";
-import { getPaymentProvider, type PaymentMethodId } from "@/lib/payments/provider";
+import { getPaymentProvider, isClientPaymentMethod, type PaymentMethodId } from "@/lib/payments/provider";
 import { recordCommission } from "@/lib/services/commission";
 import { bidAmountSchema, shippingInfoSchema, firstIssue } from "@/lib/validation";
 
@@ -285,6 +285,7 @@ export async function completeAuctionPurchaseAction(
   if (!session.user.hasVerifiedEmail) {
     return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
   }
+  if (!isClientPaymentMethod(paymentMethod) || paymentMethod === "COD") return { error: "Choose a valid payment method." };
 
   const shippingResult = shippingInfoSchema.safeParse(shipping);
   if (!shippingResult.success) return { error: firstIssue(shippingResult) };

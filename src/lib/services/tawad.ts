@@ -19,12 +19,15 @@ export function isTawadEligibleListing(product: { closetId: string | null; yardS
 }
 
 export async function assertCanSubmitOffer(productId: string, buyerId: string): Promise<LimitCheck> {
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({ where: { id: productId }, include: { seller: { select: { userId: true } } } });
   if (!product) return { allowed: false, error: "Listing not found." };
   if (!isTawadEligibleListing(product)) return { allowed: false, error: "This listing doesn't accept offers." };
   if (!product.tawadEnabled) return { allowed: false, error: "This seller isn't accepting offers on this item." };
   if (product.status !== "ACTIVE") return { allowed: false, error: "This item is no longer available." };
-  if (product.sellerId === buyerId) return { allowed: false, error: "You can't make an offer on your own listing." };
+  // Product.sellerId is a SellerProfile id, buyerId is a User id: comparing
+  // them directly could never match, so a seller could always offer on their
+  // own listing. Compare against the seller's user id.
+  if (product.seller.userId === buyerId) return { allowed: false, error: "You can't make an offer on your own listing." };
 
   const priorCount = await prisma.offer.count({ where: { productId, buyerId } });
   if (priorCount >= TAWAD_MAX_OFFERS_PER_BUYER) {

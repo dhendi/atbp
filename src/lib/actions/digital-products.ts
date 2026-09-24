@@ -9,7 +9,7 @@ import { assertCanAddCasualListing } from "@/lib/services/casual-listings";
 import { issueDigitalDownloadTokens } from "@/lib/services/digital-products";
 import { sellerInactiveMessage, idVerificationBlockMessage } from "@/lib/constants";
 import { effectivePrice } from "@/lib/deals";
-import type { PaymentMethodId } from "@/lib/payments/provider";
+import { isClientPaymentMethod, type PaymentMethodId } from "@/lib/payments/provider";
 import { listingTitleDescriptionSchema, productMoneySchema, productDescriptionSchema, firstIssue } from "@/lib/validation";
 
 async function requireSeller() {
@@ -110,6 +110,8 @@ export async function orderDigitalProductAction(
 ) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+  if (!session.user.hasVerifiedEmail) return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
+  if (!isClientPaymentMethod(paymentMethod)) return { error: "Choose a valid payment method." };
   if (paymentMethod === "COD") return { error: "Digital products are prepaid only." };
 
   const product = await prisma.product.findUnique({ where: { id: productId }, include: { seller: true } });

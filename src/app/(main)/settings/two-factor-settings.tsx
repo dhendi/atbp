@@ -56,9 +56,10 @@ export function TwoFactorSettings() {
   }
 
   async function disable() {
-    if (!confirm("Turn off two-factor authentication for your admin account?")) return;
+    const disableCode = window.prompt("Enter a code from your authenticator app (or a recovery code) to turn off two-factor authentication for your admin account:");
+    if (!disableCode) return;
     setBusy(true);
-    const res = await disableTwoFactorAction();
+    const res = await disableTwoFactorAction(disableCode);
     setBusy(false);
     if (res && "error" in res) {
       toast.error(res.error);

@@ -69,6 +69,15 @@ export async function createOrder(params: {
   buyerProtectionOptIn?: boolean;
 }) {
   const fulfillmentMethod = params.fulfillmentMethod ?? "SHIP";
+  // Last line of defense for money integrity: whatever path built these items,
+  // an order never gets created with a zero/negative/fractional quantity or a
+  // negative/non-finite price (a negative quantity would produce a negative
+  // subtotal, i.e. an order the seller "owes" the buyer for).
+  if (params.items.length === 0) throw new Error("An order needs at least one item.");
+  for (const i of params.items) {
+    if (!Number.isInteger(i.quantity) || i.quantity < 1) throw new Error("Invalid item quantity.");
+    if (!Number.isFinite(i.unitPrice) || i.unitPrice < 0) throw new Error("Invalid item price.");
+  }
   const subtotal = params.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const resolvedShippingProviderId =
     fulfillmentMethod === "SHIP" ? (getShippingProvider(params.shippingProviderId ?? "MANUAL")?.id ?? "MANUAL") : null;

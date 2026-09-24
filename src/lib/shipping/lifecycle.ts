@@ -131,6 +131,15 @@ export async function confirmShipmentDelivered(shipmentId: string, opts: { buyer
   if (!shipment) return { error: "Shipment not found." };
   if (shipment.status === "DELIVERED") return { success: true };
 
+  // Delivery (manual, buyer confirmation, the auto-confirm sweep, or a
+  // courier webhook) must never resurrect an order that was cancelled,
+  // refunded, or is under dispute: doing so would flip it to COMPLETED,
+  // release payout to the seller, and count a sale that was refunded.
+  const order = await prisma.order.findUnique({ where: { id: shipment.orderId }, select: { status: true } });
+  if (!order || ["CANCELLED", "DISPUTED", "COMPLETED"].includes(order.status)) {
+    return { error: "This order can no longer be marked as delivered." };
+  }
+
   const now = new Date();
   await prisma.shipment.update({
     where: { id: shipmentId },

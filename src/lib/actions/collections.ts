@@ -104,7 +104,11 @@ export async function toggleCollectionItemAction(collectionId: string, item: Col
   if (!userId) return { error: "Please log in first." };
   const collection = await prisma.userCollection.findFirst({ where: { id: collectionId, userId } });
   if (!collection) return { error: "Collection not found." };
-  if (!item.productId && !item.sellerId && !item.dropId) return { error: "Nothing to save." };
+  // Only these three ids are taken from the client object. Spreading `item`
+  // itself let a caller include their own `collectionId`, which overrode the
+  // ownership-checked one and wrote into (or deleted from) someone else's collection.
+  const ref = { productId: item.productId, sellerId: item.sellerId, dropId: item.dropId };
+  if (!ref.productId && !ref.sellerId && !ref.dropId) return { error: "Nothing to save." };
 
   if (add) {
     await prisma.userCollectionItem.upsert({
@@ -113,11 +117,11 @@ export async function toggleCollectionItemAction(collectionId: string, item: Col
         : item.sellerId
           ? { collectionId_sellerId: { collectionId, sellerId: item.sellerId } }
           : { collectionId_dropId: { collectionId, dropId: item.dropId! } },
-      create: { collectionId, ...item },
+      create: { collectionId, ...ref },
       update: {},
     });
   } else {
-    await prisma.userCollectionItem.deleteMany({ where: { collectionId, ...item } });
+    await prisma.userCollectionItem.deleteMany({ where: { collectionId, ...ref } });
   }
   revalidatePath(`/collections/${collectionId}`);
   return { success: true };

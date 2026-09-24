@@ -119,6 +119,12 @@ export interface BuyPromotionInput {
 export async function buyPromotionAction(input: BuyPromotionInput) {
   const seller = await requireSeller();
   if (!seller) return { error: "You need a seller account." };
+  if (seller.status !== "APPROVED") return { error: "Your store needs to be approved and active to buy promotions." };
+  // `days` and `price` come from the client. NaN/negative/huge values used to
+  // slip through the range check (NaN compares false with everything) and
+  // could buy an effectively unlimited promotion at the minimum price.
+  if (!Number.isInteger(input.days) || input.days < 1 || input.days > 90) return { error: "Choose a promotion length between 1 and 90 days." };
+  if (typeof input.price !== "number" || !Number.isFinite(input.price) || input.price <= 0) return { error: "Enter a valid price." };
 
   const [product, promotionType] = await Promise.all([
     prisma.product.findFirst({ where: { id: input.productId, sellerId: seller.id } }),

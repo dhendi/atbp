@@ -45,6 +45,15 @@ export function getPaymentProvider(id: PaymentMethodId): PaymentProvider {
   return providers[id] ?? providers.MOCK;
 }
 
+/** True only for the methods a buyer can actually pick at checkout. Server
+ * actions must check the client-supplied method with this: getPaymentProvider
+ * silently falls back to the always-succeeds MOCK provider for anything it
+ * doesn't recognize, so an unchecked string ("mock", "cod" in another case,
+ * garbage) would mark an order paid, or slip past the exact-match COD guards. */
+export function isClientPaymentMethod(value: unknown): value is PaymentMethodId {
+  return typeof value === "string" && AVAILABLE_PAYMENT_METHODS.some((m) => m.id === value);
+}
+
 // A ₱15 flat processing fee applies to Card and Online Banking orders (see
 // lib/services/commission.ts) — surfaced here too so checkout can be upfront
 // about it before the buyer picks a method.

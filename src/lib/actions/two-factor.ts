@@ -26,6 +26,13 @@ export async function beginTwoFactorSetupAction() {
   const admin = await requireAdmin();
   if (!admin) return { error: "Not authorized." };
 
+  // Re-running enrollment overwrites the secret and clears verifiedAt, which
+  // would let a stolen session silently swap in an attacker's authenticator.
+  // An already-enabled account has to disable 2FA (which needs a live code)
+  // before it can enroll a new device.
+  const existing = await prisma.twoFactorAuth.findUnique({ where: { userId: admin.id } });
+  if (existing?.verifiedAt) return { error: "Two-factor authentication is already on. Disable it first to set up a new device." };
+
   const secret = generateSecret();
   await prisma.twoFactorAuth.upsert({
     where: { userId: admin.id },
@@ -59,9 +66,26 @@ export async function confirmTwoFactorSetupAction(code: string) {
   return { success: true as const, recoveryCodes };
 }
 
-export async function disableTwoFactorAction() {
+export async function disableTwoFactorAction(code: string) {
   const admin = await requireAdmin();
   if (!admin) return { error: "Not authorized." };
+
+  // Turning 2FA off needs a live code (authenticator or a recovery code), not
+  // just a logged-in session, so a stolen session cookie can't strip it.
+  if (!(await checkRateLimit(`2fa-disable:${admin.id}`, 5, 15 * 60_000))) {
+    return { error: "Too many attempts. Please wait a while before trying again." };
+  }
+  const record = await prisma.twoFactorAuth.findUnique({ where: { userId: admin.id } });
+  if (record?.verifiedAt) {
+    const trimmed = String(code ?? "").trim();
+    let ok = !!trimmed && verifyTotp(record.secret, trimmed);
+    if (!ok && trimmed) {
+      for (const hash of record.recoveryCodes as string[]) {
+        if (await bcrypt.compare(trimmed, hash)) { ok = true; break; }
+      }
+    }
+    if (!ok) return { error: "That code didn't work." };
+  }
   await prisma.twoFactorAuth.deleteMany({ where: { userId: admin.id } });
   await logAdminAction(admin.id, "DISABLE_2FA", "User", admin.id);
   return { success: true };

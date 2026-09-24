@@ -10,7 +10,7 @@ import { logAdminAction } from "@/lib/services/audit-log";
 import { revokeSessions } from "@/lib/services/sessions";
 import { maybeGrantFoundingSeller } from "@/lib/services/founding-seller";
 import { syncClosetMonthlySalesCap } from "@/lib/services/closet";
-import { getStoreClosureBlockers } from "@/lib/actions/seller-account";
+import { getStoreClosureBlockers } from "@/lib/services/store-closure";
 import { grantFoundingSeller, revokeFoundingSeller, getFoundingSellerAvailability } from "@/lib/services/founding-seller";
 import { recomputeSellerRating } from "@/lib/services/reviews";
 import { updateOrderStatus } from "@/lib/services/orders";
@@ -232,6 +232,9 @@ export async function adminCloseSellerStoreAction(sellerId: string, reason?: str
   if (!seller) return { error: "Seller not found." };
   if (seller.status === "SUSPENDED") return { error: "A suspended account can't be closed this way. Reinstate it or handle it as a suspension." };
   if (seller.status === "CLOSED") return { error: "This store is already closed." };
+  // A PENDING store was never approved; closing it would let a reopen
+  // (which writes APPROVED) skip admin review.
+  if (seller.status !== "APPROVED") return { error: "Only an approved store can be closed. Approve or reject a pending application instead." };
 
   if (reason && reason.trim()) {
     const reasonResult = adminReasonSchema.safeParse(reason);

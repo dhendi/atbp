@@ -8,7 +8,7 @@ import { assertCanCreateListing, assertCanActivateListings } from "@/lib/service
 import { assertCanAddCasualListing } from "@/lib/services/casual-listings";
 import { SERVICE_AUTO_CONFIRM_DAYS } from "@/lib/services/service-orders";
 import { notify } from "@/lib/services/notifications";
-import type { PaymentMethodId } from "@/lib/payments/provider";
+import { isClientPaymentMethod, type PaymentMethodId } from "@/lib/payments/provider";
 import { sellerInactiveMessage, idVerificationBlockMessage } from "@/lib/constants";
 import { listingTitleDescriptionSchema, servicePackageInputSchema, sellerIdVerificationInputSchema, firstIssue } from "@/lib/validation";
 
@@ -169,6 +169,8 @@ export async function orderServiceAction(
 ) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+  if (!session.user.hasVerifiedEmail) return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
+  if (!isClientPaymentMethod(paymentMethod)) return { error: "Choose a valid payment method." };
   if (paymentMethod === "COD") return { error: "Services are prepaid only." };
 
   const pkg = await prisma.servicePackage.findUnique({ where: { id: packageId }, include: { product: { include: { seller: true } } } });

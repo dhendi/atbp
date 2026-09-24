@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { sendEmail } from "@/lib/services/email";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { isPlaceholderEmail } from "@/lib/phone";
+import { claimGuestOrders } from "@/lib/services/guest-checkout";
 
 const OTP_TTL_MS = 5 * 60_000; // 5 minutes
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -80,6 +81,8 @@ export async function confirmVerificationCodeAction(code: string) {
   }
   await prisma.emailOtpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
   await prisma.user.update({ where: { id: session.user.id }, data: { emailVerifiedAt: new Date() } });
+  // Now that this inbox is proven, pick up any guest orders placed under it.
+  await claimGuestOrders(session.user.id, email);
 
   return { success: true as const };
 }

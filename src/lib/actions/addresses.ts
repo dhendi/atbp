@@ -3,6 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+
+// Explicit shape: the client object used to be spread straight into
+// prisma.address.create, with no length limits and no cap on how many
+// addresses one account could store.
+const addressSchema = z.object({
+  fullName: z.string().trim().min(1).max(120),
+  phone: z.string().trim().min(1).max(20),
+  line1: z.string().trim().min(1).max(300),
+  city: z.string().trim().min(1).max(120),
+  province: z.string().trim().min(1).max(120),
+  postalCode: z.string().trim().min(1).max(12),
+  isDefault: z.boolean().optional(),
+});
+const MAX_ADDRESSES_PER_USER = 20;
 
 export interface AddressInput {
   fullName: string;
@@ -18,13 +33,22 @@ export async function addAddressAction(input: AddressInput) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
 
-  if (input.isDefault) {
+  const parsed = addressSchema.safeParse(input);
+  if (!parsed.success) return { error: "Please check the address fields and try again." };
+  const address = parsed.data;
+
+  const existingCount = await prisma.address.count({ where: { userId: session.user.id } });
+  if (existingCount >= MAX_ADDRESSES_PER_USER) return { error: "You've reached the limit for saved addresses." };
+  if (address.isDefault) {
     await prisma.address.updateMany({ where: { userId: session.user.id }, data: { isDefault: false } });
   }
-  const existingCount = await prisma.address.count({ where: { userId: session.user.id } });
 
   await prisma.address.create({
-    data: { ...input, userId: session.user.id, isDefault: input.isDefault || existingCount === 0 },
+    data: {
+      fullName: address.fullName, phone: address.phone, line1: address.line1, city: address.city,
+      province: address.province, postalCode: address.postalCode,
+      userId: session.user.id, isDefault: !!address.isDefault || existingCount === 0,
+    },
   });
   revalidatePath("/addresses");
   return { success: true };

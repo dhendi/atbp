@@ -10,6 +10,7 @@ import { notifyFollowersOfAnnouncement } from "@/lib/services/follow-notificatio
 import { effectivePrice } from "@/lib/deals";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { isValidArea } from "@/lib/local-shared";
+import { safeHttpsUrl } from "@/lib/safe-url";
 import { messageContentSchema, reportInputSchema, sellerIdVerificationInputSchema, businessLicenseInputSchema, firstIssue } from "@/lib/validation";
 
 const MESSAGE_RATE_LIMIT = 10; // max messages per user per thread per rolling minute
@@ -204,19 +205,49 @@ export async function updateSellerProfileAction(input: {
 
   if (!isValidArea(input.province)) return { error: "Please choose a valid city from the picker." };
 
+  const shopName = String(input.shopName ?? "").trim();
+  if (!shopName || shopName.length > 80) return { error: "Shop name must be between 1 and 80 characters." };
+  if (String(input.description ?? "").length > 2000) return { error: "Description is too long (2000 characters max)." };
+  if ((input.announcement?.length ?? 0) > 500) return { error: "Announcement is too long (500 characters max)." };
+  if ((input.returnPolicy?.length ?? 0) > 2000) return { error: "Return policy is too long (2000 characters max)." };
+
+  // These end up in href/src attributes on the public shop page, so only
+  // plain https URLs are accepted: a javascript: link stored here would run
+  // script on our origin for every visitor who clicked it.
+  let bannerUrl: string | undefined;
+  let logoUrl: string | undefined;
+  if (input.bannerUrl) {
+    const safe = safeHttpsUrl(input.bannerUrl);
+    if (!safe) return { error: "The banner image link isn't valid." };
+    bannerUrl = safe;
+  }
+  if (input.logoUrl) {
+    const safe = safeHttpsUrl(input.logoUrl);
+    if (!safe) return { error: "The logo image link isn't valid." };
+    logoUrl = safe;
+  }
+  const socialLinks: Record<string, string> = {};
+  for (const key of ["facebook", "instagram", "tiktok"] as const) {
+    const raw = input.socialLinks?.[key];
+    if (!raw || !raw.trim()) continue;
+    const safe = safeHttpsUrl(raw);
+    if (!safe) return { error: `The ${key} link must be a full https:// address.` };
+    socialLinks[key] = safe;
+  }
+
   const newAnnouncement = input.announcement?.trim() || null;
   const announcementChanged = !!newAnnouncement && newAnnouncement !== seller.announcement;
 
   await prisma.sellerProfile.update({
     where: { id: seller.id },
     data: {
-      shopName: input.shopName,
+      shopName,
       description: input.description,
-      bannerUrl: input.bannerUrl || undefined,
-      logoUrl: input.logoUrl || undefined,
+      bannerUrl,
+      logoUrl,
       province: input.province,
       announcement: newAnnouncement,
-      socialLinks: input.socialLinks ?? {},
+      socialLinks,
       returnPolicy: input.returnPolicy?.trim() || null,
     },
   });

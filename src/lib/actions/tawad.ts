@@ -9,6 +9,7 @@ export async function submitOfferAction(productId: string, amount: number) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
 
+  if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0 || amount > 10_000_000) return { error: "Enter a valid offer amount." };
   const res = await submitOffer(session.user.id, productId, amount);
   revalidatePath(`/product/${productId}`);
   revalidatePath("/offers");

@@ -8,7 +8,7 @@ import { MultiLocationManager } from "./multi-location-manager";
 import { PrimaryCategoriesForm } from "./primary-categories-form";
 import { CloseStorePanel } from "./close-store-panel";
 import { IdVerificationPanel } from "./id-verification-panel";
-import { getStoreClosureBlockers } from "@/lib/actions/seller-account";
+import { getStoreClosureBlockers } from "@/lib/services/store-closure";
 
 export const dynamic = "force-dynamic";
 

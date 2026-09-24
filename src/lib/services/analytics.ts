@@ -12,7 +12,14 @@ import { prisma } from "@/lib/prisma";
  */
 export async function getSellerWallet(sellerId: string) {
   const [completedOrders, pendingOrders, payoutsCommitted, completedPayouts] = await Promise.all([
-    prisma.order.findMany({ where: { sellerId, status: "COMPLETED" }, include: { commission: true } }),
+    // Only orders whose payment actually came in count as withdrawable: status
+    // alone isn't proof of money (a seller-set COMPLETED on an unpaid order
+    // must never become available balance). COD is settled on delivery, so a
+    // completed COD order counts too.
+    prisma.order.findMany({
+      where: { sellerId, status: "COMPLETED", OR: [{ paymentStatus: "PAID" }, { paymentMethod: "COD" }] },
+      include: { commission: true },
+    }),
     prisma.order.findMany({ where: { sellerId, status: { in: ["PROCESSING", "SHIPPED", "IN_TRANSIT", "DELIVERED"] } }, include: { commission: true } }),
     prisma.payout.aggregate({ where: { sellerId, status: { in: ["PAID", "PROCESSING"] } }, _sum: { amount: true } }),
     prisma.payout.findMany({ where: { sellerId, status: "PAID" }, orderBy: { processedAt: "desc" }, take: 10 }),

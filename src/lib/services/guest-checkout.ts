@@ -161,7 +161,10 @@ export async function createAccountFromGuest(email: string, name: string, passwo
     data: { email: normalizedEmail, passwordHash, name: name || username, username, role: "BUYER" },
   });
   await prisma.cart.create({ data: { userId: user.id } });
-  await claimGuestOrders(user.id, normalizedEmail);
+  // Deliberately not claiming guest orders here: this action takes an
+  // arbitrary email with no proof of inbox ownership, so claiming now would
+  // let anyone create an account for a victim's address and read their past
+  // guest orders. claimGuestOrders runs once the email is verified instead.
 
   return { success: true as const, userId: user.id };
 }

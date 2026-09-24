@@ -9,6 +9,8 @@ import { reserveInventory, releaseInventory } from "@/lib/services/inventory";
 import { notify } from "@/lib/services/notifications";
 import { logProductEvent } from "@/lib/trending";
 import { effectivePrice } from "@/lib/deals";
+import { checkRateLimit } from "@/lib/services/rate-limit";
+import { sellerInactiveMessage } from "@/lib/constants";
 
 export async function claimAction(livestreamProductId: string, slotNumber: number) {
   const session = await auth();
@@ -28,9 +30,17 @@ export async function bidAction(auctionId: string, amount: number) {
 export async function buyNowAction(productId: string, quantity = 1, personalizationNote?: string) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) return { error: "Choose a quantity between 1 and 99." };
+  // Buy Now holds real stock the moment it's clicked (before any payment), so
+  // it's rate limited: otherwise a script could lock a seller's whole
+  // inventory without ever paying.
+  if (!(await checkRateLimit(`buy-now:${session.user.id}`, 30, 10 * 60_000))) {
+    return { error: "Too many attempts. Please wait a few minutes and try again." };
+  }
 
   const product = await prisma.product.findUnique({ where: { id: productId }, include: { seller: true } });
-  if (!product) return { error: "Product not found." };
+  if (!product || product.status !== "ACTIVE") return { error: "Product not found." };
+  if (sellerInactiveMessage(product.seller.status)) return { error: "This seller isn't taking orders right now." };
   if (product.seller.userId === session.user.id) return { error: "You can't buy your own listing." };
   if (product.listingType === "AUCTION") return { error: "This is an auction item. Place a bid instead." };
 
@@ -97,13 +107,23 @@ export async function toggleFollowAction(sellerId: string) {
   return { following: true };
 }
 
+// Both counters used to be open to anyone, unauthenticated and unlimited, so a
+// loop could set any livestream's numbers to whatever it liked. Now they need
+// an account and are rate limited per account (a real like/share is a
+// handful of taps, not thousands).
 export async function likeLivestreamAction(livestreamId: string) {
-  await prisma.livestream.update({ where: { id: livestreamId }, data: { likeCount: { increment: 1 } } });
+  const session = await auth();
+  if (!session?.user) return { error: "Please log in first." };
+  if (!(await checkRateLimit(`stream-like:${session.user.id}:${livestreamId}`, 5, 10 * 60_000))) return { success: true };
+  await prisma.livestream.updateMany({ where: { id: livestreamId }, data: { likeCount: { increment: 1 } } });
   return { success: true };
 }
 
 export async function shareLivestreamAction(livestreamId: string) {
-  await prisma.livestream.update({ where: { id: livestreamId }, data: { shareCount: { increment: 1 } } });
+  const session = await auth();
+  if (!session?.user) return { error: "Please log in first." };
+  if (!(await checkRateLimit(`stream-share:${session.user.id}:${livestreamId}`, 3, 10 * 60_000))) return { success: true };
+  await prisma.livestream.updateMany({ where: { id: livestreamId }, data: { shareCount: { increment: 1 } } });
   return { success: true };
 }
 

@@ -1,5 +1,6 @@
 "use server";
 
+import type { Session } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -11,7 +12,9 @@ import { getSelectedArea } from "@/lib/services/local";
 import { expireOverdueYardSales } from "@/lib/services/yard-sale";
 import { codCapableProviderActive } from "@/lib/shipping/registry";
 import { createShipmentForOrder, createPickupShipment, confirmShipmentDelivered } from "@/lib/shipping/lifecycle";
-import type { PaymentMethodId } from "@/lib/payments/provider";
+import { isClientPaymentMethod, type PaymentMethodId } from "@/lib/payments/provider";
+import { sellerInactiveMessage } from "@/lib/constants";
+import { effectivePrice } from "@/lib/deals";
 import { logProductEvent } from "@/lib/trending";
 import { recomputeSellerRating } from "@/lib/services/reviews";
 import { evaluateOrderForFraud } from "@/lib/services/fraud";
@@ -20,6 +23,8 @@ import { notify } from "@/lib/services/notifications";
 import { reviewInputSchema, shippingInfoSchema, disputeInputSchema, firstIssue } from "@/lib/validation";
 
 type FulfillmentMethod = "SHIP" | "PICKUP" | "LOCAL_DELIVERY" | "DIGITAL";
+
+const CHECKOUT_LOCK_MS = 60_000;
 
 export async function checkoutAction(
   cartItemIds: string[],
@@ -32,6 +37,37 @@ export async function checkoutAction(
 ) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
+
+  // One checkout per cart at a time. Cart rows were only deleted at the very
+  // end, so two overlapping requests (double-click, retry, second tab) both
+  // read the same rows and each created a full set of orders. The lock is a
+  // conditional update, so exactly one request wins it; it expires on its own
+  // if a request dies mid-way.
+  const lock = await prisma.cart.updateMany({
+    where: {
+      userId: session.user.id,
+      OR: [{ checkoutLockedAt: null }, { checkoutLockedAt: { lt: new Date(Date.now() - CHECKOUT_LOCK_MS) } }],
+    },
+    data: { checkoutLockedAt: new Date() },
+  });
+  if (lock.count === 0) return { error: "Your checkout is already being processed. Please wait a moment." };
+  try {
+    return await runCheckout(session, cartItemIds, shipping, paymentMethod, promoCode, fulfillmentMethod, shippingProviderId, buyerProtectionOptIn);
+  } finally {
+    await prisma.cart.updateMany({ where: { userId: session.user.id }, data: { checkoutLockedAt: null } });
+  }
+}
+
+async function runCheckout(
+  session: Session,
+  cartItemIds: string[],
+  shipping: ShippingInfo,
+  paymentMethod: PaymentMethodId,
+  promoCode?: string,
+  fulfillmentMethod?: FulfillmentMethod,
+  shippingProviderId?: string,
+  buyerProtectionOptIn?: boolean
+) {
   if (!session.user.hasVerifiedEmail) {
     return { error: "Please verify your email before checking out. Use the banner at the top of the page." };
   }
@@ -39,6 +75,10 @@ export async function checkoutAction(
   if (!(await checkRateLimit(`checkout:${session.user.id}`, 10, 5 * 60_000))) {
     return { error: "Too many checkout attempts. Please wait a few minutes and try again." };
   }
+  // Validated against the real list of buyer-selectable methods. Anything
+  // else would fall through to the always-succeeds mock provider (marking the
+  // order paid) and could dodge the exact-match COD checks below.
+  if (!isClientPaymentMethod(paymentMethod)) return { error: "Choose a valid payment method." };
 
   // A crafted request (not the real checkout UI, which always sends complete
   // shipping fields) could otherwise reach createOrder with an empty/absurdly
@@ -75,6 +115,16 @@ export async function checkoutAction(
     include: { product: { include: { seller: true } } },
   });
   if (items.length === 0) return { error: "No items selected." };
+
+  // The cart's stored unitPrice is a snapshot from when the item was added.
+  // For a regular marketplace line it's re-derived from the live product here:
+  // otherwise a flash-deal price could be locked in and paid long after the
+  // deal ended (or a stale price kept after the seller raised it). BUY_NOW,
+  // CLAIM and AUCTION lines keep their snapshot on purpose: their price was
+  // fixed by the offer/claim/bid that created them.
+  for (const item of items) {
+    if (item.sourceType === "MARKETPLACE") item.unitPrice = effectivePrice(item.product);
+  }
 
   // A BUY_NOW cart item reserves its own stock the moment it's created (see
   // buyNowAction), and a CLAIM item the moment its livestream slot is won
@@ -269,6 +319,11 @@ export async function checkoutAction(
   return { success: true, orderIds };
 }
 
+// The statuses a seller may set through the Studio orders screen. PAYMENT_PENDING
+// and DISPUTED are deliberately absent: the first is what an unpaid order
+// starts as, the second is set only by a buyer's dispute.
+const SELLER_SETTABLE_STATUSES = ["PROCESSING", "SHIPPED", "IN_TRANSIT", "DELIVERED", "COMPLETED", "CANCELLED"];
+
 export async function updateOrderStatusAction(orderId: string, status: string, trackingNumber?: string, courier?: string) {
   const session = await auth();
   if (!session?.user) return { error: "Please log in first." };
@@ -277,6 +332,44 @@ export async function updateOrderStatusAction(orderId: string, status: string, t
   if (!order) return { error: "Order not found." };
   if (order.seller.userId !== session.user.id && session.user.role !== "ADMIN") {
     return { error: "Not authorized." };
+  }
+
+  // A seller (as opposed to an admin) can only walk an order forward through
+  // the normal fulfillment steps. Without these checks a seller could mark
+  // their own unpaid order COMPLETED (completed orders are what the payout
+  // wallet counts), resurrect a cancelled/disputed order, or cancel one
+  // without the inventory/promo/refund unwinding a cancellation needs.
+  if (session.user.role !== "ADMIN") {
+    if (!SELLER_SETTABLE_STATUSES.includes(status)) return { error: "That status can't be set here." };
+    const inactive = sellerInactiveMessage(order.seller.status);
+    if (inactive) return { error: inactive };
+    if (["CANCELLED", "COMPLETED", "DISPUTED"].includes(order.status)) {
+      return { error: "This order is closed and can no longer be changed." };
+    }
+    if (order.fulfillmentMethod === "SERVICE" || order.fulfillmentMethod === "DIGITAL_PRODUCT") {
+      if (status === "DELIVERED" || status === "COMPLETED") {
+        return { error: "This order completes through its own delivery flow." };
+      }
+    }
+    if ((status === "DELIVERED" || status === "COMPLETED") && order.paymentStatus !== "PAID" && order.paymentMethod !== "COD") {
+      return { error: "This order can't be completed until the payment has been received." };
+    }
+    if (status === "CANCELLED") {
+      if (!["PAYMENT_PENDING", "PROCESSING"].includes(order.status)) {
+        return { error: "An order that has already shipped can't be cancelled here." };
+      }
+      if (order.fulfillmentMethod === "DIGITAL_PRODUCT") {
+        return { error: "Digital products can't be cancelled once purchased." };
+      }
+      const items = await prisma.orderItem.findMany({ where: { orderId }, select: { productId: true, quantity: true } });
+      for (const item of items) await releaseInventory(item.productId, item.quantity);
+      await reversePromoRedemption(orderId);
+      await reverseCouponRedemption(orderId);
+      await prisma.order.update({ where: { id: orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
+      revalidatePath("/studio/orders");
+      revalidatePath("/orders");
+      return { success: true };
+    }
   }
 
   // For courier-shipped orders, DELIVERED/COMPLETED are no longer something
@@ -428,6 +521,15 @@ export async function submitDisputeAction(orderId: string, reason: string, detai
 
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order || order.buyerId !== session.user.id) return { error: "Not authorized." };
+  // Only an order that was actually paid for and is still live can be
+  // disputed, and only once. Previously any of a buyer's orders could be
+  // flipped to DISPUTED at any status (including cancelled or refunded), and
+  // a second submission crashed on the unique Dispute.orderId constraint.
+  if (["CANCELLED", "DISPUTED", "PAYMENT_PENDING"].includes(order.status) || order.paymentStatus === "REFUNDED") {
+    return { error: "This order can't be disputed right now." };
+  }
+  const existingDispute = await prisma.dispute.findUnique({ where: { orderId }, select: { id: true } });
+  if (existingDispute) return { error: "A dispute is already open for this order." };
 
   await prisma.dispute.create({ data: { orderId, raisedById: session.user.id, reason, details } });
   await prisma.order.update({ where: { id: orderId }, data: { status: "DISPUTED" } });

@@ -13,8 +13,14 @@ const LOW_STOCK_THRESHOLD = 2;
  * last unit can never both succeed: only one `updateMany` will match the row.
  */
 export async function reserveInventory(productId: string, quantity: number): Promise<boolean> {
+  // A negative quantity would satisfy `quantityAvailable >= quantity` and then
+  // *increment* stock via the negative decrement, so only positive whole
+  // numbers are ever accepted here.
+  if (!Number.isInteger(quantity) || quantity < 1) return false;
   const result = await prisma.product.updateMany({
-    where: { id: productId, quantityAvailable: { gte: quantity } },
+    // Only a live listing can be reserved (an admin-flagged/removed one must
+    // never be flipped to SOLD_OUT or sold).
+    where: { id: productId, status: "ACTIVE", quantityAvailable: { gte: quantity } },
     data: { quantityAvailable: { decrement: quantity } },
   });
   if (result.count === 1) {
@@ -41,6 +47,7 @@ export async function reserveInventory(productId: string, quantity: number): Pro
 }
 
 export async function releaseInventory(productId: string, quantity: number) {
+  if (!Number.isInteger(quantity) || quantity < 1) return;
   await prisma.product.updateMany({
     where: { id: productId },
     data: { quantityAvailable: { increment: quantity } },
