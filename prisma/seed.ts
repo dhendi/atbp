@@ -156,11 +156,10 @@ const PRODUCTION_DB_ENDPOINT_ID = "ep-spring-wildflower-auso1gvs";
 
 function assertNotProduction() {
   const url = process.env.DATABASE_URL ?? "";
-  if (url.includes(PRODUCTION_DB_ENDPOINT_ID) && process.env.ALLOW_PROD_SEED !== "true") {
+  if (url.includes(PRODUCTION_DB_ENDPOINT_ID)) {
     console.error(
       "\nRefusing to seed: DATABASE_URL points at the production database.\n" +
-      "This script deletes every row in every table. If you really mean to reset production, re-run with:\n" +
-      "  ALLOW_PROD_SEED=true npm run db:seed\n"
+      "This script deletes every row in every table, and there is deliberately no override.\n"
     );
     process.exit(1);
   }
@@ -168,6 +167,12 @@ function assertNotProduction() {
 
 async function main() {
   assertNotProduction();
+  // Second guard, independent of which database this is: never wipe a database
+  // that already holds any accounts.
+  if ((await prisma.user.count()) > 0) {
+    console.error("\nRefusing to seed: this database already has user accounts, and this script deletes every row.\n");
+    process.exit(1);
+  }
   console.log("Seeding ATBP demo data...");
 
   // ---------- Clean slate ----------
