@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem } from "lucide-react";
+import { ArrowRight, Search, Clock, Hammer, Shirt, History, Gem } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -9,10 +9,7 @@ import { getTrendingProducts, getTrendingProductIdSet } from "@/lib/trending";
 import { isDealActive, discountPercent } from "@/lib/deals";
 import { ProductCard } from "@/components/domain/product-card";
 import { MakerCard } from "@/components/domain/maker-card";
-import { FindsWithStory } from "@/components/domain/finds-with-story";
 import { QuickNav } from "@/components/layout/quick-nav";
-import { getFeaturedClosets } from "@/lib/services/closet";
-import { getTrendingYardSales } from "@/lib/services/yard-sale";
 import { SectionHeader } from "@/components/domain/section-header";
 import { toProductCardData } from "@/lib/product-card-data";
 import { Button } from "@/components/ui/button";
@@ -24,7 +21,7 @@ import { SponsoredProductCard } from "@/components/domain/sponsored-product-card
 import { InterestCollectionCard } from "@/components/domain/interest-collection-card";
 import { CollectionCard } from "@/components/domain/collection-card";
 import { FEATURED_INTERESTS, topIdentityInterests } from "@/lib/interests";
-import { getHiddenGems, getActiveCollections, getUkayFinds } from "@/lib/services/discovery";
+import { getActiveCollections } from "@/lib/services/discovery";
 import { getSavedProductIdSet } from "@/lib/services/wishlist";
 import { getSocialProofMap, type SocialProofData } from "@/lib/services/social-proof";
 import { getForYouProducts, getBecauseYouLookedAt, getBasedOnYourSearches, getWishlistDigest, getDealsForYou } from "@/lib/services/personalization";
@@ -79,7 +76,7 @@ export default async function HomePage() {
   // Server Component, not client render — wall-clock time here is correct, not impure.
   // eslint-disable-next-line react-hooks/purity
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400000);
-  const [heroProducts, trending, endingSoonAuctions, dealCandidates, recentlyAdded, makers, featuredClosets, trendingYardSales, preLovedFinds] = await Promise.all([
+  const [heroProducts, trending, endingSoonAuctions, dealCandidates, recentlyAdded, makers] = await Promise.all([
     prisma.product.findMany({ where: { status: "ACTIVE" }, orderBy: { createdAt: "desc" }, take: 5 }),
     getTrendingProducts({ limit: 12 }),
     prisma.product.findMany({
@@ -107,9 +104,6 @@ export default async function HomePage() {
         _count: { select: { products: { where: { status: "ACTIVE", createdAt: { gte: sevenDaysAgo } } } } },
       },
     }),
-    getFeaturedClosets(10),
-    getTrendingYardSales(10),
-    getUkayFinds(10),
   ]);
 
   const deals = dealCandidates.filter((p) => isDealActive(p)).sort((a, b) => discountPercent(b) - discountPercent(a)).slice(0, 10);
@@ -136,10 +130,9 @@ export default async function HomePage() {
     : [[], []];
 
   const featuredSlugs = FEATURED_INTERESTS.slice(0, 10);
-  const [sponsoredPromotions, picks, hiddenGems, featuredImages] = await Promise.all([
+  const [sponsoredPromotions, picks, featuredImages] = await Promise.all([
     getActivePromotedProducts("HOMEPAGE", { limit: 6 }),
     getActiveCollections("PICK"),
-    getHiddenGems(10),
     Promise.all(
       featuredSlugs.map((slug) => prisma.product.findFirst({ where: { status: "ACTIVE", tags: { array_contains: slug } }, select: { images: true } }))
     ),
@@ -148,12 +141,11 @@ export default async function HomePage() {
 
   // ---------- Personalization (Parts 4 & 10) — real signals only, simple ranking ----------
   const userId = session?.user?.id;
-  const [forYou, becauseYouLookedAt, basedOnSearches, wishlistDigest, filipinoFinds, dealsForYou] = await Promise.all([
+  const [forYou, becauseYouLookedAt, basedOnSearches, wishlistDigest, dealsForYou] = await Promise.all([
     userId ? getForYouProducts(userId, 12) : Promise.resolve([]),
     userId ? getBecauseYouLookedAt(userId, 12) : Promise.resolve({ source: null, label: null, products: [] }),
     userId ? getBasedOnYourSearches(userId, 12) : Promise.resolve({ terms: [], products: [] }),
     userId ? getWishlistDigest(userId, 10) : Promise.resolve([]),
-    prisma.product.findMany({ where: { status: "ACTIVE", tags: { array_contains: "filipino-finds" } }, include: { seller: true }, orderBy: { likeCount: "desc" }, take: 10 }),
     userId ? getDealsForYou(userId, 10) : Promise.resolve([]),
   ]);
 
@@ -165,8 +157,8 @@ export default async function HomePage() {
   const genuinelyTrending = trending.filter((p) => p.trendingScore > 0);
 
   const allCardProducts = [
-    ...trending, ...endingSoonAuctions, ...dealCandidates, ...recentlyAdded, ...nearbyProducts, ...hiddenGems, ...preLovedFinds,
-    ...fromFollowedShops, ...filipinoFinds, ...forYou, ...becauseYouLookedAt.products, ...basedOnSearches.products, ...dealsForYou,
+    ...trending, ...endingSoonAuctions, ...dealCandidates, ...recentlyAdded, ...nearbyProducts,
+    ...fromFollowedShops, ...forYou, ...becauseYouLookedAt.products, ...basedOnSearches.products, ...dealsForYou,
   ];
   const [savedIds, socialProofMap] = await Promise.all([
     getSavedProductIdSet(userId),
@@ -309,19 +301,6 @@ export default async function HomePage() {
           and Explore's "shop by occasion" grouping rather than living here
           too — five near-identical curated shelves back to back was the
           actual complaint this redesign is fixing. ---------- */}
-      {filipinoFinds.length > 0 && (
-        <section>
-          <SectionHeader eyebrow="🇵🇭 Proudly local" title="Filipino Finds" subtitle="Unique goods made and sold by Filipino sellers" seeAllHref="/discover?interest=filipino-finds" />
-          <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-            {filipinoFinds.map((p) => (
-              <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
-                <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ---------- SELLERS WORTH FOLLOWING — guarded like every other dynamic
           shelf on this page; there's no static fallback content here, so an
           empty approved-seller pool would otherwise render a header over
@@ -348,17 +327,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* ---------- FINDS WITH A STORY — replaces what used to be two separate
-          full-width shelves (Closets, Yard Sales) plus adds a third
-          (Pre-Loved, via getUkayFinds) as tabs in one section instead of
-          three competing ones. Nothing about Closets/Yard Sales changed —
-          still fully browsable at their own pages via "See all". ---------- */}
-      <FindsWithStory
-        closets={featuredClosets}
-        yardSales={trendingYardSales}
-        preLoved={preLovedFinds.map((p) => toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) }))}
-      />
 
       {/* ---------- DEALS (personalized when signal exists, generic top-discount otherwise) ---------- */}
       {todaysDeals.length > 0 && (
@@ -398,9 +366,9 @@ export default async function HomePage() {
           collections) and Hidden Gems (algorithmic underrated finds) are
           both "editorial discovery," just from different sources, so they
           share one section instead of two ---------- */}
-      {(picks.length > 0 || hiddenGems.length > 0) && (
+      {picks.length > 0 && (
         <section>
-          <SectionHeader eyebrow="✨ Handpicked" title="Handpicked & Hidden Gems" subtitle="Curated by our team, and great finds that haven't blown up yet" />
+          <SectionHeader eyebrow="✨ Handpicked" title="Handpicked" subtitle="Curated by our team" />
           {picks.length > 0 && (
             <div className="mb-2 px-4 md:px-6">
               <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-400">ATBP Picks</p>
@@ -414,18 +382,6 @@ export default async function HomePage() {
                     emoji={pick.emoji ?? undefined}
                     image={(pick.products[0]?.product.images as string[] | undefined)?.[0]}
                   />
-                ))}
-              </div>
-            </div>
-          )}
-          {hiddenGems.length > 0 && (
-            <div className="px-4 md:px-6">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-400">💎 Hidden Gems</p>
-              <div className="no-scrollbar -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 md:-mx-6 md:px-6">
-                {hiddenGems.map((p) => (
-                  <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
-                    <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
-                  </div>
                 ))}
               </div>
             </div>
@@ -591,36 +547,6 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* ---------- WHY ATBP ---------- */}
-      <section className="px-4 md:px-6">
-        <SectionHeader eyebrow="Why ATBP" title="Why shop on ATBP?" />
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <WhyCard
-            icon={PackageSearch}
-            title="Find something different"
-            desc="Browse handmade, vintage, pre-loved, collectibles, art, and more."
-          />
-          <WhyCard
-            icon={Users}
-            title="Support independent sellers"
-            desc="Buy directly from makers, collectors, resellers, and small businesses."
-          />
-          {AUCTIONS_ENABLED ? (
-            <WhyCard
-              icon={Gavel}
-              title="Shop or bid"
-              desc="Buy something you like, or join an auction for something you really want."
-            />
-          ) : (
-            <WhyCard
-              icon={MapPin}
-              title="Shop local"
-              desc="Find sellers near you, with local pickup and delivery options in your area."
-            />
-          )}
-        </div>
-      </section>
-
       {/* ---------- SELLER CTA ---------- */}
       <section className="px-4 md:px-6">
         <div className="relative overflow-hidden rounded-card bg-ink-900 p-7 text-white md:p-12">
@@ -637,16 +563,6 @@ export default async function HomePage() {
           </Button>
         </div>
       </section>
-    </div>
-  );
-}
-
-function WhyCard({ icon: Icon, title, desc }: { icon: typeof Users; title: string; desc: string }) {
-  return (
-    <div className="rounded-card border border-ink-200 bg-white p-4">
-      <Icon size={20} className="text-brand-600" />
-      <p className="mt-3 font-display text-sm font-semibold text-ink-900">{title}</p>
-      <p className="mt-1 text-xs leading-relaxed text-ink-500">{desc}</p>
     </div>
   );
 }
