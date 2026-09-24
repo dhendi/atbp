@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem } from "lucide-react";
+import { ArrowRight, Users, Gavel, PackageSearch, Search, Clock, MapPin, Hammer, Shirt, History, Gem } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -191,11 +191,8 @@ export default async function HomePage() {
         <div className="weave-texture absolute inset-0 -z-10 opacity-70" />
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-8">
           <div className="relative z-10">
-            <p className="font-tag mb-4 inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-ink-600">
-              <Sparkles size={12} className="text-brand-500" /> Everything filipino, at iba pa
-            </p>
             <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink-900 sm:text-6xl md:text-7xl">
-              Find something <em className="italic text-brand-600">different.</em>
+              Everything Filipino, <em className="italic text-brand-600">at iba pa.</em>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-ink-600 md:text-lg">
               Handmade, vintage, pre-loved, and collectible finds from sellers across the Philippines.
