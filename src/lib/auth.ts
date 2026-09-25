@@ -1,3 +1,4 @@
+import { isBlockedRole } from "@/lib/auth-roles";
 import { randomUUID } from "crypto";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
@@ -196,7 +197,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (provider === "google" && (profile as { email_verified?: boolean } | undefined)?.email_verified !== true) return false;
 
       let dbUser = await findOrCreateOAuthUser(user.email, user.name ?? "", user.image ?? null);
-      if (dbUser.role === "SUSPENDED") return false;
+      if (isBlockedRole(dbUser.role)) return false;
       // No TOTP step exists on this path, so an account with 2FA on must use
       // password + code instead.
       if (await hasTwoFactorEnabled(dbUser.id)) return false;
@@ -246,7 +247,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
         const valid = await bcrypt.compare(password, user ? user.passwordHash : DUMMY_PASSWORD_HASH) && !!user;
         const twoFactorOk = user ? await verifyTwoFactorCode(user.id, code) : false;
-        if (!user || !valid || !twoFactorOk || user.role === "SUSPENDED") {
+        if (!user || !valid || !twoFactorOk || isBlockedRole(user.role)) {
           await prisma.loginAttempt.create({ data: { email: normalizedEmail } });
           return null;
         }
@@ -295,7 +296,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         await prisma.phoneOtpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
 
         const user = await findOrCreateByPhone(phone);
-        if (user.role === "SUSPENDED") return null;
+        if (isBlockedRole(user.role)) return null;
         if (await hasTwoFactorEnabled(user.id)) return null;
         // A number that was previously unverified (e.g. entered for shipping)
         // is now proven — record it the same way a first-time verification would.
@@ -346,7 +347,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         await prisma.emailOtpToken.update({ where: { id: token.id }, data: { consumedAt: new Date() } });
 
         let user = await findOrCreateByEmail(email);
-        if (user.role === "SUSPENDED") return null;
+        if (isBlockedRole(user.role)) return null;
         // No TOTP step on this path: an account with 2FA on must use
         // password + code, otherwise inbox access alone would bypass 2FA.
         if (await hasTwoFactorEnabled(user.id)) return null;

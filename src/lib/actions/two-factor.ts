@@ -1,5 +1,6 @@
 "use server";
 
+import { isBlockedRole } from "@/lib/auth-roles";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -109,7 +110,7 @@ export async function checkPasswordAction(email: string, password: string) {
     where: { email: normalizedEmail },
     include: { twoFactorAuth: true },
   });
-  if (!user || user.role === "SUSPENDED") return { error: "Invalid email or password." };
+  if (!user || isBlockedRole(user.role)) return { error: "Invalid email or password." };
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) return { error: "Invalid email or password." };
 

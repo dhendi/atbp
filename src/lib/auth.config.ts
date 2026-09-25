@@ -1,3 +1,4 @@
+import { DELETED_ROLE } from "@/lib/auth-roles";
 import type { NextAuthConfig } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { isPlaceholderEmail } from "@/lib/phone";
@@ -61,7 +62,7 @@ export const authConfig: NextAuthConfig = {
           where: { id: token.id as string },
           select: { role: true, sessionVersion: true, email: true, emailVerifiedAt: true, twoFactorAuth: { select: { verifiedAt: true } } },
         });
-        if (!current || current.sessionVersion !== token.sessionVersion) {
+        if (!current || current.role === DELETED_ROLE || current.sessionVersion !== token.sessionVersion) {
           return null;
         }
         token.role = current.role;

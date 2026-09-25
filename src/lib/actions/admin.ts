@@ -8,6 +8,7 @@ import { sendPushToUser } from "@/lib/services/push";
 import { sendEmail } from "@/lib/services/email";
 import { logAdminAction } from "@/lib/services/audit-log";
 import { revokeSessions } from "@/lib/services/sessions";
+import { anonymizeAccount, getAccountDeletionBlockers } from "@/lib/services/account-deletion";
 import { maybeGrantFoundingSeller } from "@/lib/services/founding-seller";
 import { syncClosetMonthlySalesCap } from "@/lib/services/closet";
 import { getStoreClosureBlockers } from "@/lib/services/store-closure";
@@ -618,6 +619,29 @@ export async function suspendUserAction(userId: string, suspend: boolean) {
   await logAdminAction(admin.id, suspend ? "SUSPEND_USER" : "REINSTATE_USER", "User", userId, { restoredRole: suspend ? undefined : nextRole });
   await revokeSessions(userId);
   revalidatePath("/admin/users");
+  return { success: true };
+}
+
+/** Admin-initiated account deletion (anonymization). Irreversible: strips the
+ * person's data and locks the account, keeping order/review/dispute rows that
+ * other people's records depend on. Refuses admins, the caller's own account,
+ * and anything with open orders, disputes, bids or a shop balance. */
+export async function adminDeleteUserAction(userId: string, reason: string) {
+  const admin = await requireAdmin();
+  if (!admin) return { error: "Not authorized." };
+  if (userId === admin.id) return { error: "You can't delete your own account from here." };
+  const parsed = adminReasonSchema.safeParse(reason);
+  if (!parsed.success) return { error: firstIssue(parsed) };
+
+  const blockers = await getAccountDeletionBlockers(userId);
+  if (blockers.length > 0) return { error: `Can't delete yet: ${blockers.join("; ")}.` };
+
+  const result = await anonymizeAccount(userId);
+  if ("error" in result) return result;
+  await logAdminAction(admin.id, "DELETE_USER", "User", userId, { reason: parsed.data });
+  revalidatePath("/admin/users");
+  revalidatePath("/admin/sellers");
+  updateTag("products");
   return { success: true };
 }
 

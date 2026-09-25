@@ -220,13 +220,14 @@ export default function PrivacyPage() {
             <li>lodge a complaint with the National Privacy Commission (NPC).</li>
           </ul>
           <p className="mt-2">
-            To exercise these rights, or to request account deletion, contact us at{" "}
+            You can delete your account yourself from Settings (&quot;Delete account&quot;). To exercise your other rights, or
+            if you can&apos;t sign in, contact us at{" "}
             <a href={`mailto:${LEGAL_CONFIG.privacyContactEmail}`} className="font-semibold text-brand-600 hover:underline">{LEGAL_CONFIG.privacyContactEmail}</a>{" "}
             or through the{" "}
             <Link href="/help/contact" className="font-semibold text-brand-600 hover:underline">contact form</Link>.
-            Account deletion is currently handled by our support team on request rather than a self-service button;
-            we&apos;ll confirm with you once it&apos;s processed. Deleting your account does not erase records ATBP is
-            legally required to keep (e.g., completed order/tax records).
+            Deleting your account removes your name, email, phone number, addresses, and any ID files, and it cannot be
+            undone. It does not erase records ATBP is legally required to keep (for example, completed order and tax
+            records), which are kept without your name attached to your profile.
           </p>
         </Section>
 

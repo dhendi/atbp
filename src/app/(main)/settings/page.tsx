@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AccountSettingsForm } from "./account-settings-form";
 import { TwoFactorSettings } from "./two-factor-settings";
+import { DeleteAccountSection } from "./delete-account-section";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
           <TwoFactorSettings />
         </div>
       )}
+      {user.role !== "ADMIN" && <DeleteAccountSection />}
     </div>
   );
 }
