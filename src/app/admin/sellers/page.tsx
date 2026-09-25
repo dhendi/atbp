@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/domain/empty-state";
 import { FoundingSellerBadge } from "@/components/domain/founding-seller-badge";
 import { formatCompactNumber } from "@/lib/utils";
 import { purgeExpiredIdDocuments } from "@/lib/services/document-retention";
+import { hideSuspendedSellerListings } from "@/lib/services/seller-suspension";
 import { AdminSearch } from "@/components/domain/admin-search";
 import { SellerModerationActions } from "./actions";
 
@@ -24,6 +25,8 @@ export default async function AdminSellersPage({ searchParams }: { searchParams:
   // Lazy, on-view retention cleanup — same pattern as expireOverdueYardSales,
   // since this app has no cron. See purgeExpiredIdDocuments for what it does.
   await purgeExpiredIdDocuments();
+  // Catches shops suspended before listings were hidden on suspension.
+  await hideSuspendedSellerListings();
 
   const sellers = await prisma.sellerProfile.findMany({
     where: query

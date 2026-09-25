@@ -43,7 +43,7 @@ export const getYardSalesNearby = cachedQuery(
   async (area: string, limit = 10) => {
     await expireOverdueYardSales();
     return prisma.yardSale.findMany({
-      where: { status: "ACTIVE", city: area },
+      where: { status: "ACTIVE", seller: { status: "APPROVED" }, city: area },
       include: yardSaleCardInclude,
       orderBy: { createdAt: "desc" },
       take: limit,
@@ -68,7 +68,7 @@ export const getYardSalesThisWeekend = cachedQuery(
     weekendEnd.setHours(23, 59, 59, 999);
 
     return prisma.yardSale.findMany({
-      where: { status: "ACTIVE", startDate: { lte: weekendEnd }, endDate: { gte: weekendStart } },
+      where: { status: "ACTIVE", seller: { status: "APPROVED" }, startDate: { lte: weekendEnd }, endDate: { gte: weekendStart } },
       include: yardSaleCardInclude,
       orderBy: { startDate: "asc" },
       take: limit,
@@ -93,7 +93,7 @@ export const getTrendingYardSales = cachedQuery(
     const ids = grouped.map((g) => g.yardSaleId).filter((id): id is string => !!id);
     if (ids.length === 0) return [];
     const order = new Map(ids.map((id, i) => [id, i]));
-    const yardSales = await prisma.yardSale.findMany({ where: { id: { in: ids }, status: "ACTIVE" }, include: yardSaleCardInclude });
+    const yardSales = await prisma.yardSale.findMany({ where: { id: { in: ids }, status: "ACTIVE", seller: { status: "APPROVED" } }, include: yardSaleCardInclude });
     return yardSales.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
   },
   ["trending-yard-sales"],
@@ -103,7 +103,7 @@ export const getTrendingYardSales = cachedQuery(
 export const getAllActiveYardSales = cachedQuery(
   async (limit = 60) => {
     await expireOverdueYardSales();
-    return prisma.yardSale.findMany({ where: { status: "ACTIVE" }, include: yardSaleCardInclude, orderBy: { createdAt: "desc" }, take: limit });
+    return prisma.yardSale.findMany({ where: { status: "ACTIVE", seller: { status: "APPROVED" } }, include: yardSaleCardInclude, orderBy: { createdAt: "desc" }, take: limit });
   },
   ["all-active-yard-sales"],
   { revalidate: 60, tags: ["yard-sales"] }
@@ -115,7 +115,7 @@ export const getYardSalesEndingSoon = cachedQuery(
     const now = new Date();
     const cutoff = new Date(now.getTime() + withinHours * 3600000);
     return prisma.yardSale.findMany({
-      where: { status: "ACTIVE", endDate: { gte: now, lte: cutoff } },
+      where: { status: "ACTIVE", seller: { status: "APPROVED" }, endDate: { gte: now, lte: cutoff } },
       include: yardSaleCardInclude,
       orderBy: { endDate: "asc" },
       take: limit,

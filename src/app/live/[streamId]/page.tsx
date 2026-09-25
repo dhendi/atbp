@@ -6,10 +6,10 @@ import { LiveRoom } from "./live-room";
 export default async function LiveWatchPage({ params }: { params: Promise<{ streamId: string }> }) {
   const { streamId } = await params;
   const [stream, session] = await Promise.all([
-    prisma.livestream.findUnique({ where: { id: streamId } }),
+    prisma.livestream.findUnique({ where: { id: streamId }, include: { seller: { select: { status: true } } } }),
     auth(),
   ]);
-  if (!stream) notFound();
+  if (!stream || stream.seller.status === "SUSPENDED") notFound();
 
   return <LiveRoom streamId={streamId} isLoggedIn={!!session?.user} />;
 }

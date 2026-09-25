@@ -122,20 +122,20 @@ const closetCardInclude = { seller: true, products: { where: { status: "ACTIVE" 
 
 export const getClosetsNearby = cachedQuery(
   async (area: string, limit = 10) =>
-    prisma.closet.findMany({ where: { city: area }, include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
+    prisma.closet.findMany({ where: { city: area, seller: { status: "APPROVED" } }, include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
   ["closets-nearby"],
   { revalidate: 60, tags: ["closets"] }
 );
 
 export const getAllClosets = cachedQuery(
-  async (limit = 60) => prisma.closet.findMany({ include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
+  async (limit = 60) => prisma.closet.findMany({ where: { seller: { status: "APPROVED" } }, include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
   ["all-closets"],
   { revalidate: 60, tags: ["closets"] }
 );
 
 export const getFeaturedClosets = cachedQuery(
   async (limit = 10) =>
-    prisma.closet.findMany({ where: { featured: true }, include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
+    prisma.closet.findMany({ where: { featured: true, seller: { status: "APPROVED" } }, include: closetCardInclude, orderBy: { createdAt: "desc" }, take: limit }),
   ["featured-closets"],
   { revalidate: 60, tags: ["closets"] }
 );

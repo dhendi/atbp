@@ -11,6 +11,7 @@ import { autoConfirmOverdueServiceOrders } from "@/lib/services/service-orders";
 import { releaseOverdueDigitalProductHolds } from "@/lib/services/digital-products";
 import { settleExpiredPromotions } from "@/lib/services/promotions";
 import { recomputeAllSellerBadges } from "@/lib/services/badges";
+import { hideSuspendedSellerListings } from "@/lib/services/seller-suspension";
 
 export const maxDuration = 60;
 
@@ -60,6 +61,7 @@ export async function GET(request: Request) {
     releasedDigitalHolds,
     settledPromotions,
     sellersWithUpdatedBadges,
+    hiddenSuspendedListings,
   ] = await Promise.all([
     settleExpiredAuctions(),
     notifyStartedAuctions(),
@@ -73,6 +75,7 @@ export async function GET(request: Request) {
     releaseOverdueDigitalProductHolds(),
     settleExpiredPromotions(),
     recomputeAllSellerBadges(),
+    hideSuspendedSellerListings(),
   ]);
 
   // Sweeps above change what the "products"/"drops"/"sellers" caches would
@@ -97,6 +100,7 @@ export async function GET(request: Request) {
     releasedDigitalHolds,
     settledPromotions,
     sellersWithUpdatedBadges,
+    hiddenSuspendedListings,
     ranAt: new Date().toISOString(),
   });
 }

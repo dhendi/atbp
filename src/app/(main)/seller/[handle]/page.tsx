@@ -34,7 +34,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const seller = await prisma.sellerProfile.findUnique({ where: { handle } });
-  if (!seller) return { title: "Shop not found" };
+  if (!seller || seller.status === "SUSPENDED") return { title: "Shop not found" };
 
   // The root layout's title template already appends " | ATBP" — don't
   // repeat it here, or the rendered tab title doubles up as "... | ATBP | ATBP".
@@ -89,7 +89,7 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
   const session = await auth();
 
   const seller = await prisma.sellerProfile.findUnique({ where: { handle }, include: { hours: true } });
-  if (!seller) notFound();
+  if (!seller || seller.status === "SUSPENDED") notFound();
 
   const shopStatus = seller.physicalPresence !== "ONLINE_ONLY" ? getShopStatus(seller.hours, seller.temporarilyClosed) : null;
   const locationLabel = getPublicLocationLabel(seller);

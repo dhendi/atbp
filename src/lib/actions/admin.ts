@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/services/email";
 import { logAdminAction } from "@/lib/services/audit-log";
 import { revokeSessions } from "@/lib/services/sessions";
 import { anonymizeAccount, getAccountDeletionBlockers } from "@/lib/services/account-deletion";
+import { hideSuspendedSellerListings, restoreSellerListings } from "@/lib/services/seller-suspension";
 import { maybeGrantFoundingSeller } from "@/lib/services/founding-seller";
 import { syncClosetMonthlySalesCap } from "@/lib/services/closet";
 import { getStoreClosureBlockers } from "@/lib/services/store-closure";
@@ -194,6 +195,9 @@ export async function suspendSellerAction(sellerId: string) {
   const admin = await requireAdmin();
   if (!admin) return { error: "Not authorized." };
   const seller = await prisma.sellerProfile.update({ where: { id: sellerId }, data: { status: "SUSPENDED" } });
+  await hideSuspendedSellerListings(sellerId);
+  updateTag("closets");
+  updateTag("yard-sales");
   await logAdminAction(admin.id, "SUSPEND_SELLER", "SellerProfile", sellerId, { shopName: seller.shopName });
   await revokeSessions(seller.userId);
   await notify(seller.userId, "ORDER_CONFIRMED", "Account suspended", `${seller.shopName} has been suspended pending review. Contact support.`, "/studio");
@@ -212,6 +216,9 @@ export async function reinstateSellerAction(sellerId: string) {
   if (seller.status !== "SUSPENDED") return { error: "This account isn't suspended." };
 
   await prisma.sellerProfile.update({ where: { id: sellerId }, data: { status: "APPROVED" } });
+  await restoreSellerListings(sellerId);
+  updateTag("closets");
+  updateTag("yard-sales");
   await logAdminAction(admin.id, "REINSTATE_SELLER", "SellerProfile", sellerId, { shopName: seller.shopName });
   await notify(seller.userId, "ACCOUNT_REINSTATED", "Account reinstated", `${seller.shopName} has been reinstated after review. Welcome back.`, "/studio");
   revalidatePath("/admin/sellers");
@@ -319,6 +326,9 @@ export async function flagProhibitedItemAction(productId: string, reason: string
   const activeWarningCount = await prisma.sellerWarning.count({ where: { sellerId: product.sellerId, active: true } });
   if (activeWarningCount >= AUTO_SUSPEND_WARNING_COUNT && product.seller.status !== "SUSPENDED") {
     await prisma.sellerProfile.update({ where: { id: product.sellerId }, data: { status: "SUSPENDED" } });
+    await hideSuspendedSellerListings(product.sellerId);
+    updateTag("closets");
+    updateTag("yard-sales");
     await logAdminAction(admin.id, "AUTO_SUSPEND_SELLER", "SellerProfile", product.sellerId, {
       shopName: product.seller.shopName,
       activeWarningCount,

@@ -38,9 +38,9 @@ export default async function LiveBrowsePage() {
   const session = await auth();
 
   const [live, upcoming, ended] = await Promise.all([
-    prisma.livestream.findMany({ where: { status: "LIVE" }, include: { seller: true }, orderBy: { viewerCount: "desc" } }),
-    prisma.livestream.findMany({ where: { status: "SCHEDULED" }, include: { seller: true, reminders: true }, orderBy: { scheduledAt: "asc" } }),
-    prisma.livestream.findMany({ where: { status: "ENDED" }, include: { seller: true }, orderBy: { endedAt: "desc" }, take: 12 }),
+    prisma.livestream.findMany({ where: { status: "LIVE", seller: { status: "APPROVED" } }, include: { seller: true }, orderBy: { viewerCount: "desc" } }),
+    prisma.livestream.findMany({ where: { status: "SCHEDULED", seller: { status: "APPROVED" } }, include: { seller: true, reminders: true }, orderBy: { scheduledAt: "asc" } }),
+    prisma.livestream.findMany({ where: { status: "ENDED", seller: { status: "APPROVED" } }, include: { seller: true }, orderBy: { endedAt: "desc" }, take: 12 }),
   ]);
 
   return (
