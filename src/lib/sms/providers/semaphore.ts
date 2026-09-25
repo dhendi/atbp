@@ -10,7 +10,9 @@ import type { SmsProvider } from "../types";
  * (see lib/local-shared.ts). This is NOT reachable from anywhere in the app
  * until SMS_PROVIDER="SEMAPHORE" AND SEMAPHORE_API_KEY are both set — see
  * isActive() in ../registry.ts. Nothing here has been tested against a real
- * Semaphore account, because there isn't one yet.
+ * Semaphore account, because there isn't one yet. NOTE: Semaphore rejects
+ * sends with an error when the account has no registered Sender Name and
+ * SEMAPHORE_SENDER_NAME is unset, so register and get one approved first.
  *
  * To activate:
  * 1. Sign up at https://semaphore.co, buy SMS credits, and get your API key
@@ -26,7 +28,7 @@ import type { SmsProvider } from "../types";
  * ============================================================================
  */
 
-const SEND_URL = "https://api.semaphore.co/api/v4/messages"; // ⚠️ VERIFY against live docs
+const SEND_URL = "https://api.semaphore.co/api/v4/messages"; // checked against semaphore.co/docs (POST, form-encoded: apikey, number, message, sendername)
 
 export const semaphoreProvider: SmsProvider = {
   id: "SEMAPHORE",
@@ -35,7 +37,8 @@ export const semaphoreProvider: SmsProvider = {
     try {
       const params = new URLSearchParams({
         apikey: process.env.SEMAPHORE_API_KEY ?? "",
-        number: to,
+        // Semaphore's documented format is 639XXXXXXXXX, without the leading +.
+        number: to.replace(/^\+/, ""),
         message: body,
       });
       if (process.env.SEMAPHORE_SENDER_NAME) params.set("sendername", process.env.SEMAPHORE_SENDER_NAME);

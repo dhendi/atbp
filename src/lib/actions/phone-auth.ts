@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { randomInt } from "crypto";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { normalizePhMobile } from "@/lib/phone";
 import { sendPhoneOtpSms } from "@/lib/services/sms";
@@ -18,6 +19,13 @@ const OTP_TTL_MS = 5 * 60_000; // 5 minutes
 export async function requestPhoneOtpAction(rawPhone: string) {
   const phone = normalizePhMobile(rawPhone);
   if (!phone) return { error: "Enter a valid PH mobile number, e.g. 0917 123 4567." };
+
+  // Every code sent is a paid text, and the per-number limit below does nothing
+  // against someone cycling through many different numbers. Cap per visitor too.
+  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!(await checkRateLimit(`phone-otp-send-ip:${ip}`, 10, 60 * 60_000))) {
+    return { error: "Too many attempts. Please wait a while before trying again." };
+  }
 
   if (!(await checkRateLimit(`phone-otp-send:${phone}`, 5, 15 * 60_000))) {
     return { error: "Too many attempts. Please wait a while before trying again." };
