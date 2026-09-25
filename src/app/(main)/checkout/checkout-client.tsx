@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics-client";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -212,6 +213,7 @@ export function CheckoutClient({
         toast.error(res.error);
         return;
       }
+      track("order_placed", { payment_method: method, item_count: checkoutItems.length, fulfillment: fulfillment ?? "none" });
       toast.success("Order placed! 🎉", { action: { label: "View order", onClick: () => router.push("/orders") } });
       router.push("/");
     } catch {

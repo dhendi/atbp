@@ -122,7 +122,7 @@ export default function PrivacyPage() {
             <li><strong className="text-ink-900">Database hosting</strong> (Neon, a managed PostgreSQL provider): stores account, listing, and order records.</li>
             <li><strong className="text-ink-900">Sign-in</strong>: ATBP&apos;s own authentication system, plus optional &quot;Sign in with Google&quot; and &quot;Sign in with Facebook,&quot; which share the name, email, and profile photo you&apos;ve authorized with those providers.</li>
             <li><strong className="text-ink-900">Transactional email</strong> (ZeptoMail, a Zoho product): delivers account, order, and password-reset emails.</li>
-            <li><strong className="text-ink-900">Site analytics</strong> (Vercel Analytics): counts page views and traffic patterns without using tracking cookies or building an advertising profile.</li>
+            <li><strong className="text-ink-900">Site and product analytics</strong> (Vercel Analytics and PostHog): count page views and how people move through the Platform (for example, whether a sign-up or checkout is completed) without using tracking cookies, storing anything in your browser, or building an advertising profile. Staff pages are never included, and we do not send your name, email, address, or messages to these tools.</li>
             <li><strong className="text-ink-900">Error monitoring</strong> (Sentry): receives technical error reports (e.g., a crashed page) to help us fix bugs; this can incidentally include the URL and account ID involved in an error, not your message or listing content.</li>
           </ul>
           <p className="mt-3 text-ink-600">

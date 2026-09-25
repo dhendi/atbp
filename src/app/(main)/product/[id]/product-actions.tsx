@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics-client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -91,6 +92,7 @@ export function ProductActions({
         toast.error(res.error);
         return;
       }
+      track("add_to_cart", { product_id: productId, quantity: qty });
       toast.success(`Added ${qty} to cart!`);
     });
   }

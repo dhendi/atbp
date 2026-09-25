@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics-client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -35,6 +36,7 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
   const [showEmailOtpFlow, setShowEmailOtpFlow] = useState(false);
 
   function onSignedUp() {
+    track("signup_completed");
     toast.success("Welcome to ATBP!");
     router.push("/");
     router.refresh();
