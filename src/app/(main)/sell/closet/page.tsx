@@ -21,8 +21,8 @@ export const metadata: Metadata = {
 
 // A Closet is a person clearing out what they own, so the "what do you
 // primarily sell" list is just the everyday things people actually part with.
-// Anything else (shoes, say) can still be typed in as their own tag.
-const CLOSET_CATEGORY_SLUGS = new Set(["fashion", "streetwear", "bags", "jewelry", "beauty", "vintage", "pre-loved", "baby-kids", "books"]);
+// Anything else can still be typed in as their own tag.
+const CLOSET_CATEGORY_SLUGS = new Set(["fashion", "streetwear", "bags", "jewelry", "beauty", "vintage", "pre-loved", "baby-kids", "shoes"]);
 
 export default async function SellClosetPage() {
   const session = await auth();

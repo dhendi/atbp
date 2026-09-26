@@ -260,6 +260,7 @@ async function main() {
     { name: "Antiques", slug: "antiques", icon: "🏺" },
     { name: "Hobby & Toys", slug: "hobby-toys", icon: "🎲" },
     { name: "Clothes", slug: "fashion", icon: "👗" },
+    { name: "Shoes", slug: "shoes", icon: "👟" },
     { name: "Home Décor", slug: "home-living", icon: "🏠" },
     ...NEW_CATEGORIES,
     // Food & Snacks subcategories — shelf-stable packaged goods only, never
@@ -310,7 +311,7 @@ async function main() {
     { name: "Handmade & Art", slug: "handmade-art", icon: "🎨", children: ["handmade", "art", "custom", "digital-art"] },
     { name: "Vintage & Pre-Loved", slug: "vintage-preloved", icon: "🕰️", children: ["pre-loved", "vintage", "antiques"] },
     { name: "Collectibles & Hobbies", slug: "collectibles-hobbies", icon: "🧸", children: ["collectibles", "hobby-toys", "trading-cards", "anime", "gaming", "music", "books"] },
-    { name: "Fashion & Accessories", slug: "fashion-accessories", icon: "👗", children: ["fashion", "jewelry", "bags", "streetwear", "beauty"] },
+    { name: "Fashion & Accessories", slug: "fashion-accessories", icon: "👗", children: ["fashion", "shoes", "jewelry", "bags", "streetwear", "beauty"] },
     { name: "Home & Living", slug: "home-and-living", icon: "🏠", children: ["home-living", "plants", "stationery"] },
     { name: "Filipino Finds", slug: "filipino", icon: "🇵🇭", children: ["filipino-finds", "local-brands"] },
     { name: "Tech & Gadgets", slug: "tech-gadgets", icon: "📱", children: ["tech"] },
