@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: SELL_CLOSET_TITLE, description: SELL_CLOSET_DESCRIPTION },
 };
 
+// A Closet is a person clearing out what they own, so the "what do you
+// primarily sell" list is just the everyday things people actually part with.
+// Anything else (shoes, say) can still be typed in as their own tag.
+const CLOSET_CATEGORY_SLUGS = new Set(["fashion", "streetwear", "bags", "jewelry", "beauty", "vintage", "pre-loved", "baby-kids", "books"]);
+
 export default async function SellClosetPage() {
   const session = await auth();
   if (!session?.user) redirect("/login?callbackUrl=/sell/closet");
@@ -39,7 +44,7 @@ export default async function SellClosetPage() {
           Sell things you already own, whenever you want. Up to 20 active items, no monthly subscription, approved instantly.
         </p>
       </div>
-      <ClosetOnboardingForm categories={leafCategories.map((c) => ({ slug: c.slug, name: c.name, icon: c.icon }))} />
+      <ClosetOnboardingForm categories={leafCategories.filter((c) => CLOSET_CATEGORY_SLUGS.has(c.slug)).map((c) => ({ slug: c.slug, name: c.name, icon: c.icon }))} />
     </div>
   );
 }
