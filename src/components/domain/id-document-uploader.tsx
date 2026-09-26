@@ -112,14 +112,15 @@ export function IdDocumentUploader({
         <SingleDocumentUploader url={url} onUrlChange={onUrlChange} label={label} />
       </div>
       <div>
-        <p className="mb-1.5 text-xs font-semibold text-ink-600">Live selfie</p>
+        <p className="mb-0.5 text-xs font-semibold text-ink-600">Live selfie holding your ID</p>
+        <p className="mb-1.5 text-[11px] text-ink-400">Hold your ID next to your face so both are clearly visible.</p>
         <SingleDocumentUploader
           url={selfieUrl}
           onUrlChange={onSelfieUrlChange}
-          label="Take a live selfie"
+          label="Take a selfie holding your ID"
           accept="image/*"
           capture="user"
-          uploadedLabel="Selfie captured"
+          uploadedLabel="Selfie with ID captured"
         />
       </div>
     </div>

@@ -45,7 +45,7 @@ export function DigitalProductListingForm({ needsOnboarding, categories }: { nee
     if (needsOnboarding) {
       if (!shopName.trim() || !handle.trim() || !province) return toast.error("Fill in your shop name, handle, and area.");
       if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
-      if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
+      if (!selfiePhotoUrl) return toast.error("Take a live selfie holding your ID to verify your identity.");
     }
     if (!title.trim() || !description.trim()) return toast.error("Add a title and description.");
     if (!categoryId) return toast.error("Choose a category.");

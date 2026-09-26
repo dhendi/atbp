@@ -32,7 +32,7 @@ export function ClosetOnboardingForm({ categories }: { categories: CategoryOptio
       return toast.error("Please choose at least one category for what you're selling.");
     }
     if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
-    if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
+    if (!selfiePhotoUrl) return toast.error("Take a live selfie holding your ID to verify your identity.");
     setLoading(true);
     const res = await becomeClosetSellerAction({
       shopName,

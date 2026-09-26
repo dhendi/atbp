@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus, Package, Handshake, Download } from "lucide-react";
+import { SERVICES_ENABLED } from "@/lib/feature-flags";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
@@ -22,9 +23,11 @@ export default async function StudioProductsPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl font-extrabold text-ink-900">Products</h1>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/sell/service"><Handshake size={14} /> Offer a Service</Link>
-          </Button>
+          {SERVICES_ENABLED && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/sell/service"><Handshake size={14} /> Offer a Service</Link>
+            </Button>
+          )}
           <Button variant="outline" size="sm" asChild>
             <Link href="/sell/digital-product"><Download size={14} /> Sell a Digital Product</Link>
           </Button>

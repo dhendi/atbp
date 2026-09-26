@@ -45,7 +45,7 @@ export function SellForm({ categories }: { categories: CategoryOption[] }) {
       return toast.error("Please choose at least one category for what you primarily sell.");
     }
     if (!idDocumentType || !idDocumentUrl) return toast.error("Upload a government ID to verify your identity.");
-    if (!selfiePhotoUrl) return toast.error("Take a live selfie to verify your identity.");
+    if (!selfiePhotoUrl) return toast.error("Take a live selfie holding your ID to verify your identity.");
     setLoading(true);
     const res = await becomeSellerAction({
       shopName,

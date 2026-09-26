@@ -40,7 +40,7 @@ export function IdVerificationPanel({
 
   function submitResubmit() {
     if (!idDocType || !idDocUrl) return toast.error("Upload your ID before submitting.");
-    if (!selfieUrl) return toast.error("Take a live selfie before submitting.");
+    if (!selfieUrl) return toast.error("Take a live selfie holding your ID before submitting.");
     if (needsBusinessLicense && !licenseUrl) return toast.error("Upload your BIR Certificate of Registration before submitting.");
     startTransition(async () => {
       const res = await resubmitIdDocumentAction({ idDocumentType: idDocType, idDocumentUrl: idDocUrl, selfiePhotoUrl: selfieUrl, businessLicenseUrl: licenseUrl || undefined });

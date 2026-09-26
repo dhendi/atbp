@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Handshake } from "lucide-react";
 import { ServiceListingForm } from "./service-listing-form";
+import { SERVICES_ENABLED } from "@/lib/feature-flags";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ export const metadata: Metadata = {
 
 export default async function SellServicePage() {
   const session = await auth();
+  // Services are switched off (see lib/feature-flags.ts): no way in from the site.
+  if (!SERVICES_ENABLED) redirect("/sell");
   if (!session?.user) redirect("/login?callbackUrl=/sell/service");
 
   const [seller, digitalArtCategory] = await Promise.all([

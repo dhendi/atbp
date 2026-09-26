@@ -29,7 +29,7 @@ export const LIVESTREAMS_ENABLED = false;
 // Art's "Digital Art" — see prisma/seed.ts) — SERVICES_ENABLED now only
 // gates the "Offer a Service" card on /sell; sellers can still list and sell
 // services, there's just no dedicated /services destination for buyers.
-export const SERVICES_ENABLED = true;
+export const SERVICES_ENABLED = false;
 export const DIGITAL_PRODUCTS_ENABLED = false;
 export const FOOD_ENABLED = true;
 
