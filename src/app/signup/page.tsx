@@ -10,8 +10,11 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
+    <>
+    <h1 className="sr-only">Create your ATBP account</h1>
     <Suspense fallback={null}>
       <SignupForm googleEnabled={googleLoginEnabled} facebookEnabled={facebookLoginEnabled} />
     </Suspense>
+    </>
   );
 }

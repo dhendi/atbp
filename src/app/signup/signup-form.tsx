@@ -103,7 +103,7 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
           </p>
         </div>
       )}
-      <h1 className="text-xl font-extrabold text-ink-900">Create your account</h1>
+      <h2 className="text-xl font-extrabold text-ink-900">Create your account</h2>
       <p className="mt-1 text-sm text-ink-500">Join the home for Filipino makers, collectors, and buyers.</p>
 
       <label className="mt-5 flex items-start gap-2.5 rounded-xl border border-ink-100 bg-ink-50 p-3 text-xs text-ink-700">

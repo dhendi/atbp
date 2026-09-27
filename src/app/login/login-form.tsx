@@ -100,7 +100,7 @@ export function LoginForm({ googleEnabled, facebookEnabled }: { googleEnabled: b
     return (
       <AuthCard>
         <ShieldCheck size={22} className="mb-2 text-brand-600" />
-        <h1 className="text-xl font-extrabold text-ink-900">Enter your code</h1>
+        <h2 className="text-xl font-extrabold text-ink-900">Enter your code</h2>
         <p className="mt-1 text-sm text-ink-500">This account has two-factor authentication on. Check your authenticator app.</p>
 
         <form onSubmit={handleCodeSubmit} className="mt-6 space-y-4">
@@ -133,7 +133,7 @@ export function LoginForm({ googleEnabled, facebookEnabled }: { googleEnabled: b
 
   return (
     <AuthCard>
-      <h1 className="text-xl font-extrabold text-ink-900">Log in to ATBP</h1>
+      <h2 className="text-xl font-extrabold text-ink-900">Log in to ATBP</h2>
       <p className="mt-1 text-sm text-ink-500">Good to see you again.</p>
 
       <div className="mt-6 space-y-2">

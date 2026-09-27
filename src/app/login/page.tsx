@@ -10,8 +10,12 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
+    <>
+    {/* The form below renders client-side, so the page needs its own heading in the server HTML. */}
+    <h1 className="sr-only">Log in to ATBP</h1>
     <Suspense>
       <LoginForm googleEnabled={googleLoginEnabled} facebookEnabled={facebookLoginEnabled} />
     </Suspense>
+    </>
   );
 }

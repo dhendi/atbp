@@ -25,6 +25,9 @@ const SITE_DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  // "./" resolves to each page's own path (query string dropped), so filtered
+  // and sorted variants all point search engines at one canonical URL.
+  alternates: { canonical: "./" },
   // A page that sets its own `title` (a plain string) renders exactly that,
   // via the `template`, as "<page title> | ATBP" — pages only need to set
   // `title` here for the "%s" swap to apply; the fallback (`default`) is
