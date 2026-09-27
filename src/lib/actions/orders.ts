@@ -115,6 +115,9 @@ async function runCheckout(
     include: { product: { include: { seller: true } } },
   });
   if (items.length === 0) return { error: "No items selected." };
+  // A shop suspended or closed after the item went into the cart can't take the order.
+  const closedShop = items.find((i) => i.product.seller.status === "SUSPENDED" || i.product.seller.status === "CLOSED");
+  if (closedShop) return { error: `${closedShop.product.seller.shopName} isn't taking orders right now. Remove those items to continue.` };
 
   // The cart's stored unitPrice is a snapshot from when the item was added.
   // For a regular marketplace line it's re-derived from the live product here:

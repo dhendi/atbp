@@ -35,7 +35,7 @@ export async function addToCart(userId: string, productId: string, quantity = 1,
   if (product.listingType === "AUCTION") {
     throw new Error("Auction items can't be added to cart. Place a bid instead.");
   }
-  if (product.status !== "ACTIVE") {
+  if (product.status !== "ACTIVE" || product.seller.status === "SUSPENDED" || product.seller.status === "CLOSED") {
     throw new Error("This item is no longer available.");
   }
 

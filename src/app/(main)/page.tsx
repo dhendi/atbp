@@ -47,7 +47,7 @@ export const dynamic = "force-dynamic";
 // (via `absolute`, which opts out of the root template) rather than relying
 // on the `default` fallback, so the homepage always has its own metadata
 // export instead of silently inheriting one from a parent.
-const HOME_TITLE = "ATBP — Find something different.";
+const HOME_TITLE = "ATBP | Find something different.";
 const HOME_DESCRIPTION =
   "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.";
 

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { cachedQuery } from "@/lib/cache";
 import Image from "next/image";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Store } from "lucide-react";
+import { EmptyState } from "@/components/domain/empty-state";
+import { MARKETS_ENABLED } from "@/lib/feature-flags";
 import { prisma } from "@/lib/prisma";
 import { SectionHeader } from "@/components/domain/section-header";
 
@@ -20,6 +22,7 @@ const MARKETS_DESCRIPTION =
   "See weekend makers markets and pop-up bazaars featured on ATBP across the Philippines, with city, schedule, and details for each.";
 
 export const metadata: Metadata = {
+  ...(MARKETS_ENABLED ? {} : { robots: { index: false, follow: false } }),
   title: MARKETS_TITLE,
   description: MARKETS_DESCRIPTION,
   openGraph: { title: MARKETS_TITLE, description: MARKETS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
@@ -27,11 +30,24 @@ export const metadata: Metadata = {
 };
 
 export default async function MarketsPage() {
+  if (!MARKETS_ENABLED) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16">
+        <EmptyState
+          asPageHeading
+          icon={Store}
+          title="Markets are coming soon"
+          description="We're holding off on ATBP Markets for now. Check back as ATBP grows."
+          action={{ href: "/discover", label: "Explore ATBP" }}
+        />
+      </div>
+    );
+  }
   const markets = await getActiveMarkets();
 
   return (
     <div className="space-y-4 pt-4 md:pt-6">
-      <SectionHeader
+      <SectionHeader as="h1"
         eyebrow="IRL & online"
         title="ATBP markets"
         subtitle="Weekend makers markets and pop-up bazaars across the Philippines, brought online."

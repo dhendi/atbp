@@ -58,7 +58,7 @@ export default async function FollowingPage() {
   return (
     <div className="space-y-8 pt-4 md:pt-6">
       <section>
-        <SectionHeader title="Sellers you follow" />
+        <SectionHeader as="h1" title="Sellers you follow" />
         <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-1 md:px-6">
           {follows.map((f) => (
             <Link key={f.id} href={`/seller/${f.seller.handle}`} className="flex w-16 shrink-0 flex-col items-center gap-1.5">

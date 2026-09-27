@@ -27,6 +27,7 @@ const AUCTIONS_DESCRIPTION =
   "Bid on live auctions on ATBP, including piso-start and rapid auctions from independent Filipino sellers. Browse by category before time runs out.";
 
 export const metadata: Metadata = {
+  ...(AUCTIONS_ENABLED ? {} : { robots: { index: false, follow: false } }),
   title: AUCTIONS_TITLE,
   description: AUCTIONS_DESCRIPTION,
   openGraph: { title: AUCTIONS_TITLE, description: AUCTIONS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
@@ -38,6 +39,7 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Pro
     return (
       <div className="mx-auto max-w-lg px-4 py-16">
         <EmptyState
+          asPageHeading
           icon={Gavel}
           title="Auctions are coming soon"
           description="We're holding off on auctions for now. Check back as ATBP grows."
@@ -161,7 +163,7 @@ function AuctionsPageShell({
 
   return (
     <div className="space-y-4 pt-4 md:pt-6">
-      <SectionHeader
+      <SectionHeader as="h1"
         eyebrow="🔨 Bid to win"
         title="Auctions"
         subtitle="Bid before someone else does"

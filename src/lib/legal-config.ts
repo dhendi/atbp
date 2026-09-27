@@ -12,7 +12,7 @@
  * live site that these are still outstanding rather than silently wrong.
  */
 
-const FILL_IN_ENTITY_NAME = "[LEGAL ENTITY NAME — e.g. \"ATBP Marketplace, Inc.\" or the registered sole proprietorship name]";
+const FILL_IN_ENTITY_NAME = "[LEGAL ENTITY NAME, e.g. \"ATBP Marketplace, Inc.\" or the registered sole proprietorship name]";
 const FILL_IN_ENTITY_ADDRESS = "[REGISTERED BUSINESS ADDRESS, PHILIPPINES]";
 const FILL_IN_GOVERNING_CITY = "[CITY where the registered office sits, for venue/jurisdiction clauses]";
 const FILL_IN_DPO = "[DPO NAME, or \"the Privacy Contact below\" once a Data Protection Officer is formally designated per NPC Circular 16-01]";

@@ -186,7 +186,7 @@ export default function HelpCenterPage() {
           </li>
           <li className="flex gap-2.5">
             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">2</span>
-            <span>Check the seller&apos;s shop page — ratings from real buyers (once a shop has any), and badges like BIR Verified or Founding Seller where they apply.</span>
+            <span>Check the seller&apos;s shop page: ratings from real buyers (once a shop has any), and badges like BIR Verified or Founding Seller where they apply.</span>
           </li>
           <li className="flex gap-2.5">
             <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">3</span>
@@ -204,7 +204,7 @@ export default function HelpCenterPage() {
           </li>
         </ol>
         <p className="mt-4 text-xs leading-relaxed text-ink-500">
-          On prepaid orders, you can optionally add Buyer Protection at checkout — a small fee (3% of your item subtotal + ₱10, capped at ₱150) that backs a refund guarantee if a dispute is resolved in your favor. It&apos;s off by default and doesn&apos;t apply to cash on delivery, since you inspect the item before paying.
+          On prepaid orders, you can optionally add Buyer Protection at checkout: a small fee (3% of your item subtotal + ₱10, capped at ₱150) that backs a refund guarantee if a dispute is resolved in your favor. It&apos;s off by default and doesn&apos;t apply to cash on delivery, since you inspect the item before paying.
         </p>
       </div>
 

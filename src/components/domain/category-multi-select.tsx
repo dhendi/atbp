@@ -126,7 +126,7 @@ export function CategoryMultiSelect({
           </div>
         )}
       </div>
-      <p className="text-xs text-ink-400">Don&apos;t see what you sell? Type it anyway and add it as your own tag — it goes to our team for review.</p>
+      <p className="text-xs text-ink-400">Don&apos;t see what you sell? Type it anyway and add it as your own tag. It goes to our team for review.</p>
 
       {(selectedCategories.length > 0 || customTags.length > 0) && (
         <div className="flex flex-wrap gap-1.5 pt-1">

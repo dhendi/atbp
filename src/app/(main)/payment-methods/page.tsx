@@ -12,7 +12,7 @@ export default async function PaymentMethodsPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6 px-4 pt-4 pb-10 md:px-6 md:pt-6">
-      <SectionHeader eyebrow="Checkout" title="Payment methods" subtitle="Accepted ways to pay across every ATBP shop" />
+      <SectionHeader as="h1" eyebrow="Checkout" title="Payment methods" subtitle="Accepted ways to pay across every ATBP shop" />
 
       <div className="space-y-2">
         {AVAILABLE_PAYMENT_METHODS.map((m) => (

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/layout/logo";
-import { AUCTIONS_ENABLED } from "@/lib/feature-flags";
+import { AUCTIONS_ENABLED, MARKETS_ENABLED } from "@/lib/feature-flags";
 import { LEGAL_CONFIG, legalConfigIsComplete } from "@/lib/legal-config";
 import { SOCIAL_LINKS } from "@/lib/site-config";
 
@@ -21,7 +21,7 @@ const columns = [
     links: [
       { href: "/sell", label: "Sell on ATBP" },
       { href: "/pricing", label: "Seller pricing" },
-      { href: "/markets", label: "ATBP Markets" },
+      ...(MARKETS_ENABLED ? [{ href: "/markets", label: "ATBP Markets" }] : []),
       { href: "/search", label: "Search" },
     ],
   },

@@ -38,7 +38,7 @@ export default async function ClosetsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema).replace(/</g, "\\u003c") }}
       />
-      <SectionHeader
+      <SectionHeader as="h1"
         eyebrow="🧺 Pre-loved, sold personally"
         title="Closets"
         subtitle="Real people clearing out real closets, inspected and honestly photographed."

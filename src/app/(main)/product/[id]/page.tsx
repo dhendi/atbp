@@ -67,7 +67,7 @@ const getRelatedProducts = cachedQuery(
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const product = await getProductDetail(id);
-  if (!product) return { title: "Product not found" };
+  if (!product || product.seller.status === "SUSPENDED") return { title: "Product not found" };
 
   const images = product.images as string[];
   // The root layout's title template already appends " | ATBP" — don't
@@ -105,7 +105,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   // DRAFT/REMOVED/FLAGGED/PAUSED_CAP/ARCHIVED listings (a flagged prohibited
   // item, an expired Yard Sale item, a paused-cap Closet item, etc.) aren't
   // publicly viewable or buyable — SOLD_OUT still is, same as everywhere else.
-  if (!product || (product.status !== "ACTIVE" && product.status !== "SOLD_OUT")) notFound();
+  if (!product || (product.status !== "ACTIVE" && product.status !== "SOLD_OUT") || product.seller.status === "SUSPENDED") notFound();
 
   const [closet, yardSale, existingReport] = await Promise.all([
     product.closetId ? prisma.closet.findUnique({ where: { id: product.closetId } }) : null,

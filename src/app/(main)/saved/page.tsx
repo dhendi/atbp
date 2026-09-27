@@ -23,7 +23,7 @@ export default async function SavedPage() {
 
   return (
     <div className="space-y-4 pt-4 md:pt-6">
-      <SectionHeader eyebrow="Your list" title="Saved" subtitle="Things you've tucked away for later" />
+      <SectionHeader as="h1" eyebrow="Your list" title="Saved" subtitle="Things you've tucked away for later" />
       <div className="px-4 md:px-6">
         {digest.length === 0 ? (
           <EmptyState

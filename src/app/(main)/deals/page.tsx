@@ -91,7 +91,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema).replace(/</g, "\\u003c") }}
       />
-      <SectionHeader eyebrow="🏷️ Today's deals" title="Deals today" subtitle="Good finds, better prices" />
+      <SectionHeader as="h1" eyebrow="🏷️ Today's deals" title="Deals today" subtitle="Good finds, better prices" />
 
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-2 md:px-6">
         <CategoryChip href={priceTierHref(sp, null)} label="All prices" active={!sp.max} />

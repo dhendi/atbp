@@ -19,7 +19,7 @@ const fraunces = Fraunces({
 });
 
 const SITE_NAME = "ATBP";
-const SITE_TITLE = "ATBP — Find something different.";
+const SITE_TITLE = "ATBP | Find something different.";
 const SITE_DESCRIPTION =
   "ATBP (at iba pa) is a marketplace for handmade, vintage, pre-loved, and collectible items from independent sellers across the Philippines.";
 

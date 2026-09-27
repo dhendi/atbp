@@ -50,7 +50,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-8 pt-4 md:pt-6">
-      <SectionHeader eyebrow="IRL" title="Events" subtitle="Flea markets, card shows, and maker fairs from the ATBP community" />
+      <SectionHeader as="h1" eyebrow="IRL" title="Events" subtitle="Flea markets, card shows, and maker fairs from the ATBP community" />
 
       {cities.length > 1 && (
         <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-1 md:px-6">

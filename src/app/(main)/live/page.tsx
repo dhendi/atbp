@@ -15,6 +15,7 @@ const LIVE_DESCRIPTION =
   "Watch live selling streams on ATBP, chat, claim items, and bid in real time. Browse what's live now, upcoming, and recently ended.";
 
 export const metadata: Metadata = {
+  ...(LIVESTREAMS_ENABLED ? {} : { robots: { index: false, follow: false } }),
   title: LIVE_TITLE,
   description: LIVE_DESCRIPTION,
   openGraph: { title: LIVE_TITLE, description: LIVE_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
@@ -26,6 +27,7 @@ export default async function LiveBrowsePage() {
     return (
       <div className="mx-auto max-w-lg px-4 py-16">
         <EmptyState
+          asPageHeading
           icon={Radio}
           title="Live selling is coming soon"
           description="We're holding off on live selling for now. Check back as ATBP grows."
@@ -53,7 +55,7 @@ export default async function LiveBrowsePage() {
       </div>
 
       <section>
-        <SectionHeader title="Live Now" subtitle={`${live.length} streaming right now`} />
+        <SectionHeader as="h1" title="Live Now" subtitle={`${live.length} streaming right now`} />
         {live.length === 0 ? (
           <div className="px-4 md:px-6">
             <EmptyState icon={Radio} title="No one's live right now" description="Set a reminder for an upcoming stream below." />

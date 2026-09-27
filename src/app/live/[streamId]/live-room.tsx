@@ -123,7 +123,7 @@ export function LiveRoom({ streamId, isLoggedIn }: Props) {
         details,
       });
       if ("error" in res) toast.error(res.error);
-      else toast.success("Thanks — our team will review this stream.");
+      else toast.success("Thanks, our team will review this stream.");
       setReportOpen(false);
     });
   }
@@ -342,7 +342,7 @@ function CurrentItemCard({
         {active.mode === "CLAIM" && (
           <div>
             <p className={cn("mb-2 flex items-center gap-1 text-xs font-bold", textClass)}>
-              <Hand size={13} /> {formatPeso(active.product.price)} each — tap a number to claim
+              <Hand size={13} /> {formatPeso(active.product.price)} each. Tap a number to claim
             </p>
             <div className="grid grid-cols-6 gap-1.5">
               {active.claimSlots.map((slot) => (

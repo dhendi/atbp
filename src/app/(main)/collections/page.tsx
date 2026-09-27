@@ -41,7 +41,7 @@ export default async function CollectionsPage() {
   return (
     <div className="space-y-4 pt-4 md:pt-6">
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-6">
-        <SectionHeader eyebrow="Yours" title="Collections" subtitle="Boards you've saved products, shops, and drops into" />
+        <SectionHeader as="h1" eyebrow="Yours" title="Collections" subtitle="Boards you've saved products, shops, and drops into" />
         <NewCollectionDialog />
       </div>
 

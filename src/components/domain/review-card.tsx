@@ -155,7 +155,7 @@ export function ReviewCard({ review, extra }: { review: ReviewCardData; extra?: 
           <Textarea
             value={responseDraft}
             onChange={(e) => setResponseDraft(e.target.value)}
-            placeholder="Thank the buyer, or address anything they raised — this will be shown publicly."
+            placeholder="Thank the buyer, or address anything they raised. This will be shown publicly."
             className="min-h-20 text-sm"
           />
           <div className="flex gap-2">

@@ -42,7 +42,7 @@ export default async function BidsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4 px-4 pt-4 pb-10 md:px-6 md:pt-6">
-      <SectionHeader eyebrow="🔨 Bidding" title="My Bids" subtitle="Everything you're bidding on, and everything you've won" />
+      <SectionHeader as="h1" eyebrow="🔨 Bidding" title="My Bids" subtitle="Everything you're bidding on, and everything you've won" />
 
       <Tabs defaultValue="active" className="px-0">
         <TabsList>

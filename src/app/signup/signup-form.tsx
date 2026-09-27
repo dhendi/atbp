@@ -161,7 +161,7 @@ export function SignupForm({ googleEnabled, facebookEnabled }: { googleEnabled: 
           />
           <span>
             Subscribe to ATBP marketing emails.{" "}
-            <span className="text-ink-500">Required to unlock 10% off your first purchase (up to ₱100) — no spam, unsubscribe anytime.</span>
+            <span className="text-ink-500">Required to unlock 10% off your first purchase (up to ₱100). No spam, unsubscribe anytime.</span>
           </span>
         </label>
         <Button type="submit" variant="brand" size="lg" className="w-full" disabled={loading || !agreedToTerms}>

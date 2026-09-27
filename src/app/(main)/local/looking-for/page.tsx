@@ -45,7 +45,7 @@ export default async function LookingForPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-4 pt-4 pb-10 md:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <SectionHeader eyebrow="Looking For" title="What buyers are hoping to find" subtitle="Post a request, or reply if you can help" />
+        <SectionHeader as="h1" eyebrow="Looking For" title="What buyers are hoping to find" subtitle="Post a request, or reply if you can help" />
       </div>
       <NewRequestDialog categories={categories.map((c) => ({ id: c.id, name: c.name }))} defaultArea={area} loggedIn={!!session?.user} />
 

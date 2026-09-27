@@ -38,7 +38,7 @@ export default async function YardSalesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema).replace(/</g, "\\u003c") }}
       />
-      <SectionHeader
+      <SectionHeader as="h1"
         eyebrow="🏷️ Time-boxed clear-outs"
         title="Yard Sales"
         subtitle="One-time sales from sellers clearing out: here today, gone soon."

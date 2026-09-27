@@ -77,7 +77,7 @@ export default async function TrendingPage() {
 
   return (
     <div className="space-y-8 pt-4 md:pt-6">
-      <SectionHeader eyebrow="🔥 Popular this week" title="Trending" subtitle="What people are checking out right now" />
+      <SectionHeader as="h1" eyebrow="🔥 Popular this week" title="Trending" subtitle="What people are checking out right now" />
 
       {popularCategories.length > 0 && (
         <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-1 md:px-6">

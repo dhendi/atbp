@@ -31,7 +31,7 @@ export function EmailVerificationBanner() {
       return;
     }
     setStep("sent");
-    toast.success("Code sent — check your email.");
+    toast.success("Code sent. Check your email.");
   }
 
   async function verify(e: React.FormEvent) {

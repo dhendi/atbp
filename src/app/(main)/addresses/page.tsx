@@ -17,7 +17,7 @@ export default async function AddressesPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6 px-4 pt-4 pb-10 md:px-6 md:pt-6">
-      <SectionHeader eyebrow="Shipping" title="Addresses" subtitle="Where your finds get delivered" />
+      <SectionHeader as="h1" eyebrow="Shipping" title="Addresses" subtitle="Where your finds get delivered" />
 
       <div className="px-0">
         {addresses.length === 0 ? (

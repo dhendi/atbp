@@ -23,7 +23,7 @@ export default async function PicksIndexPage() {
 
   return (
     <div className="pb-10 pt-4 md:pt-6">
-      <SectionHeader eyebrow="✨ Handpicked" title="ATBP Picks" subtitle="Finds our team thinks are worth a look, updated regularly" />
+      <SectionHeader as="h1" eyebrow="✨ Handpicked" title="ATBP Picks" subtitle="Finds our team thinks are worth a look, updated regularly" />
       {picks.length === 0 ? (
         <div className="px-4 md:px-6"><EmptyState icon={Sparkles} title="No picks yet" description="Check back soon." /></div>
       ) : (

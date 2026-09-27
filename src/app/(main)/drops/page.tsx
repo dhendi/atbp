@@ -47,7 +47,7 @@ export default async function DropsPage() {
 
   return (
     <div className="space-y-4 pt-4 md:pt-6">
-      <SectionHeader
+      <SectionHeader as="h1"
         eyebrow="Limited & timed"
         title="Drops"
         subtitle="Small-batch releases from Filipino makers. Once they're gone, they're gone."

@@ -26,7 +26,7 @@ export const CONDITIONS = [
   { value: "LIKE_NEW", label: "Like New", definition: "Used once or twice at most, with no visible wear." },
   { value: "EXCELLENT", label: "Excellent", definition: "Gently used with only minor, hard-to-notice signs of wear." },
   { value: "GOOD", label: "Good", definition: "Visible signs of normal use, but fully functional and accurately photographed." },
-  { value: "FAIR", label: "Fair", definition: "Noticeable wear or flaws — check the photos and description closely before buying." },
+  { value: "FAIR", label: "Fair", definition: "Noticeable wear or flaws. Check the photos and description closely before buying." },
 ] as const;
 
 export type Condition = (typeof CONDITIONS)[number]["value"];
@@ -71,7 +71,7 @@ export function isSellerInactive(status: string): boolean {
 
 /** The message a buyer-facing action should show when a seller can't currently sell — `null` if they can. */
 export function sellerInactiveMessage(status: string): string | null {
-  if (status === "SUSPENDED") return "Your seller account is suspended — contact support for more information.";
+  if (status === "SUSPENDED") return "Your seller account is suspended. Contact support for more information.";
   if (status === "CLOSED") return "Your store is closed. Reopen it from Studio settings to sell again.";
   return null;
 }
@@ -126,12 +126,12 @@ export function idVerificationBlockMessage(seller: {
 }): string | null {
   if (seller.idVerified) return null;
   if (seller.idRejectedReason) {
-    return "Your ID was sent back for changes — resubmit it from Shop Settings before adding new listings.";
+    return "Your ID was sent back for changes. Resubmit it from Shop Settings before adding new listings.";
   }
   if (!seller.idSubmittedAt) return null; // pre-existing seller, from before ID verification shipped
   const graceMs = ID_VERIFICATION_GRACE_DAYS * 24 * 60 * 60_000;
   if (Date.now() - seller.idSubmittedAt.getTime() > graceMs) {
-    return "Your ID verification is taking longer than expected — new listings are paused until it's approved. Contact support if this seems wrong.";
+    return "Your ID verification is taking longer than expected. New listings are paused until it's approved. Contact support if this seems wrong.";
   }
   return null;
 }

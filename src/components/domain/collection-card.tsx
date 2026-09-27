@@ -15,7 +15,7 @@ export function CollectionCard({
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-ink-900/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-3 text-white">
-        {emoji && <span className="text-lg leading-none">{emoji}</span>}
+        {emoji && image && <span className="text-lg leading-none">{emoji}</span>}
         <p className="font-display text-sm font-semibold leading-tight">{title}</p>
         {subtitle && <p className="text-[11px] text-white/70">{subtitle}</p>}
       </div>

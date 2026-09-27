@@ -31,7 +31,7 @@ export function ResetPasswordForm() {
       toast.error(res.error);
       return;
     }
-    toast.success("Password updated — log in with your new password.");
+    toast.success("Password updated. Log in with your new password.");
     router.push("/login");
   }
 
