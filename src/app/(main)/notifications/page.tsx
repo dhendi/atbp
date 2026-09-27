@@ -8,6 +8,9 @@ import { NotificationsList } from "./notifications-list";
 import { LocalNotificationPrefs } from "./local-notification-prefs";
 import { WishlistNotificationPrefs } from "./wishlist-notification-prefs";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Notifications", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function NotificationsPage() {

@@ -7,6 +7,9 @@ import { AccountSettingsForm } from "./account-settings-form";
 import { TwoFactorSettings } from "./two-factor-settings";
 import { DeleteAccountSection } from "./delete-account-section";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Account settings", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function AccountSettingsPage({ searchParams }: { searchParams: Promise<{ require2fa?: string }> }) {

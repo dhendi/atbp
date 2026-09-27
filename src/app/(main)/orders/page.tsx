@@ -12,6 +12,9 @@ import { autoConfirmOverdueShipments } from "@/lib/shipping/lifecycle";
 import { autoConfirmOverdueServiceOrders } from "@/lib/services/service-orders";
 import { releaseOverdueDigitalProductHolds } from "@/lib/services/digital-products";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "My Orders", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {

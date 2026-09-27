@@ -4,6 +4,9 @@ import { auth } from "@/lib/auth";
 import { SectionHeader } from "@/components/domain/section-header";
 import { AVAILABLE_PAYMENT_METHODS } from "@/lib/payments/provider";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Payment methods", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function PaymentMethodsPage() {

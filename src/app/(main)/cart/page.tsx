@@ -13,6 +13,9 @@ import { getSocialProofMap } from "@/lib/services/social-proof";
 import { getBecauseYouLookedAt } from "@/lib/services/personalization";
 import { getTrendingProducts, getTrendingProductIdSet } from "@/lib/trending";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Your Cart", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {

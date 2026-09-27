@@ -6,6 +6,9 @@ import { checkRateLimit } from "@/lib/services/rate-limit";
 import { getOrderByTrackingToken } from "@/lib/services/guest-checkout";
 import { GuestDisputeButton } from "./guest-dispute-button";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Track your order", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function GuestOrderTrackingPage({ searchParams }: { searchParams: Promise<{ token?: string }> }) {

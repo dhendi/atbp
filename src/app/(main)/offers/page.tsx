@@ -6,6 +6,9 @@ import { EmptyState } from "@/components/domain/empty-state";
 import { expireStaleOffers } from "@/lib/services/tawad";
 import { MyOfferRow } from "./my-offer-row";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "My Tawad Offers", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function MyOffersPage() {

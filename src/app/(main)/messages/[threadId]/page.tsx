@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { amIBlockedByAction } from "@/lib/actions/moderation";
 import { ThreadClient } from "./thread-client";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Messages", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function ThreadPage({ params }: { params: Promise<{ threadId: string }> }) {

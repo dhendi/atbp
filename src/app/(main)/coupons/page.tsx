@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { formatPeso } from "@/lib/utils";
 import { EmptyState } from "@/components/domain/empty-state";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "My Coupons", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function CouponsPage() {

@@ -12,6 +12,9 @@ import { MiniCountdown } from "@/components/domain/countdown";
 import { formatPeso } from "@/lib/utils";
 import { WonAuctionCard } from "./won-auction-card";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "My Bids", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function BidsPage() {

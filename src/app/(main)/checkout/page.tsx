@@ -13,6 +13,9 @@ import { codCapableProviderActive, getShippingOptionsFor } from "@/lib/shipping/
 import { CheckoutClient } from "./checkout-client";
 import { GuestCheckoutClient } from "./guest-checkout-client";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Checkout", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ item?: string; items?: string; guest?: string; qty?: string }> }) {

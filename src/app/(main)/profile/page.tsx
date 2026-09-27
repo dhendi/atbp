@@ -19,6 +19,9 @@ import { getSocialProofMap } from "@/lib/services/social-proof";
 import { LogoutButton } from "./logout-button";
 import { InterestsOnboarding } from "@/components/domain/interests-onboarding";
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Profile", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {

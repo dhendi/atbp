@@ -17,6 +17,9 @@ import { ServiceOrderPanel } from "./service-order-panel";
 
 const STATUS_STEPS = ["PAYMENT_PENDING", "PROCESSING", "SHIPPED", "IN_TRANSIT", "DELIVERED", "COMPLETED"];
 
+// Private page: give it its own tab title (and keep it out of search results).
+export const metadata = { title: "Order details", robots: { index: false, follow: false } };
+
 export const dynamic = "force-dynamic";
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
