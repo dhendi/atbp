@@ -184,7 +184,7 @@ export default function TermsPage() {
             </p>
             <p>
               A flat <strong className="text-ink-900">₱15 processing fee</strong> currently applies to an order paid
-              by Credit/Debit Card or Online Banking, charged to the Seller. Where applicable, Pro and Premium also
+              by Credit/Debit Card, Online Banking, or Cash on Delivery, charged to the Seller. Where applicable, Pro and Premium also
               carry their own recurring subscription price, as does an Instant Payout request from Seller Studio.
               The complete, current fee schedule is published on ATBP&apos;s{" "}
               <Link href="/pricing" className="font-semibold text-brand-600 hover:underline">pricing page</Link> and

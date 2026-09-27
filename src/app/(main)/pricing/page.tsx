@@ -43,7 +43,7 @@ export default async function PricingPage() {
         as="h1"
         eyebrow="For sellers"
         title="Sell on ATBP for a simple 10% commission"
-        subtitle="10% marketplace commission, or 8% on Premium. Card and Online Banking orders also carry a flat ₱15 processing fee per order, charged to the seller. No listing fees, no signup cost. ATBP only makes money when you do."
+        subtitle="10% marketplace commission, or 8% on Premium. Card, Online Banking, and Cash on Delivery orders also carry a flat ₱15 processing fee per order, charged to the seller. No listing fees, no signup cost. ATBP only makes money when you do."
       />
 
       <FoundingSellerSection availability={foundingAvailability} />

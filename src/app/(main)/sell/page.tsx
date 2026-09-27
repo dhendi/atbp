@@ -118,7 +118,7 @@ export default async function SellPage() {
       )}
 
       <p className="mt-6 text-center text-xs text-ink-400">
-        10% marketplace commission (8% on Premium). Card and Online Banking orders also have a flat ₱15 processing fee per order, charged to the seller.{" "}
+        10% marketplace commission (8% on Premium). Card, Online Banking, and Cash on Delivery orders also have a flat ₱15 processing fee per order, charged to the seller.{" "}
         <Link href="/pricing" className="font-semibold text-brand-600 hover:underline">See full seller pricing</Link>.
       </p>
     </div>

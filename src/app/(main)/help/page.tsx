@@ -83,7 +83,7 @@ const faqs: { section: string; icon: typeof Truck; questions: { q: string; a: st
       },
       {
         q: "How much does ATBP take per sale?",
-        a: "A simple 10% commission on Free and Pro, or 8% on Premium. There's also a flat ₱15 processing fee on orders paid by card or online banking. GCash, Maya, and QR Ph carry no extra fee. See Seller pricing in the footer for the full breakdown.",
+        a: "A simple 10% commission on Free and Pro, or 8% on Premium. There's also a flat ₱15 processing fee on orders paid by card, online banking, or cash on delivery. GCash, Maya, and QR Ph carry no extra fee. See Seller pricing in the footer for the full breakdown.",
       },
       {
         q: "How do payouts work?",

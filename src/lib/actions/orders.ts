@@ -364,11 +364,18 @@ export async function updateOrderStatusAction(orderId: string, status: string, t
       if (order.fulfillmentMethod === "DIGITAL_PRODUCT") {
         return { error: "Digital products can't be cancelled once purchased." };
       }
+      // Claim the cancellation atomically first: two requests at once (a
+      // double click, or buyer and seller together) must not both restock the
+      // items and reverse the promo.
+      const claimed = await prisma.order.updateMany({
+        where: { id: orderId, status: { in: ["PAYMENT_PENDING", "PROCESSING"] } },
+        data: { status: "CANCELLED", paymentStatus: "REFUNDED" },
+      });
+      if (claimed.count !== 1) return { error: "This order is closed and can no longer be changed." };
       const items = await prisma.orderItem.findMany({ where: { orderId }, select: { productId: true, quantity: true } });
       for (const item of items) await releaseInventory(item.productId, item.quantity);
       await reversePromoRedemption(orderId);
       await reverseCouponRedemption(orderId);
-      await prisma.order.update({ where: { id: orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
       revalidatePath("/studio/orders");
       revalidatePath("/orders");
       return { success: true };
@@ -434,12 +441,17 @@ export async function cancelOrderAction(orderId: string) {
     return { error: "Digital products can't be cancelled once purchased. Report a problem if the file is missing, corrupt, or not as described." };
   }
 
+  // Atomic claim, same reason as the seller path in updateOrderStatusAction.
+  const claimed = await prisma.order.updateMany({
+    where: { id: orderId, status: { in: ["PAYMENT_PENDING", "PROCESSING"] } },
+    data: { status: "CANCELLED", paymentStatus: "REFUNDED" },
+  });
+  if (claimed.count !== 1) return { error: "This order can no longer be cancelled." };
   for (const item of order.items) {
     await releaseInventory(item.productId, item.quantity);
   }
   await reversePromoRedemption(orderId);
   await reverseCouponRedemption(orderId);
-  await prisma.order.update({ where: { id: orderId }, data: { status: "CANCELLED", paymentStatus: "REFUNDED" } });
   await notify(order.seller.userId, "ORDER_CANCELLED", "Order cancelled", `${order.orderNumber} was cancelled by the buyer.`, "/studio/orders");
   revalidatePath("/orders");
   return { success: true };

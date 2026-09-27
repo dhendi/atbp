@@ -48,10 +48,9 @@ export async function reserveInventory(productId: string, quantity: number): Pro
 
 export async function releaseInventory(productId: string, quantity: number) {
   if (!Number.isInteger(quantity) || quantity < 1) return;
-  await prisma.product.updateMany({
-    where: { id: productId },
-    data: { quantityAvailable: { increment: quantity } },
-  });
+  // Never above the listing's total quantity: a release that runs twice for the
+  // same order (a repeated cancel or refund) would otherwise invent stock.
+  await prisma.$executeRaw`UPDATE "Product" SET "quantityAvailable" = LEAST("quantityAvailable" + ${quantity}, "quantity") WHERE "id" = ${productId}`;
   const restocked = await prisma.product.updateMany({
     where: { id: productId, status: "SOLD_OUT" },
     data: { status: "ACTIVE" },
