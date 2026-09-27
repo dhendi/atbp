@@ -168,7 +168,7 @@ export function LiveRoom({ streamId, isLoggedIn }: Props) {
             <Link href={`/seller/${stream.seller.handle}`} className="block text-sm font-bold text-white">
               @{stream.seller.handle}
             </Link>
-            <span className="text-[11px] text-white/70">{formatCompactNumber(stream.seller.followerCount)} followers</span>
+            {stream.seller.followerCount > 0 && <span className="text-[11px] text-white/70">{formatCompactNumber(stream.seller.followerCount)} followers</span>}
           </div>
           <Button size="sm" variant={stream.isFollowing ? "subtle" : "brand"} className="ml-1 h-8 px-3 text-xs" onClick={handleFollow}>
             {stream.isFollowing ? "Following" : "Follow"}

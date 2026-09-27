@@ -22,7 +22,7 @@ const TRENDING_DESCRIPTION =
 export const metadata: Metadata = {
   title: TRENDING_TITLE,
   description: TRENDING_DESCRIPTION,
-  openGraph: { title: TRENDING_TITLE, description: TRENDING_DESCRIPTION, type: "website" },
+  openGraph: { title: TRENDING_TITLE, description: TRENDING_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: TRENDING_TITLE, description: TRENDING_DESCRIPTION },
 };
 

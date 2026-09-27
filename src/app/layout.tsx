@@ -61,8 +61,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: "#c95532",
+    themeColor: "#c95532",
 };
 
 // Site-wide identity for search engines and AI answer engines alike — this

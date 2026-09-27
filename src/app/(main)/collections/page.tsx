@@ -17,7 +17,7 @@ const COLLECTIONS_DESCRIPTION = "Save products, shops, and drops into named boar
 export const metadata: Metadata = {
   title: COLLECTIONS_TITLE,
   description: COLLECTIONS_DESCRIPTION,
-  openGraph: { title: COLLECTIONS_TITLE, description: COLLECTIONS_DESCRIPTION, type: "website" },
+  openGraph: { title: COLLECTIONS_TITLE, description: COLLECTIONS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: COLLECTIONS_TITLE, description: COLLECTIONS_DESCRIPTION },
 };
 

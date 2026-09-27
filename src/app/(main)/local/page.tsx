@@ -43,7 +43,7 @@ const LOCAL_DESCRIPTION =
 export const metadata: Metadata = {
   title: LOCAL_TITLE,
   description: LOCAL_DESCRIPTION,
-  openGraph: { title: LOCAL_TITLE, description: LOCAL_DESCRIPTION, type: "website" },
+  openGraph: { title: LOCAL_TITLE, description: LOCAL_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: LOCAL_TITLE, description: LOCAL_DESCRIPTION },
 };
 

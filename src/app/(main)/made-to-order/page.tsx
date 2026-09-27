@@ -24,7 +24,7 @@ const MADE_TO_ORDER_DESCRIPTION =
 export const metadata: Metadata = {
   title: MADE_TO_ORDER_TITLE,
   description: MADE_TO_ORDER_DESCRIPTION,
-  openGraph: { title: MADE_TO_ORDER_TITLE, description: MADE_TO_ORDER_DESCRIPTION, type: "website" },
+  openGraph: { title: MADE_TO_ORDER_TITLE, description: MADE_TO_ORDER_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: MADE_TO_ORDER_TITLE, description: MADE_TO_ORDER_DESCRIPTION },
 };
 

@@ -14,7 +14,7 @@ const PICKS_DESCRIPTION =
 export const metadata: Metadata = {
   title: PICKS_TITLE,
   description: PICKS_DESCRIPTION,
-  openGraph: { title: PICKS_TITLE, description: PICKS_DESCRIPTION, type: "website" },
+  openGraph: { title: PICKS_TITLE, description: PICKS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: PICKS_TITLE, description: PICKS_DESCRIPTION },
 };
 

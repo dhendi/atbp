@@ -34,7 +34,7 @@ export function TrendingSellerRow({ rank, seller, isFollowing }: { rank: number;
           <p className="truncate text-sm font-bold text-ink-900">{seller.shopName}</p>
           <p className="flex items-center gap-1.5 text-xs text-ink-500">
             {seller.province && <span className="flex items-center gap-0.5"><MapPin size={10} /> {seller.province}</span>}
-            <span>{formatCompactNumber(seller.followerCount)} followers</span>
+            {seller.followerCount > 0 && <span>{formatCompactNumber(seller.followerCount)} followers</span>}
           </p>
         </div>
       </Link>

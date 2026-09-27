@@ -13,7 +13,7 @@ const CONTACT_DESCRIPTION =
 export const metadata: Metadata = {
   title: CONTACT_TITLE,
   description: CONTACT_DESCRIPTION,
-  openGraph: { title: CONTACT_TITLE, description: CONTACT_DESCRIPTION, type: "website" },
+  openGraph: { title: CONTACT_TITLE, description: CONTACT_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: CONTACT_TITLE, description: CONTACT_DESCRIPTION },
 };
 export const dynamic = "force-dynamic";

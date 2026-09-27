@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     openGraph: {
       title,
       description,
-      images: seller.bannerUrl ? [{ url: seller.bannerUrl }] : seller.logoUrl ? [{ url: seller.logoUrl }] : undefined,
+      images: seller.bannerUrl ? [{ url: seller.bannerUrl }] : seller.logoUrl ? [{ url: seller.logoUrl }] : [{ url: "/opengraph-image" }],
       type: "website",
     },
     twitter: {
@@ -228,7 +228,7 @@ export default async function SellerProfilePage({ params }: { params: Promise<{ 
 
         <div className="mt-4 flex gap-6 border-y border-ink-200 py-3 text-sm">
           <Stat label="Rating" value={seller.ratingCount > 0 ? `${seller.rating.toFixed(1)} ★` : "New"} />
-          <Stat label="Followers" value={formatCompactNumber(seller.followerCount)} />
+          {seller.followerCount > 0 && <Stat label="Followers" value={formatCompactNumber(seller.followerCount)} />}
           <Stat label="Orders completed" value={formatCompactNumber(seller.totalSales)} />
           <Stat label="Listings" value={formatCompactNumber(products.length)} />
         </div>

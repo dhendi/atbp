@@ -12,7 +12,7 @@ const TERMS_DESCRIPTION =
 export const metadata: Metadata = {
   title: TERMS_TITLE,
   description: TERMS_DESCRIPTION,
-  openGraph: { title: TERMS_TITLE, description: TERMS_DESCRIPTION, type: "website" },
+  openGraph: { title: TERMS_TITLE, description: TERMS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: TERMS_TITLE, description: TERMS_DESCRIPTION },
 };
 

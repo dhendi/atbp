@@ -32,7 +32,7 @@ const DROPS_DESCRIPTION =
 export const metadata: Metadata = {
   title: DROPS_TITLE,
   description: DROPS_DESCRIPTION,
-  openGraph: { title: DROPS_TITLE, description: DROPS_DESCRIPTION, type: "website" },
+  openGraph: { title: DROPS_TITLE, description: DROPS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: DROPS_TITLE, description: DROPS_DESCRIPTION },
 };
 

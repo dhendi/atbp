@@ -15,7 +15,7 @@ const SELL_YARD_SALE_DESCRIPTION =
 export const metadata: Metadata = {
   title: SELL_YARD_SALE_TITLE,
   description: SELL_YARD_SALE_DESCRIPTION,
-  openGraph: { title: SELL_YARD_SALE_TITLE, description: SELL_YARD_SALE_DESCRIPTION, type: "website" },
+  openGraph: { title: SELL_YARD_SALE_TITLE, description: SELL_YARD_SALE_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: SELL_YARD_SALE_TITLE, description: SELL_YARD_SALE_DESCRIPTION },
 };
 

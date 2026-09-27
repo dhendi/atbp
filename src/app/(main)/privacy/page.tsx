@@ -12,7 +12,7 @@ const PRIVACY_DESCRIPTION =
 export const metadata: Metadata = {
   title: PRIVACY_TITLE,
   description: PRIVACY_DESCRIPTION,
-  openGraph: { title: PRIVACY_TITLE, description: PRIVACY_DESCRIPTION, type: "website" },
+  openGraph: { title: PRIVACY_TITLE, description: PRIVACY_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: PRIVACY_TITLE, description: PRIVACY_DESCRIPTION },
 };
 

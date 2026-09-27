@@ -22,7 +22,7 @@ const MARKETS_DESCRIPTION =
 export const metadata: Metadata = {
   title: MARKETS_TITLE,
   description: MARKETS_DESCRIPTION,
-  openGraph: { title: MARKETS_TITLE, description: MARKETS_DESCRIPTION, type: "website" },
+  openGraph: { title: MARKETS_TITLE, description: MARKETS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: MARKETS_TITLE, description: MARKETS_DESCRIPTION },
 };
 

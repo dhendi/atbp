@@ -11,7 +11,7 @@ const PROHIBITED_DESCRIPTION =
 export const metadata: Metadata = {
   title: PROHIBITED_TITLE,
   description: PROHIBITED_DESCRIPTION,
-  openGraph: { title: PROHIBITED_TITLE, description: PROHIBITED_DESCRIPTION, type: "website" },
+  openGraph: { title: PROHIBITED_TITLE, description: PROHIBITED_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: PROHIBITED_TITLE, description: PROHIBITED_DESCRIPTION },
 };
 

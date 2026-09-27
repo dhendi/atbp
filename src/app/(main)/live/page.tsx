@@ -17,7 +17,7 @@ const LIVE_DESCRIPTION =
 export const metadata: Metadata = {
   title: LIVE_TITLE,
   description: LIVE_DESCRIPTION,
-  openGraph: { title: LIVE_TITLE, description: LIVE_DESCRIPTION, type: "website" },
+  openGraph: { title: LIVE_TITLE, description: LIVE_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: LIVE_TITLE, description: LIVE_DESCRIPTION },
 };
 

@@ -27,7 +27,7 @@ const GIFTS_DESCRIPTION =
 export const metadata: Metadata = {
   title: GIFTS_TITLE,
   description: GIFTS_DESCRIPTION,
-  openGraph: { title: GIFTS_TITLE, description: GIFTS_DESCRIPTION, type: "website" },
+  openGraph: { title: GIFTS_TITLE, description: GIFTS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: GIFTS_TITLE, description: GIFTS_DESCRIPTION },
 };
 

@@ -41,7 +41,7 @@ function rotate<T>(arr: T[], offset: number, count: number): T[] {
 /** A seller's "booth" on ATBP — banner, logo, a taste of what they sell, and a way to follow or visit, all in one card.
  *  On hover (pointer devices only), it lifts slightly and the preview shelf cycles through more of the shop's items —
  *  a small nod to "peeking into the booth" rather than a static thumbnail. */
-export function MakerCard({ seller, isFollowing = false }: { seller: MakerCardData; isFollowing?: boolean }) {
+export function MakerCard({ seller, isFollowing = false, fluid = false }: { seller: MakerCardData; isFollowing?: boolean; /** Fill the grid cell instead of the fixed carousel width. */ fluid?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const [following, setFollowing] = useState(isFollowing);
@@ -73,7 +73,7 @@ export function MakerCard({ seller, isFollowing = false }: { seller: MakerCardDa
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative w-[260px] shrink-0 overflow-hidden rounded-card border border-ink-200 bg-white transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl md:w-[280px]"
+      className={`relative ${fluid ? "w-full" : "w-[260px] shrink-0 md:w-[280px]"} overflow-hidden rounded-card border border-ink-200 bg-white transition-all duration-300 hover:z-10 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl`}
     >
       <Link href={`/seller/${seller.handle}`} className="block">
         <div className="relative h-16 w-full bg-ink-100">
@@ -108,7 +108,7 @@ export function MakerCard({ seller, isFollowing = false }: { seller: MakerCardDa
                 {typeof seller.ratingCount === "number" && seller.ratingCount > 0 && ` (${seller.ratingCount})`}
               </span>
             )}
-            <span>{formatCompactNumber(seller.followerCount)} followers</span>
+            {seller.followerCount > 0 && <span>{formatCompactNumber(seller.followerCount)} followers</span>}
           </p>
           {seller.topInterests && seller.topInterests.length > 0 && (
             <p className="mt-1 truncate text-xs font-medium text-ink-500">

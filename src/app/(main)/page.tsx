@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Search, Clock, Hammer, Shirt, History, Gem } from "lucide-react";
+import { ArrowRight, Search, Clock, Hammer, Shirt, History, Gem, Trophy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { settleExpiredAuctions, notifyStartedAuctions, notifyEndingSoonAuctions } from "@/lib/actions/auctions";
@@ -21,7 +21,8 @@ import { SponsoredProductCard } from "@/components/domain/sponsored-product-card
 import { InterestCollectionCard } from "@/components/domain/interest-collection-card";
 import { CollectionCard } from "@/components/domain/collection-card";
 import { FEATURED_INTERESTS, topIdentityInterests } from "@/lib/interests";
-import { getActiveCollections } from "@/lib/services/discovery";
+import { getActiveCollections, getSulitFinds, getUkayFinds } from "@/lib/services/discovery";
+import { getFoundingSellerAvailability } from "@/lib/services/founding-seller";
 import { getSavedProductIdSet } from "@/lib/services/wishlist";
 import { getSocialProofMap, type SocialProofData } from "@/lib/services/social-proof";
 import { getForYouProducts, getBecauseYouLookedAt, getBasedOnYourSearches, getWishlistDigest, getDealsForYou } from "@/lib/services/personalization";
@@ -56,6 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
+    images: ["/opengraph-image"],
     type: "website",
   },
   twitter: {
@@ -130,12 +132,15 @@ export default async function HomePage() {
     : [[], []];
 
   const featuredSlugs = FEATURED_INTERESTS.slice(0, 10);
-  const [sponsoredPromotions, picks, featuredImages] = await Promise.all([
+  const [sponsoredPromotions, picks, featuredImages, sulitFinds, ukayFinds, foundingAvailability] = await Promise.all([
     getActivePromotedProducts("HOMEPAGE", { limit: 6 }),
     getActiveCollections("PICK"),
     Promise.all(
       featuredSlugs.map((slug) => prisma.product.findFirst({ where: { status: "ACTIVE", tags: { array_contains: slug } }, select: { images: true } }))
     ),
+    getSulitFinds(16),
+    getUkayFinds(16),
+    getFoundingSellerAvailability(),
   ]);
   await Promise.all(sponsoredPromotions.map((p) => logPromotionImpression(p.id)));
 
@@ -157,7 +162,7 @@ export default async function HomePage() {
   const genuinelyTrending = trending.filter((p) => p.trendingScore > 0);
 
   const allCardProducts = [
-    ...trending, ...endingSoonAuctions, ...dealCandidates, ...recentlyAdded, ...nearbyProducts,
+    ...trending, ...sulitFinds, ...ukayFinds, ...endingSoonAuctions, ...dealCandidates, ...recentlyAdded, ...nearbyProducts,
     ...fromFollowedShops, ...forYou, ...becauseYouLookedAt.products, ...basedOnSearches.products, ...dealsForYou,
   ];
   const [savedIds, socialProofMap] = await Promise.all([
@@ -173,6 +178,27 @@ export default async function HomePage() {
   // user actually has signal, generic top-discount deals otherwise.
   const personalizedDeals = dealsForYou.length > 0;
   const todaysDeals = personalizedDeals ? dealsForYou : deals;
+
+  // The same listing turning up on three shelves in one scroll reads as a
+  // thin catalog. Each shelf below takes only products no earlier shelf
+  // already showed, in the order they appear on the page.
+  const seen = new Set<string>();
+  const uniq = <T extends { id: string }>(list: T[], max = 10): T[] => {
+    const out = list.filter((p) => !seen.has(p.id)).slice(0, max);
+    out.forEach((p) => seen.add(p.id));
+    return out;
+  };
+  const shownTrending = uniq(genuinelyTrending);
+  const shownSulit = uniq(sulitFinds);
+  const shownUkay = uniq(ukayFinds);
+  const shownDeals = uniq(todaysDeals);
+  const shownAuctions = uniq(endingSoonAuctions);
+  const shownRecent = uniq(recentlyAdded);
+  const shownForYou = uniq(forYou);
+  const shownBecause = uniq(becauseYouLookedAt.products);
+  const shownSearches = uniq(basedOnSearches.products);
+  const shownNearby = uniq(nearbyProducts, 12);
+  const shownFollowed = uniq(fromFollowedShops);
 
   return (
     <div className="space-y-16 pb-6 pt-4 md:space-y-24 md:pt-8">
@@ -247,15 +273,47 @@ export default async function HomePage() {
           after the hero rather than buried in Explore only. ---------- */}
       <QuickNav />
 
+      {/* ---------- FOUNDING 200 — the main reason for a business to sign up
+          now; live spot count, and it disappears once the 200 are gone. ---------- */}
+      {!foundingAvailability.full && (
+        <section className="px-4 md:px-6">
+          <div className="relative overflow-hidden rounded-card border border-amber-300 bg-gradient-to-br from-amber-50 via-amber-50 to-white p-6 md:p-8">
+            <div className="paper-grain absolute inset-0" />
+            <div className="relative">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white">
+                <Trophy size={12} /> Founding 200
+              </span>
+              <h2 className="font-display mt-3 max-w-xl text-2xl font-semibold leading-tight text-ink-900 md:text-3xl">
+                Selling a registered business? Be one of our first 200 sellers.
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-ink-700 md:text-base">
+                Free Pro for 1 year, an 8% commission, then Founding Premium at just ₱999/month.
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Button asChild variant="gold" size="lg">
+                  <Link href="/pricing">See Founding benefits <ArrowRight size={17} /></Link>
+                </Button>
+                <span className="text-sm font-semibold text-ink-700">
+                  {foundingAvailability.remaining} of {foundingAvailability.limit} spots left
+                </span>
+              </div>
+              <p className="mt-3 max-w-xl text-xs text-ink-500">
+                For businesses with a BIR Certificate of Registration. Individual and casual sellers are always welcome on ATBP too.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ---------- TRENDING NOW — only shown once real event-driven demand
-          exists (see genuinelyTrending above); a brand-new marketplace with
+          exists (see shownTrending above); a brand-new marketplace with
           no signal yet simply skips straight to Shop by Category below,
           rather than showing recent listings mislabeled as trending. ---------- */}
-      {genuinelyTrending.length > 0 && (
+      {shownTrending.length > 0 && (
         <section>
           <SectionHeader eyebrow="🔥 Popular this week" title="Trending on ATBP" subtitle="What people are checking out" seeAllHref="/trending" />
           <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-            {genuinelyTrending.map((p) => (
+            {shownTrending.map((p) => (
               <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                 <ProductCard product={toProductCardData(p, { trending: true, ...cardOpts(p.id) })} />
               </div>
@@ -307,7 +365,7 @@ export default async function HomePage() {
           nothing. ---------- */}
       {makers.length > 0 && (
         <section>
-          <SectionHeader eyebrow="Sellers" title="Shops to check out" subtitle="Small shops, makers, and collectors from around the country" seeAllHref="/discover" />
+          <SectionHeader eyebrow="Sellers" title="Shops to check out" subtitle="Small shops, makers, and collectors from around the country" seeAllHref="/shops" />
           <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-2 md:px-6">
             {makers.map((m) => (
               <MakerCard
@@ -328,8 +386,36 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* ---------- SULIT FINDS — good-value picks under ₱500 ---------- */}
+      {shownSulit.length > 0 && (
+        <section>
+          <SectionHeader eyebrow="Sulit" title="Sulit Finds under ₱500" subtitle="Worth every peso" seeAllHref="/discover?interest=under-500" />
+          <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
+            {shownSulit.map((p) => (
+              <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
+                <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- UKAY — pre-loved clothes and everyday things ---------- */}
+      {shownUkay.length > 0 && (
+        <section>
+          <SectionHeader eyebrow="Ukay" title="Ukay Finds" subtitle="Pre-loved pieces in good shape, for less" seeAllHref="/discover?category=pre-loved" />
+          <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
+            {shownUkay.map((p) => (
+              <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
+                <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ---------- DEALS (personalized when signal exists, generic top-discount otherwise) ---------- */}
-      {todaysDeals.length > 0 && (
+      {shownDeals.length > 0 && (
         <section>
           <SectionHeader
             eyebrow={personalizedDeals ? "🎯 Picked for you" : "🏷️ Limited time"}
@@ -338,7 +424,7 @@ export default async function HomePage() {
             seeAllHref="/deals"
           />
           <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-            {todaysDeals.map((p) => (
+            {shownDeals.map((p) => (
               <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                 <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
               </div>
@@ -349,11 +435,11 @@ export default async function HomePage() {
 
       {/* ---------- AUCTIONS ENDING SOON — grouped with Deals: both are
           urgency/value-driven, not general browsing ---------- */}
-      {AUCTIONS_ENABLED && endingSoonAuctions.length > 0 && (
+      {AUCTIONS_ENABLED && shownAuctions.length > 0 && (
         <section>
           <SectionHeader eyebrow="🔨 Bid to win" title="Ending soon" subtitle="Place your bid before time runs out" seeAllHref="/auctions" />
           <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-            {endingSoonAuctions.map((p) => (
+            {shownAuctions.map((p) => (
               <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                 <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
               </div>
@@ -393,11 +479,11 @@ export default async function HomePage() {
           rather than competing with the curated sections above. Still
           guarded like the rest: an empty catalog shouldn't render a "Just
           added" header over nothing. ---------- */}
-      {recentlyAdded.length > 0 && (
+      {shownRecent.length > 0 && (
         <section>
           <SectionHeader eyebrow="New" title="Just added" seeAllHref="/discover?sort=newest" />
           <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-            {recentlyAdded.map((p) => (
+            {shownRecent.map((p) => (
               <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                 <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
               </div>
@@ -411,17 +497,17 @@ export default async function HomePage() {
           main narrative. A first-time visitor never sees any of this (all
           require a session + real signal); a returning user gets it as a
           bonus zone after the curated homepage, not competing with it. ---------- */}
-      {(forYou.length > 0 || becauseYouLookedAt.products.length > 0 || basedOnSearches.products.length > 0 ||
-        (area && (nearbySellers.length > 0 || nearbyProducts.length > 0)) ||
-        fromFollowedShops.length > 0 || wishlistDigest.length > 0 || sponsoredPromotions.length > 0) && (
+      {(shownForYou.length > 0 || shownBecause.length > 0 || shownSearches.length > 0 ||
+        (area && (nearbySellers.length > 0 || shownNearby.length > 0)) ||
+        shownFollowed.length > 0 || wishlistDigest.length > 0 || sponsoredPromotions.length > 0) && (
         <div className="space-y-16 md:space-y-20">
           <SectionHeader eyebrow="👋 Welcome back" title="Just for you" subtitle="Based on what you've viewed, saved, searched, and followed" />
 
-          {forYou.length > 0 && (
+          {shownForYou.length > 0 && (
             <section>
               <SectionHeader eyebrow="✨ Just for you" title="For You" subtitle="Picked based on what you've saved, bought, and followed" />
               <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-                {forYou.map((p) => (
+                {shownForYou.map((p) => (
                   <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                     <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
                   </div>
@@ -430,7 +516,7 @@ export default async function HomePage() {
             </section>
           )}
 
-          {becauseYouLookedAt.products.length > 0 && (
+          {shownBecause.length > 0 && (
             <section>
               <SectionHeader
                 eyebrow="👀 Following up"
@@ -438,7 +524,7 @@ export default async function HomePage() {
                 subtitle="More like what you've recently viewed"
               />
               <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-                {becauseYouLookedAt.products.map((p) => (
+                {shownBecause.map((p) => (
                   <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                     <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
                   </div>
@@ -447,11 +533,11 @@ export default async function HomePage() {
             </section>
           )}
 
-          {basedOnSearches.products.length > 0 && (
+          {shownSearches.length > 0 && (
             <section>
               <SectionHeader eyebrow="🔍 From your searches" title="Based on your searches" subtitle={`Related to "${basedOnSearches.terms[0]}" and more`} />
               <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-                {basedOnSearches.products.map((p) => (
+                {shownSearches.map((p) => (
                   <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                     <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
                   </div>
@@ -460,7 +546,7 @@ export default async function HomePage() {
             </section>
           )}
 
-          {area && (nearbySellers.length > 0 || nearbyProducts.length > 0) && (
+          {area && (nearbySellers.length > 0 || shownNearby.length > 0) && (
             <section>
               <SectionHeader eyebrow="📍 Near You" title={`What's near you in ${area}`} subtitle="Sellers and products based in your area" seeAllHref="/local" />
 
@@ -486,9 +572,9 @@ export default async function HomePage() {
                 </div>
               )}
 
-              {nearbyProducts.length > 0 && (
+              {shownNearby.length > 0 && (
                 <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-                  {nearbyProducts.map((p) => (
+                  {shownNearby.map((p) => (
                     <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                       <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
                     </div>
@@ -498,11 +584,11 @@ export default async function HomePage() {
             </section>
           )}
 
-          {fromFollowedShops.length > 0 && (
+          {shownFollowed.length > 0 && (
             <section>
               <SectionHeader eyebrow="From shops you follow" title="Back at the market" subtitle="New from the shops you follow" seeAllHref="/following" />
               <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-2 md:px-6">
-                {fromFollowedShops.map((p) => (
+                {shownFollowed.map((p) => (
                   <div key={p.id} className="w-[168px] shrink-0 md:w-[200px]">
                     <ProductCard product={toProductCardData(p, { trending: trendingIds.has(p.id), ...cardOpts(p.id) })} />
                   </div>

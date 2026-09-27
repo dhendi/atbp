@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title,
       description,
-      images: event.coverImage ? [{ url: event.coverImage }] : undefined,
+      images: event.coverImage ? [{ url: event.coverImage }] : [{ url: "/opengraph-image" }],
       type: "website",
     },
     twitter: {

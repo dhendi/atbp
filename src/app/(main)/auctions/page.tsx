@@ -29,7 +29,7 @@ const AUCTIONS_DESCRIPTION =
 export const metadata: Metadata = {
   title: AUCTIONS_TITLE,
   description: AUCTIONS_DESCRIPTION,
-  openGraph: { title: AUCTIONS_TITLE, description: AUCTIONS_DESCRIPTION, type: "website" },
+  openGraph: { title: AUCTIONS_TITLE, description: AUCTIONS_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: AUCTIONS_TITLE, description: AUCTIONS_DESCRIPTION },
 };
 

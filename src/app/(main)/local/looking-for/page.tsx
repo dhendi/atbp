@@ -19,7 +19,7 @@ const LOOKING_FOR_DESCRIPTION =
 export const metadata: Metadata = {
   title: LOOKING_FOR_TITLE,
   description: LOOKING_FOR_DESCRIPTION,
-  openGraph: { title: LOOKING_FOR_TITLE, description: LOOKING_FOR_DESCRIPTION, type: "website" },
+  openGraph: { title: LOOKING_FOR_TITLE, description: LOOKING_FOR_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: LOOKING_FOR_TITLE, description: LOOKING_FOR_DESCRIPTION },
 };
 

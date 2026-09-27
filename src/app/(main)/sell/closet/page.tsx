@@ -15,7 +15,7 @@ const SELL_CLOSET_DESCRIPTION =
 export const metadata: Metadata = {
   title: SELL_CLOSET_TITLE,
   description: SELL_CLOSET_DESCRIPTION,
-  openGraph: { title: SELL_CLOSET_TITLE, description: SELL_CLOSET_DESCRIPTION, type: "website" },
+  openGraph: { title: SELL_CLOSET_TITLE, description: SELL_CLOSET_DESCRIPTION, images: ["/opengraph-image"], type: "website" },
   twitter: { card: "summary_large_image", title: SELL_CLOSET_TITLE, description: SELL_CLOSET_DESCRIPTION },
 };
 
