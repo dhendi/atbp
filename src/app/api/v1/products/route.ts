@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { PRODUCT_TYPES } from "@/lib/constants";
+import { AUCTIONS_ENABLED } from "@/lib/feature-flags";
 
 /**
  * GET /api/v1/products — the mobile app's main browse/search feed. Public
@@ -33,18 +35,37 @@ export async function GET(req: Request) {
   const sortKey = (url.searchParams.get("sort") ?? "newest") as keyof typeof SORTS;
   const cursor = url.searchParams.get("cursor") ?? undefined;
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 50);
+  const typeParam = url.searchParams.get("type");
+  const type = PRODUCT_TYPES.some((t) => t.value === typeParam) ? typeParam : null;
+  // onDeal=1 → only listings with a live deal price, same window check as
+  // isDealActive in lib/deals.ts (no start = already started, no end = open-ended).
+  const onDeal = url.searchParams.get("onDeal") === "1";
+  const now = new Date();
 
   const products = await prisma.product.findMany({
     where: {
       status: "ACTIVE",
       seller: { status: "APPROVED" },
+      // Auctions are switched off at launch (AUCTIONS_ENABLED), so they never
+      // appear in a browse feed — same as the web app's EXCLUDE_AUCTIONS.
+      ...(AUCTIONS_ENABLED ? {} : { listingType: { not: "AUCTION" } }),
+      ...(type ? { type } : {}),
+      ...(onDeal
+        ? {
+            dealPrice: { not: null },
+            AND: [
+              { OR: [{ dealStartAt: null }, { dealStartAt: { lte: now } }] },
+              { OR: [{ dealEndAt: null }, { dealEndAt: { gt: now } }] },
+            ],
+          }
+        : {}),
       ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
       ...(category ? { category: { slug: category } } : {}),
       ...(Number.isFinite(minPrice) && minPrice > 0 ? { price: { gte: minPrice } } : {}),
       ...(Number.isFinite(maxPrice) && maxPrice > 0 ? { price: { lte: maxPrice } } : {}),
     },
     select: {
-      id: true, title: true, price: true, compareAtPrice: true, dealPrice: true, images: true,
+      id: true, title: true, price: true, compareAtPrice: true, dealPrice: true, dealStartAt: true, dealEndAt: true, images: true,
       condition: true, quantityAvailable: true, likeCount: true, status: true, listingType: true,
       seller: { select: { shopName: true, handle: true, rating: true, verified: true, isSampleContent: true } },
     },
